@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -20,6 +21,14 @@ export default function Home() {
   const viewingHistory = ['p2', 'p4', 'p6'];
 
   const heroSlides = [
+    {
+      image: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp',
+      dataAiHint: 'electronics sale',
+      headline: 'Mega Electronics Sale!',
+      description: 'Get the best deals on the latest gadgets and electronics.',
+      buttonLink: '/shop',
+      buttonText: 'Shop Electronics',
+    },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 'mens fashion',
