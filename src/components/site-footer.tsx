@@ -26,10 +26,10 @@ export function SiteFooter() {
           <div>
              <h4 className="font-semibold mb-3 font-headline">Support</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Contact Us</a></li>
-              <li><a href="#" className="hover:text-primary">FAQ</a></li>
-              <li><a href="#" className="hover:text-primary">Returns</a></li>
-              <li><a href="#" className="hover:text-primary">Track Order</a></li>
+              <li><Link href="/contact" className="hover:text-primary">Contact Us</Link></li>
+              <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
+              <li><Link href="/returns" className="hover:text-primary">Returns</Link></li>
+              <li><Link href="/track-order" className="hover:text-primary">Track Order</Link></li>
             </ul>
           </div>
           <div>
