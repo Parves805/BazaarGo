@@ -91,12 +91,21 @@ export default function CheckoutPage() {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    console.log('Order placed:', {
-      shippingInfo: data,
+    const order = {
+      id: new Date().getTime().toString(),
+      date: new Date().toISOString(),
       items: cartItems,
-      subtotal,
       total: subtotal + shippingCost,
-    });
+      shippingInfo: data,
+      status: 'Processing' as const,
+    };
+
+    try {
+        const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+        localStorage.setItem('userOrders', JSON.stringify([order, ...existingOrders]));
+    } catch (error) {
+        console.error("Failed to save order to localStorage", error);
+    }
 
     clearCart();
     toast({

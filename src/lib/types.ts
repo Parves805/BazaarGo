@@ -23,3 +23,21 @@ export interface Category {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+export interface Order {
+  id: string;
+  date: string;
+  items: CartItem[];
+  total: number;
+  status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  shippingInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    paymentMethod: string;
+  };
+}
