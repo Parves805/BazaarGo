@@ -41,7 +41,7 @@ export default function CartPage() {
                             <p className="font-semibold">{item.name}</p>
                             <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor?.name}</p>
                             <p className="md:hidden mt-2 font-medium">
-                                {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(item.price)} each
+                                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(item.price)} each
                             </p>
                           </div>
                           <div className="flex items-center border rounded-md w-fit justify-self-start md:justify-self-center">
@@ -55,7 +55,7 @@ export default function CartPage() {
                           </div>
                           <div className="flex items-center justify-between md:justify-end gap-4 w-full">
                             <p className="font-medium text-lg hidden md:block">
-                              {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
+                              {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
                             </p>
                             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => item.selectedColor && item.selectedSize && removeItem(item.id, item.selectedSize, item.selectedColor.name)}>
                               <Trash2 className="h-5 w-5" />
@@ -80,16 +80,16 @@ export default function CartPage() {
                    <div className="space-y-2">
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Subtotal</span>
-                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(subtotal)}</span>
+                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(subtotal)}</span>
                       </div>
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Shipping</span>
-                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(shippingCost)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(subtotal + shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(subtotal + shippingCost)}</span>
                       </div>
                   </div>
                 </CardContent>
