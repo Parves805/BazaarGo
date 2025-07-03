@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings } from 'lucide-react';
+import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -115,6 +115,14 @@ export default function AdminLayout({
                   <Link href="/admin/customers">
                     <Users />
                     Customers
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                  <Link href="/admin/analytics">
+                    <BarChart />
+                    Analytics
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
