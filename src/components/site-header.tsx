@@ -8,11 +8,29 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { categories } from '@/lib/data';
 import { CartSheet } from './cart-sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 export function SiteHeader() {
-  // Mock authentication state. In a real app, you'd use a context or auth library.
+  const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // This code runs only on the client, after the component mounts.
+    const authStatus = localStorage.getItem('isAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    setIsAuthenticated(false);
+    toast({
+      title: 'Logged Out',
+      description: 'You have been successfully logged out.',
+    });
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -83,20 +101,26 @@ export function SiteHeader() {
                         <>
                           <DropdownMenuLabel>My Account</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <UserCircle className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <ListOrdered className="mr-2 h-4 w-4" />
-                            <span>Orders</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
-                          </DropdownMenuItem>
+                           <Link href="/profile" passHref>
+                            <DropdownMenuItem>
+                              <UserCircle className="mr-2 h-4 w-4" />
+                              <span>Profile</span>
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link href="/orders" passHref>
+                            <DropdownMenuItem>
+                              <ListOrdered className="mr-2 h-4 w-4" />
+                              <span>My Orders</span>
+                            </DropdownMenuItem>
+                          </Link>
+                           <Link href="/settings" passHref>
+                            <DropdownMenuItem>
+                              <Settings className="mr-2 h-4 w-4" />
+                              <span>Settings</span>
+                            </DropdownMenuItem>
+                          </Link>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => setIsAuthenticated(false)}>
+                          <DropdownMenuItem onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                           </DropdownMenuItem>

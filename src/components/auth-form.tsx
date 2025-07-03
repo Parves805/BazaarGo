@@ -60,6 +60,9 @@ export function AuthForm({ type }: AuthFormProps) {
     // Mock API call to your backend
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // Persist authentication state in localStorage
+    localStorage.setItem('isAuthenticated', 'true');
+
     setIsLoading(false);
     
     if (type === 'login') {
