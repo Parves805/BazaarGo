@@ -2,12 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, StarHalf } from 'lucide-react';
+import { Star, StarHalf, Heart } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import type { Product } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { useCart } from '@/context/cart-context';
+import { useWishlist } from '@/context/wishlist-context';
+import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -33,11 +35,18 @@ function Rating({ rating, reviewCount }: { rating: number, reviewCount: number }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
 
   const handleAddToCart = () => {
     addItem(product, 1);
   };
   
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleWishlist(product);
+  }
+
   return (
     <Card className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col bg-card">
       <CardHeader className="p-0 border-b">
@@ -52,7 +61,19 @@ export function ProductCard({ product }: ProductCardProps) {
             />
           </Link>
            { product.tags.includes('new') && <Badge variant="default" className="absolute top-3 left-3 bg-primary">NEW</Badge> }
-           { product.stock < 20 && <Badge variant="destructive" className="absolute top-3 right-3">LOW STOCK</Badge> }
+           { product.stock < 20 && <Badge variant="destructive" className="absolute top-3 right-3 z-10">LOW STOCK</Badge> }
+           <Button 
+                size="icon" 
+                variant="ghost" 
+                className={cn(
+                    "absolute top-2 right-2 h-9 w-9 rounded-full bg-background/60 backdrop-blur-sm hover:bg-background/80 z-20",
+                    isWishlisted ? "text-accent" : "text-muted-foreground"
+                )}
+                onClick={handleWishlistToggle}
+            >
+                <Heart className={cn("h-5 w-5", isWishlisted && "fill-current")} />
+                <span className="sr-only">Add to wishlist</span>
+            </Button>
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">

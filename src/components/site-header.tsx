@@ -12,11 +12,13 @@ import { CartSheet } from './cart-sheet';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
+import { useWishlist } from '@/context/wishlist-context';
 
 export function SiteHeader() {
   const { toast } = useToast();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { wishlistCount } = useWishlist();
 
   useEffect(() => {
     // This code runs only on the client, after the component mounts.
@@ -89,10 +91,17 @@ export function SiteHeader() {
         <div className="flex items-center">
             <nav className="flex items-center">
               <div className="hidden md:flex items-center space-x-1">
-                  <Button variant="ghost" size="icon">
-                      <Heart className="h-6 w-6" />
-                      <span className="sr-only">Wishlist</span>
-                  </Button>
+                  <Link href="/wishlist" passHref>
+                    <Button variant="ghost" size="icon" className="relative">
+                        <Heart className="h-6 w-6" />
+                        {wishlistCount > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
+                                {wishlistCount}
+                            </span>
+                        )}
+                        <span className="sr-only">Wishlist</span>
+                    </Button>
+                  </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
