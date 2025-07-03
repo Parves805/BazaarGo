@@ -43,23 +43,35 @@ const defaultSettings: WebsiteSettings = {
 
 export default function AdminSettingsPage() {
     const { toast } = useToast();
-    const [slides, setSlides] = useState<Slide[]>(() => defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
-    const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
+    const [slides, setSlides] = useState<Slide[]>([]);
+    const [settings, setSettings] = useState<WebsiteSettings | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         try {
-            const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
-            if (savedImages) {
-                setSlides(JSON.parse(savedImages).map((img: Omit<Slide, 'id'>, i: number) => ({...img, id: Date.now() + i })));
+            const savedImagesJson = localStorage.getItem(SLIDER_IMAGES_KEY);
+            if (savedImagesJson) {
+                const savedImages = JSON.parse(savedImagesJson);
+                if (Array.isArray(savedImages)) {
+                  setSlides(savedImages.map((img: Omit<Slide, 'id'>, i: number) => ({...img, id: Date.now() + i })));
+                } else {
+                  setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
+                }
+            } else {
+                 setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
             }
-             const savedSettings = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-            if (savedSettings) {
-                setSettings(JSON.parse(savedSettings));
+
+            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettingsJson) {
+                setSettings(JSON.parse(savedSettingsJson));
+            } else {
+                setSettings(defaultSettings);
             }
         } catch (error) {
-            console.error("Failed to load settings from localStorage", error);
+            console.error("Failed to load settings from localStorage, using defaults", error);
+            setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
+            setSettings(defaultSettings);
         }
         setIsMounted(true);
     }, []);
@@ -73,7 +85,7 @@ export default function AdminSettingsPage() {
     };
 
     const handleSettingChange = (field: keyof WebsiteSettings, value: string) => {
-        setSettings(prev => ({ ...prev, [field]: value }));
+        setSettings(prev => prev ? ({ ...prev, [field]: value }) : null);
     };
 
     const addSlide = () => {
@@ -85,9 +97,9 @@ export default function AdminSettingsPage() {
     };
 
     const saveChanges = async () => {
+        if (!settings) return; // Guard against null settings
         setIsLoading(true);
         try {
-            // Strip the temporary 'id' property before saving
             const slidesToSave = slides.map(({ id, ...rest }) => rest);
             localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave));
             localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
@@ -109,7 +121,7 @@ export default function AdminSettingsPage() {
         }
     };
     
-    if (!isMounted) {
+    if (!isMounted || !settings) {
         return <p>Loading settings...</p>;
     }
 
