@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -127,7 +128,7 @@ export default function AdminProductsPage() {
                                 <TableCell>
                                     <Badge variant="outline">{product.category}</Badge>
                                 </TableCell>
-                                <TableCell>৳{product.price.toLocaleString('en-IN')}</TableCell>
+                                <TableCell>৳{product.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                                 <TableCell>{product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}</TableCell>
                                 <TableCell>
                                     <DropdownMenu>

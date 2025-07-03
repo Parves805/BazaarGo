@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
       
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {renderStatCard("Total Revenue", `৳${stats.totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, stats.revenueChange, <DollarSign className="h-4 w-4 text-muted-foreground" />, "from last month")}
+        {renderStatCard("Total Revenue", `৳${stats.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, stats.revenueChange, <DollarSign className="h-4 w-4 text-muted-foreground" />, "from last month")}
         {renderStatCard("Total Sales", `+${stats.totalSales}`, stats.salesChange, <ShoppingCart className="h-4 w-4 text-muted-foreground" />, "from last month")}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
                   <TableCell>{order.shippingInfo.name}</TableCell>
-                  <TableCell>৳{order.total.toLocaleString('en-IN')}</TableCell>
+                  <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                   <TableCell>
                      <Badge variant="outline" className="flex items-center gap-2 w-fit">
                         <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>

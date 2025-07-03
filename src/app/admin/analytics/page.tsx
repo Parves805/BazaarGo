@@ -15,7 +15,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     
     let displayValue = value.toLocaleString('en-IN');
     if (key === 'sales') {
-        displayValue = `৳${value.toLocaleString('en-IN')}`;
+        displayValue = `৳${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     return (

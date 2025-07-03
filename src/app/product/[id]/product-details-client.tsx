@@ -105,7 +105,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
         </div>
         <Rating rating={product.rating} reviewCount={product.reviewCount} />
         <p className="text-3xl font-bold text-primary">
-            {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(product.price)}
+            ৳{product.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
         <Separator />
         <p className="text-muted-foreground leading-relaxed">{product.description}</p>

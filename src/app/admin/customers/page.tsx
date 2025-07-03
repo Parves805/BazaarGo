@@ -90,7 +90,7 @@ export default function AdminCustomersPage() {
                                 <TableCell>{customer.email}</TableCell>
                                 <TableCell>{customer.phone}</TableCell>
                                 <TableCell className="text-center">{customer.orderCount}</TableCell>
-                                <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN')}</TableCell>
+                                <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                             </TableRow>
                         )) : (
                             <TableRow>

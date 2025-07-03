@@ -87,7 +87,7 @@ export default function OrdersPage() {
                                         </div>
                                         <div className="flex items-center gap-4 justify-between">
                                             <p className="font-semibold text-lg">
-                                                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(order.total)}
+                                                ৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </p>
                                             <Badge variant="outline" className="flex items-center gap-2">
                                                 <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
@@ -113,7 +113,7 @@ export default function OrdersPage() {
                                                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                                 </div>
                                                 <p className="font-medium">
-                                                    {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(item.price * item.quantity)}
+                                                    ৳{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                 </p>
                                             </div>
                                         ))}

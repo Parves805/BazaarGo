@@ -116,7 +116,7 @@ export default function AdminOrdersPage() {
                                 <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
                                 <TableCell>{order.shippingInfo.name}</TableCell>
                                 <TableCell>{format(new Date(order.date), "PPP")}</TableCell>
-                                <TableCell>৳{order.total.toLocaleString('en-IN')}</TableCell>
+                                <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className="flex items-center gap-2 w-fit">
                                         <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>

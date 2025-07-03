@@ -360,7 +360,7 @@ export default function CheckoutPage() {
                           <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                         <p className="font-medium">
-                          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(item.price * item.quantity)}
+                          ৳{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       </div>
                     ))}
@@ -369,16 +369,16 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Subtotal</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(subtotal)}</span>
+                          <span>৳{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Shipping</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(shippingCost)}</span>
+                          <span>৳{shippingCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(subtotal + shippingCost)}</span>
+                          <span>৳{(subtotal + shippingCost).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                   </div>
                 </CardContent>
@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                           </>
                       ) : (
                           <>
-                              Place Order ({new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', currencyDisplay: 'symbol' }).format(subtotal + shippingCost)})
+                              Place Order (৳{(subtotal + shippingCost).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
                           </>
                       )}
                   </Button>
