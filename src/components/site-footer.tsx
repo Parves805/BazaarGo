@@ -15,10 +15,10 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold mb-3 font-headline">Shop</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Electronics</a></li>
-              <li><a href="#" className="hover:text-primary">Clothing</a></li>
-              <li><a href="#" className="hover:text-primary">Home Goods</a></li>
-              <li><a href="#" className="hover:text-primary">Gaming</a></li>
+              <li><a href="#" className="hover:text-primary">Half Sleeve T-shirt</a></li>
+              <li><a href="#" className="hover:text-primary">Shirt</a></li>
+              <li><a href="#" className="hover:text-primary">Polo T-shirt</a></li>
+              <li><a href="#" className="hover:text-primary">Underwear</a></li>
             </ul>
           </div>
           <div>

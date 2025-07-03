@@ -25,7 +25,7 @@ export default function Home() {
             alt="Promotional banner"
             fill
             className="object-cover -z-10"
-            data-ai-hint="vibrant marketplace"
+            data-ai-hint="mens fashion"
             priority
           />
           <div className="container h-full flex flex-col items-start justify-center text-left">
@@ -47,7 +47,7 @@ export default function Home() {
         <section className="py-12 md:py-20">
           <div className="container">
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Shop by Category</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
               {categories.map((category) => (
                 <a href="#" key={category.id} className="group text-center">
                   <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary">
@@ -58,7 +58,7 @@ export default function Home() {
                           alt={category.name}
                           fill
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
-                          data-ai-hint={`${category.name} products`}
+                          data-ai-hint={`mens ${category.name}`}
                         />
                       </div>
                     </CardContent>
