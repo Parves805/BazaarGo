@@ -35,14 +35,24 @@ export default function ProfilePage() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setUser(prev => ({
-        ...prev,
-        address: { ...prev.address, [child]: value }
+    const nameParts = name.split('.');
+
+    if (nameParts.length === 1) {
+      // Handle top-level properties like 'name', 'phone'
+      setUser(prevUser => ({
+        ...prevUser,
+        [name]: value,
       }));
-    } else {
-      setUser(prev => ({ ...prev, [name]: value }));
+    } else if (nameParts.length === 2 && nameParts[0] === 'address') {
+      // Handle nested properties in 'address'
+      const key = nameParts[1];
+      setUser(prevUser => ({
+        ...prevUser,
+        address: {
+          ...prevUser.address,
+          [key]: value,
+        },
+      }));
     }
   };
 
