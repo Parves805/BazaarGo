@@ -59,9 +59,11 @@ export default function AdminSettingsPage() {
     }, []);
 
     const handleSlideChange = (index: number, field: 'url' | 'dataAiHint', value: string) => {
-        const newSlides = [...slides];
-        newSlides[index] = { ...newSlides[index], [field]: value };
-        setSlides(newSlides);
+        setSlides(prevSlides => {
+            const newSlides = [...prevSlides];
+            newSlides[index] = { ...newSlides[index], [field]: value };
+            return newSlides;
+        });
     };
 
     const handleSettingChange = (field: keyof WebsiteSettings, value: string) => {
@@ -69,12 +71,11 @@ export default function AdminSettingsPage() {
     };
 
     const addSlide = () => {
-        setSlides([...slides, { url: '', dataAiHint: '' }]);
+        setSlides(prevSlides => [...prevSlides, { url: '', dataAiHint: '' }]);
     };
 
     const removeSlide = (index: number) => {
-        const newSlides = slides.filter((_, i) => i !== index);
-        setSlides(newSlides);
+        setSlides(prevSlides => prevSlides.filter((_, i) => i !== index));
     };
 
     const saveChanges = async () => {
