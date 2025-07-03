@@ -1,5 +1,5 @@
 import type { Product, Category } from '@/lib/types';
-import { Shirt, Laptop, Utensils, Home, Gamepad2, Watch } from 'lucide-react';
+import { Shirt, Laptop, Utensils, Home, Gamepad2, Watch, ToyBrick } from 'lucide-react';
 
 export const categories: Category[] = [
   { id: 'electronics', name: 'Electronics', icon: Laptop, image: 'https://placehold.co/400x300.png' },
@@ -8,6 +8,7 @@ export const categories: Category[] = [
   { id: 'furniture', name: 'Furniture', icon: Home, image: 'https://placehold.co/400x300.png' },
   { id: 'gaming', name: 'Gaming', icon: Gamepad2, image: 'https://placehold.co/400x300.png' },
   { id: 'watches', name: 'Watches', icon: Watch, image: 'https://placehold.co/400x300.png' },
+  { id: 'toys', name: 'Toys', icon: ToyBrick, image: 'https://placehold.co/400x300.png' },
 ];
 
 export const products: Product[] = [
@@ -46,7 +47,12 @@ export const products: Product[] = [
     reviewCount: 150,
     category: 'watches',
     brand: 'Timeless',
-    images: ['https://placehold.co/600x600.png'],
+    images: [
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj2-xDhxthKCE-uxSJhGk4VoCP23jwjKO_Tkdy_LLPKolLLj4EshRh_YW1fpkbwKcZBzAfgjaR4IvPvK7xNY7St8JC4Rv_jaWVRnyLxjfiD4xWALAQsBu4MZEI4K24MJgmnvwWT0IF0r-v2Dkir0JRCvu4iy1BCZedaWcP0_PGW2joc9NbFHec2WCyK3gc/s320/COLMIP78SmartwatchBlack3-Photoroom-2-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiF2RQWJXC2FDBjx-S0PSJI06DsVK-n8QIifaBl-VI6y6rySGBBDVWia1um9SIxCXhQ7Mo5kzVegO2WuihACvsKoatROnV4eUHo5ys6PP1uTBSTgOVWvVwL0nKd0Dm_DN7I5Bx7h041XsVV__PYd0L5dHulqzKa6EbN8YtsNL2UL3xQ17z9a6sq1QXv61g/s320/Geeoo_Bluetooth_Calling_W11_Smartwatch_-Geeoo-c1a86-413603-Photoroom-3-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhhcJ5V0-JEDzYUIUpxyMs2ndGqevBMBuDKMzXdhY7SWsTRk-TYevoaybTQdxjGgIsAMGZMgIrptGlb0_SO26ekRpQOC8YT_pr_cm-vbTqQrX9UKD1wekAsb7bQ360aikwaDyPayrLTOanCQMeXqrwMxYZvXgkVqbHcaqGOqILe-xS1B5BAX_6fmN0u2EE/s320/image-upscaled-1-3-768x768.webp',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEicFIqq0MmKZqH0YmrtUEKj4PuIrBfwFkV3eHTz3SzycIbzrnS5Ho4yzvRpclqXcN0HYNg5ZjFeMR0tsrtBZRbJQWBgFSfvnaLv2_PZEbwmS7KnRm-vlNmVHpTxrOhFqY7eKEj-pZDEslDjfrgqTN7tmO5bXCunXqwH8jliH-Mx6NYvaLIeiBYfeEujcHY/s320/image-upscaled-27-768x768.webp'
+    ],
     stock: 30,
     tags: ['watch', 'luxury', 'classic'],
   },
@@ -98,7 +104,12 @@ export const products: Product[] = [
     reviewCount: 780,
     category: 'electronics',
     brand: 'NovaAudio',
-    images: ['https://placehold.co/600x600.png'],
+    images: [
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjvj9HuiiPwK_yFJyDhYcsg6y9ceYW7JJzTU3VuZG_KCFY-ks71ezFk4ggk8gO2zHzCJ8nZq4KbUpFz6N3xcnvfXW3uVYKri1XXG7TIvH50B32Rp4G6op7mtEQNZ5woJsufyTjrQ7pSIiU2PilSfNMyvLFG5jciUVwr6SCQzg8ubdVY_XOWO2rF27diMuQ/s320/image-upscaled-56-768x768.webp',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhEmCt8er8xx5eoeZWg6Y12UbMa8v3_l-dGpfp_UXvDowWOpafu9i8K7A9V4hf8_ViTW8O-ggp_gTAtikDYn2vnHOBr6RYeX2bdtAX33rkHHSxX9dmNhF_NiZBfxBhipCmpeMgUL5orlFm7FYQFrAkRnlGiJoU4HWBtvFQSofXhM10hlKu7jSF7Q3uuy24/s320/image-upscaled-20-768x771.webp',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEijMVIWq8hUInEBmbCY0013DcynKVf1QnTBQCwULIPIZ9Hn8j5XKzPFyMiM_JB0lZXqV5vEzRwL32rXOsxLqSxUvN4h11jsP0M7ICTjNwzmERgoWmLWdximgTT5LfnZR1bn_OWI8JImov72ClUQ7-G2L255cAsuRSYMWGj5OFiQrlYB8GcY6ouJ3Duih1A/s320/image-upscaled-1-Photoroom-2-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirnc2hMVcFWJojWm-skQBLGUAu6Comm113rWNZZ7ybWUBYdW3xvP0Wg3OaMIHZPd1WLfC2bEmK9tf9gS5R5YaFrj19eJhy2L78H4X_cHGSL2mknb6kYd7s2j1EKHV0oyesFsXwRZe-T-ZgHcG2L7KewlfYKuVtNGdYO1irNlQ_eAPjJy-5vxNhsyDNPaw/s320/1-4-768x768.webp'
+    ],
     stock: 120,
     tags: ['audio', 'earbuds', 'new'],
   },
@@ -114,5 +125,23 @@ export const products: Product[] = [
     images: ['https://placehold.co/600x600.png'],
     stock: 80,
     tags: ['shoes', 'hiking', 'outdoor'],
+  },
+  {
+    id: 'p9',
+    name: 'Dragon Action Figure',
+    description: 'A fun and exciting dragon toy for all ages. Highly detailed and durable.',
+    price: 24.99,
+    rating: 4.7,
+    reviewCount: 120,
+    category: 'toys',
+    brand: 'Mythical',
+    images: [
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkAZ8N0oics_sH6VP5OkUaVc8Ai72dVjzUN-y16K3mgzHNrTKdfyUn-t0_DPxcYwsVSvhOYrg9Ou8K7OfsKT4pJg1RwnKIyOdG3csntoGV-RqDnRhfAPTn5VSY8s4yYUjqGkcHqwPhMpVzpJCzR9-SAKYoNULvLAfLeCGog4jJSCS9EgNQkSuqTx2QxRU/s320/01a4e3ed-317c-4547-9fc1-2eb1fa2d041c-Photoroom-1-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEijLDhUUz0o46t1ImRxfLPr9X1WGVq25NEbyM6L0cRIaWIcJZ9PjNDFuUTlfjCxhbD_GLZW87eCs6vQomIWZQ4saiHePgZ0Dr5-vlROElF8eB11UlAY088sph5RDPWkanVSGjhVURlP8rqPJlrDEpkIFvHnwNJkk-wF9dQfbdjrT8JECtIaKxxzl5Y5IGI/s320/01a4e3ed-317c-4547-9fc1-2eb1fa2d041c-Photoroom-2-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgCVE9qoxl_ZZ7l7YH4eavQvXq-vkAGyanplghG7bTijrY6MzR3z0GOan6TIL70XoPPTB38_LFf3ApvD1u66JiGZfWb2XDlum0gzaQfxFzuaBs7tPvIKBdRarGMxwHFS0MidY1tBNYMfcEb5zckY1BEkU5fIjhzvUoibRkRZRAv4ZuU1h9nlZrEqrEL7WY/s320/01a4e3ed-317c-4547-9fc1-2eb1fa2d041c-Photoroom-768x768.jpg',
+        'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgS7hzlCPEj2tizvtzvvuRSHLGt1BjhCsbcMio8_dy00AcpY5toK8gCaeFEVtlKkQ20KrWcmu0_aWWATMpDp6ne3zGWyzeWmKWYOqfQ56SCn2QLGEN5ZFj7mfSI4Uc4Wt4DabONftY0fhk9MwFzzYyscykvOnpNV75HGrCD5VP849wwbqsWaKM5VKIOaHQ/s320/Dragon-Red-768x768.webp'
+    ],
+    stock: 75,
+    tags: ['toy', 'dragon', 'new'],
   },
 ];
