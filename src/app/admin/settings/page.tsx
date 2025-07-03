@@ -22,6 +22,12 @@ const defaultImages = [
   { url: 'https://placehold.co/1200x800.png', dataAiHint: 'new arrivals' },
 ];
 
+interface Slide {
+  id: number;
+  url: string;
+  dataAiHint: string;
+}
+
 interface WebsiteSettings {
   storeName: string;
   contactEmail: string;
@@ -37,7 +43,7 @@ const defaultSettings: WebsiteSettings = {
 
 export default function AdminSettingsPage() {
     const { toast } = useToast();
-    const [slides, setSlides] = useState(defaultImages);
+    const [slides, setSlides] = useState<Slide[]>(() => defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
     const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -46,7 +52,7 @@ export default function AdminSettingsPage() {
         try {
             const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
             if (savedImages) {
-                setSlides(JSON.parse(savedImages));
+                setSlides(JSON.parse(savedImages).map((img: Omit<Slide, 'id'>, i: number) => ({...img, id: Date.now() + i })));
             }
              const savedSettings = localStorage.getItem(WEBSITE_SETTINGS_KEY);
             if (savedSettings) {
@@ -58,12 +64,12 @@ export default function AdminSettingsPage() {
         setIsMounted(true);
     }, []);
 
-    const handleSlideChange = (index: number, field: 'url' | 'dataAiHint', value: string) => {
-        setSlides(prevSlides => {
-            const newSlides = [...prevSlides];
-            newSlides[index] = { ...newSlides[index], [field]: value };
-            return newSlides;
-        });
+    const handleSlideChange = (id: number, field: 'url' | 'dataAiHint', value: string) => {
+        setSlides(prevSlides => 
+            prevSlides.map(slide => 
+                slide.id === id ? { ...slide, [field]: value } : slide
+            )
+        );
     };
 
     const handleSettingChange = (field: keyof WebsiteSettings, value: string) => {
@@ -71,17 +77,19 @@ export default function AdminSettingsPage() {
     };
 
     const addSlide = () => {
-        setSlides(prevSlides => [...prevSlides, { url: '', dataAiHint: '' }]);
+        setSlides(prevSlides => [...prevSlides, { id: Date.now(), url: '', dataAiHint: '' }]);
     };
 
-    const removeSlide = (index: number) => {
-        setSlides(prevSlides => prevSlides.filter((_, i) => i !== index));
+    const removeSlide = (id: number) => {
+        setSlides(prevSlides => prevSlides.filter(slide => slide.id !== id));
     };
 
     const saveChanges = async () => {
         setIsLoading(true);
         try {
-            localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slides));
+            // Strip the temporary 'id' property before saving
+            const slidesToSave = slides.map(({ id, ...rest }) => rest);
+            localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave));
             localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
 
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
@@ -151,11 +159,11 @@ export default function AdminSettingsPage() {
                     <CardDescription>Add, remove, or change images in the homepage hero slider.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {slides.map((slide, index) => (
-                        <div key={index} className="flex flex-col sm:flex-row items-start gap-4 p-4 border rounded-lg">
+                    {slides.map((slide) => (
+                        <div key={slide.id} className="flex flex-col sm:flex-row items-start gap-4 p-4 border rounded-lg">
                             <Image
                                 src={slide.url || 'https://placehold.co/150x150.png'}
-                                alt={`Slide ${index + 1}`}
+                                alt={`Slide preview`}
                                 width={100}
                                 height={100}
                                 className="aspect-square rounded-md object-cover border"
@@ -163,25 +171,25 @@ export default function AdminSettingsPage() {
                             />
                             <div className="flex-grow space-y-2 w-full">
                                 <div>
-                                    <Label htmlFor={`slide-url-${index}`}>Image URL</Label>
+                                    <Label htmlFor={`slide-url-${slide.id}`}>Image URL</Label>
                                     <Input
-                                        id={`slide-url-${index}`}
+                                        id={`slide-url-${slide.id}`}
                                         value={slide.url}
-                                        onChange={(e) => handleSlideChange(index, 'url', e.target.value)}
+                                        onChange={(e) => handleSlideChange(slide.id, 'url', e.target.value)}
                                         placeholder="https://example.com/image.png"
                                     />
                                 </div>
                                  <div>
-                                    <Label htmlFor={`slide-hint-${index}`}>AI Hint (for image generation)</Label>
+                                    <Label htmlFor={`slide-hint-${slide.id}`}>AI Hint (for image generation)</Label>
                                     <Input
-                                        id={`slide-hint-${index}`}
+                                        id={`slide-hint-${slide.id}`}
                                         value={slide.dataAiHint}
-                                        onChange={(e) => handleSlideChange(index, 'dataAiHint', e.target.value)}
+                                        onChange={(e) => handleSlideChange(slide.id, 'dataAiHint', e.target.value)}
                                         placeholder="e.g. mens fashion"
                                     />
                                 </div>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={() => removeSlide(index)} className="text-destructive flex-shrink-0 mt-2 sm:mt-0">
+                            <Button variant="ghost" size="icon" onClick={() => removeSlide(slide.id)} className="text-destructive flex-shrink-0 mt-2 sm:mt-0">
                                 <Trash2 className="h-5 w-5" />
                                 <span className="sr-only">Remove slide</span>
                             </Button>

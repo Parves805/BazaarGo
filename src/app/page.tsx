@@ -40,7 +40,12 @@ export default function Home() {
     try {
         const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
         if (savedImages) {
-            setHeroSlides(JSON.parse(savedImages));
+            const parsedImages = JSON.parse(savedImages);
+            if (parsedImages.length > 0) {
+              setHeroSlides(parsedImages);
+            } else {
+              setHeroSlides(defaultSlides);
+            }
         } else {
             setHeroSlides(defaultSlides);
         }
