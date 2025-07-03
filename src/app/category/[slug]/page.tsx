@@ -5,6 +5,8 @@ import { ProductCard } from '@/components/product-card';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 
 interface CategoryPageProps {
   params: {
@@ -51,6 +53,12 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </section>
 
         <div className="container py-8 md:py-12">
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+              <Link href="/" className="hover:text-primary">Home</Link>
+              <ChevronRight className="h-4 w-4" />
+              <span>{category.name}</span>
+            </div>
+
             {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredProducts.map((product) => (
