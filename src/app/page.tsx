@@ -14,38 +14,47 @@ import { ProductCard } from '@/components/product-card';
 import { ProductRecommendations } from '@/components/product-recommendations';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const SLIDER_IMAGES_KEY = 'heroSliderImages';
+
+const defaultSlides = [
+    { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
+    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'mens fashion' },
+    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'winter collection' },
+    { url: 'https://placehold.co/1200x800.png', dataAiHint: 't-shirt sale' },
+    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'polo shirts' },
+    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'new arrivals' },
+];
+
+interface Slide {
+    url: string;
+    dataAiHint: string;
+}
 
 export default function Home() {
+  const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
+  const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
+
+  React.useEffect(() => {
+    try {
+        const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
+        if (savedImages) {
+            setHeroSlides(JSON.parse(savedImages));
+        } else {
+            setHeroSlides(defaultSlides);
+        }
+    } catch (error) {
+        console.error("Failed to load slider images, using defaults.", error);
+        setHeroSlides(defaultSlides);
+    }
+    setIsLoadingSlides(false);
+  }, []);
+
+
   const featuredProducts = products.slice(0, 6);
   // Mock viewing history for the AI recommendations
   const viewingHistory = ['p2', 'p4', 'p6'];
-
-  const heroSlides = [
-    {
-      image: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp',
-      dataAiHint: 'electronics sale',
-    },
-    {
-      image: 'https://placehold.co/1200x800.png',
-      dataAiHint: 'mens fashion',
-    },
-    {
-      image: 'https://placehold.co/1200x800.png',
-      dataAiHint: 'winter collection',
-    },
-    {
-      image: 'https://placehold.co/1200x800.png',
-      dataAiHint: 't-shirt sale',
-    },
-    {
-      image: 'https://placehold.co/1200x800.png',
-      dataAiHint: 'polo shirts',
-    },
-    {
-      image: 'https://placehold.co/1200x800.png',
-      dataAiHint: 'new arrivals',
-    },
-  ];
 
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
@@ -57,33 +66,37 @@ export default function Home() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section>
-          <Carousel
-            plugins={[plugin.current]}
-            opts={{ loop: true }}
-            className="w-full"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
-          >
-            <CarouselContent>
-              {heroSlides.map((slide, index) => (
-                <CarouselItem key={index}>
-                  <div className="relative h-[60vh] md:h-[70vh] w-full">
-                    <Image
-                      src={slide.image}
-                      alt={`Hero slide ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      data-ai-hint={slide.dataAiHint}
-                      priority={index === 0}
-                    />
-                    <div className="absolute inset-0 bg-black/30" />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-          </Carousel>
+          {isLoadingSlides ? (
+            <Skeleton className="h-[60vh] md:h-[70vh] w-full" />
+          ) : (
+            <Carousel
+              plugins={[plugin.current]}
+              opts={{ loop: true }}
+              className="w-full"
+              onMouseEnter={plugin.current.stop}
+              onMouseLeave={plugin.current.reset}
+            >
+              <CarouselContent>
+                {heroSlides.map((slide, index) => (
+                  <CarouselItem key={index}>
+                    <div className="relative h-[60vh] md:h-[70vh] w-full">
+                      <Image
+                        src={slide.url}
+                        alt={`Hero slide ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={slide.dataAiHint}
+                        priority={index === 0}
+                      />
+                      <div className="absolute inset-0 bg-black/30" />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+              <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+            </Carousel>
+          )}
         </section>
 
         {/* Categories Section */}

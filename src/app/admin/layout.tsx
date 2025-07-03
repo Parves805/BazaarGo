@@ -118,6 +118,14 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                  <Link href="/admin/settings">
+                    <Settings />
+                    Settings
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
@@ -145,9 +153,11 @@ export default function AdminLayout({
               <SidebarTrigger />
             </div>
             <div className="ml-auto flex items-center gap-4">
-                <Button variant="ghost" size="icon">
-                    <Settings className="h-5 w-5" />
-                    <span className="sr-only">Settings</span>
+                <Button variant="ghost" size="icon" asChild>
+                    <Link href="/admin/settings">
+                        <Settings className="h-5 w-5" />
+                        <span className="sr-only">Settings</span>
+                    </Link>
                 </Button>
                 <Avatar className="h-9 w-9">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="@admin" />
