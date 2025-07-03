@@ -1,4 +1,6 @@
-import { Search, User, Heart, ShoppingBag, Menu } from 'lucide-react';
+'use client';
+
+import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +8,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { categories } from '@/lib/data';
 import { CartSheet } from './cart-sheet';
+import { useState } from 'react';
 
 export function SiteHeader() {
+  // Mock authentication state. In a real app, you'd use a context or auth library.
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -73,13 +79,46 @@ export function SiteHeader() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Orders</DropdownMenuItem>
-                      <DropdownMenuItem>Settings</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Log out</DropdownMenuItem>
+                      {isAuthenticated ? (
+                        <>
+                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <UserCircle className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <ListOrdered className="mr-2 h-4 w-4" />
+                            <span>Orders</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Settings</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setIsAuthenticated(false)}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Log out</span>
+                          </DropdownMenuItem>
+                        </>
+                      ) : (
+                        <>
+                          <DropdownMenuLabel>Welcome</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <Link href="/login" passHref>
+                            <DropdownMenuItem>
+                              <LogIn className="mr-2 h-4 w-4" />
+                              <span>Log In</span>
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link href="/signup" passHref>
+                            <DropdownMenuItem>
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              <span>Sign Up</span>
+                            </DropdownMenuItem>
+                          </Link>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
               </div>
