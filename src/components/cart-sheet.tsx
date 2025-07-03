@@ -7,6 +7,7 @@ import {
   SheetTitle,
   SheetFooter,
   SheetTrigger,
+  SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,14 +16,15 @@ import Image from 'next/image';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from '@/context/cart-context';
+import { useRouter } from 'next/navigation';
 
 export function CartSheet() {
   const { toast } = useToast();
+  const router = useRouter();
   const { 
     cartItems, 
     removeItem, 
     updateQuantity,
-    clearCart,
     totalItems, 
     subtotal 
   } = useCart();
@@ -36,12 +38,7 @@ export function CartSheet() {
       });
       return;
     }
-    // This is a mock checkout. In a real app, you'd handle payment processing.
-    clearCart();
-    toast({
-      title: "Checkout Successful!",
-      description: "Your order has been placed.",
-    });
+    router.push('/checkout');
   };
 
   return (
@@ -115,9 +112,11 @@ export function CartSheet() {
                   <span>Subtotal</span>
                   <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(subtotal)}</span>
                 </div>
-                <Button size="lg" className="w-full" onClick={handleCheckout}>
-                  Proceed to Checkout
-                </Button>
+                <SheetClose asChild>
+                    <Button size="lg" className="w-full" onClick={handleCheckout}>
+                        Proceed to Checkout
+                    </Button>
+                </SheetClose>
               </div>
             </SheetFooter>
           </>
