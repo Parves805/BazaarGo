@@ -17,6 +17,7 @@ export interface Category {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
   image: string;
+  bannerImage: string;
 }
 
 export interface CartItem extends Product {
