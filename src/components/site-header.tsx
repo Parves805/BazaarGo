@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { useWishlist } from '@/context/wishlist-context';
 import { useCart } from '@/context/cart-context';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { categories } from '@/lib/data';
 
 export function SiteHeader() {
   const { toast } = useToast();
@@ -61,6 +68,24 @@ export function SiteHeader() {
                       </Link>
                       <nav className="flex flex-col space-y-3">
                           <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary">Home</Link>
+                          
+                           <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="categories" className="border-b-0">
+                              <AccordionTrigger className="py-2 text-lg font-medium text-foreground/80 hover:text-primary hover:no-underline">
+                                  Categories
+                              </AccordionTrigger>
+                              <AccordionContent className="pl-4 pt-2">
+                                <nav className="grid gap-2">
+                                  {categories.map((category) => (
+                                    <Link key={category.id} href={`/category/${category.id}`} className="text-base text-foreground/70 hover:text-primary">
+                                      {category.name}
+                                    </Link>
+                                  ))}
+                                </nav>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+
                           <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop All</Link>
                           <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary">About Us</Link>
                       </nav>
@@ -176,6 +201,25 @@ export function SiteHeader() {
       <div className="hidden md:flex h-12 items-center justify-center border-t">
           <nav className="flex items-center space-x-6 text-sm font-medium">
               <Link href="/" className="text-foreground transition-colors hover:text-primary">Home</Link>
+              
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="group flex items-center text-sm font-medium text-foreground transition-colors hover:text-primary focus:outline-none">
+                    Categories
+                    <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition duration-200 group-data-[state=open]:rotate-180" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center">
+                  {categories.map((category) => (
+                    <Link key={category.id} href={`/category/${category.id}`} passHref>
+                      <DropdownMenuItem>
+                        {category.name}
+                      </DropdownMenuItem>
+                    </Link>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop All</Link>
               <Link href="/about" className="text-foreground transition-colors hover:text-primary">About Us</Link>
           </nav>
