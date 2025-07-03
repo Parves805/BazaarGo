@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { Switch } from '@/components/ui/switch';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultImages = [
   { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -34,10 +36,18 @@ interface WebsiteSettings {
   contactPhone: string;
 }
 
+interface AiSettings {
+  recommendationsEnabled: boolean;
+}
+
 const defaultSettings: WebsiteSettings = {
   storeName: 'BazaarGo',
   contactEmail: 'support@bazaargo.com',
   contactPhone: '+1 (234) 567-890',
+};
+
+const defaultAiSettings: AiSettings = {
+  recommendationsEnabled: true,
 };
 
 
@@ -45,6 +55,7 @@ export default function AdminSettingsPage() {
     const { toast } = useToast();
     const [slides, setSlides] = useState<Slide[]>([]);
     const [settings, setSettings] = useState<WebsiteSettings | null>(null);
+    const [aiSettings, setAiSettings] = useState<AiSettings | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -68,10 +79,18 @@ export default function AdminSettingsPage() {
             } else {
                 setSettings(defaultSettings);
             }
+
+            const savedAiSettingsJson = localStorage.getItem(AI_SETTINGS_KEY);
+            if (savedAiSettingsJson) {
+                setAiSettings(JSON.parse(savedAiSettingsJson));
+            } else {
+                setAiSettings(defaultAiSettings);
+            }
         } catch (error) {
             console.error("Failed to load settings from localStorage, using defaults", error);
             setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
             setSettings(defaultSettings);
+            setAiSettings(defaultAiSettings);
         }
         setIsMounted(true);
     }, []);
@@ -88,6 +107,10 @@ export default function AdminSettingsPage() {
         setSettings(prev => prev ? ({ ...prev, [field]: value }) : null);
     };
 
+    const handleAiSettingChange = (field: keyof AiSettings, value: boolean) => {
+        setAiSettings(prev => prev ? ({ ...prev, [field]: value }) : null);
+    };
+
     const addSlide = () => {
         setSlides(prevSlides => [...prevSlides, { id: Date.now(), url: '', dataAiHint: '' }]);
     };
@@ -97,12 +120,13 @@ export default function AdminSettingsPage() {
     };
 
     const saveChanges = async () => {
-        if (!settings) return; // Guard against null settings
+        if (!settings || !aiSettings) return; 
         setIsLoading(true);
         try {
             const slidesToSave = slides.map(({ id, ...rest }) => rest);
             localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave));
             localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
+            localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(aiSettings));
 
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
             toast({
@@ -121,7 +145,7 @@ export default function AdminSettingsPage() {
         }
     };
     
-    if (!isMounted || !settings) {
+    if (!isMounted || !settings || !aiSettings) {
         return <p>Loading settings...</p>;
     }
 
@@ -212,6 +236,26 @@ export default function AdminSettingsPage() {
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Add Slide
                         </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle>AI Settings</CardTitle>
+                    <CardDescription>Manage AI-powered features for your store.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="ai-recommendations" className="font-medium">Product Recommendations</Label>
+                            <p className="text-sm text-muted-foreground">Enable or disable AI-powered product recommendations on the homepage.</p>
+                        </div>
+                        <Switch 
+                            id="ai-recommendations" 
+                            checked={aiSettings.recommendationsEnabled} 
+                            onCheckedChange={(checked) => handleAiSettingChange('recommendationsEnabled', checked)} 
+                        />
                     </div>
                 </CardContent>
             </Card>

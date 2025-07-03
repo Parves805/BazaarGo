@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
+const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -39,6 +40,7 @@ export default function Home() {
   const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = React.useState(true);
+  const [aiRecommendationsEnabled, setAiRecommendationsEnabled] = React.useState(true);
 
   React.useEffect(() => {
     try {
@@ -53,24 +55,27 @@ export default function Home() {
         } else {
             setHeroSlides(defaultSlides);
         }
-    } catch (error) {
-        console.error("Failed to load slider images, using defaults.", error);
-        setHeroSlides(defaultSlides);
-    }
-    setIsLoadingSlides(false);
 
-    try {
-      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProducts) {
-        setProducts(JSON.parse(savedProducts));
-      } else {
-        setProducts(initialProducts);
-      }
+        const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+        if (savedProducts) {
+            setProducts(JSON.parse(savedProducts));
+        } else {
+            setProducts(initialProducts);
+        }
+
+        const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
+        if (savedAiSettings) {
+            const parsed = JSON.parse(savedAiSettings);
+            setAiRecommendationsEnabled(parsed.recommendationsEnabled);
+        }
     } catch (error) {
-      console.error("Failed to load products", error);
-      setProducts(initialProducts);
+        console.error("Failed to load data from localStorage, using defaults.", error);
+        setHeroSlides(defaultSlides);
+        setProducts(initialProducts);
+        setAiRecommendationsEnabled(true);
     } finally {
-      setIsLoadingProducts(false);
+        setIsLoadingSlides(false);
+        setIsLoadingProducts(false);
     }
   }, []);
 
@@ -174,12 +179,14 @@ export default function Home() {
         </section>
 
         {/* AI Recommendations Section */}
-        <section className="py-12 md:py-20">
-          <div className="container">
-            <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
-            <ProductRecommendations viewingHistory={viewingHistory} />
-          </div>
-        </section>
+        {aiRecommendationsEnabled && (
+          <section className="py-12 md:py-20">
+            <div className="container">
+              <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
+              <ProductRecommendations viewingHistory={viewingHistory} />
+            </div>
+          </section>
+        )}
 
       </main>
       <SiteFooter />
