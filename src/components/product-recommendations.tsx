@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -26,14 +27,19 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
 
   useEffect(() => {
     try {
-      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProducts) {
-        setAllProducts(JSON.parse(savedProducts));
+      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+      if (savedProductsJSON) {
+          const parsed = JSON.parse(savedProductsJSON);
+          if (Array.isArray(parsed)) {
+              setAllProducts(parsed);
+          } else {
+              setAllProducts(initialProducts);
+          }
       } else {
         setAllProducts(initialProducts);
       }
     } catch (e) {
-      console.error("Failed to load products for recommendations", e);
+      console.error("Failed to load products for recommendations, using defaults", e);
       setAllProducts(initialProducts);
     }
   }, []);

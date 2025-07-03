@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,15 +19,24 @@ export default function ProductPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     try {
-      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-      const allProducts = savedProducts ? JSON.parse(savedProducts) : initialProducts;
+      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+      let allProducts: Product[] = initialProducts;
+      if (savedProductsJSON) {
+          const parsed = JSON.parse(savedProductsJSON);
+          if (Array.isArray(parsed)) {
+              allProducts = parsed;
+          }
+      }
       const foundProduct = allProducts.find((p: Product) => p.id === id);
       if (foundProduct) {
         setProduct(foundProduct);
       }
     } catch (error) {
-      console.error("Failed to load product", error);
+      console.error("Failed to load product from localStorage, trying fallback", error);
+      const foundProduct = initialProducts.find((p: Product) => p.id === id);
+      if(foundProduct) setProduct(foundProduct);
     } finally {
       setIsLoading(false);
     }

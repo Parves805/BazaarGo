@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,15 +16,21 @@ export default function ShopPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     try {
-      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProducts) {
-        setProducts(JSON.parse(savedProducts));
+      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+      if (savedProductsJSON) {
+        const parsed = JSON.parse(savedProductsJSON);
+        if (Array.isArray(parsed)) {
+          setProducts(parsed);
+        } else {
+          setProducts(initialProducts);
+        }
       } else {
         setProducts(initialProducts);
       }
     } catch (error) {
-      console.error("Failed to load products", error);
+      console.error("Failed to load products from localStorage, using defaults.", error);
       setProducts(initialProducts);
     } finally {
       setIsLoading(false);
