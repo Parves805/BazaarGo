@@ -1,25 +1,20 @@
-
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 import Autoplay from 'embla-carousel-autoplay';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { categories, products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
-import { ProductRecommendations } from '@/components/product-recommendations';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
-const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -40,7 +35,6 @@ export default function Home() {
   const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = React.useState(true);
-  const [aiRecommendationsEnabled, setAiRecommendationsEnabled] = React.useState(true);
 
   React.useEffect(() => {
     try {
@@ -48,7 +42,7 @@ export default function Home() {
         if (savedImages) {
             const parsedImages = JSON.parse(savedImages);
             if (Array.isArray(parsedImages) && parsedImages.length > 0) {
-              setHeroSlides(parsedImages);
+              setHeroSlides(parsedImages.filter(slide => slide.url));
             } else {
               setHeroSlides(defaultSlides);
             }
@@ -62,17 +56,10 @@ export default function Home() {
         } else {
             setProducts(initialProducts);
         }
-
-        const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
-        if (savedAiSettings) {
-            const parsed = JSON.parse(savedAiSettings);
-            setAiRecommendationsEnabled(parsed.recommendationsEnabled);
-        }
     } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
         setHeroSlides(defaultSlides);
         setProducts(initialProducts);
-        setAiRecommendationsEnabled(true);
     } finally {
         setIsLoadingSlides(false);
         setIsLoadingProducts(false);
@@ -81,8 +68,6 @@ export default function Home() {
 
 
   const featuredProducts = products.slice(0, 8);
-  // Mock viewing history for the AI recommendations
-  const viewingHistory = ['p2', 'p4', 'p6'];
 
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
@@ -177,16 +162,6 @@ export default function Home() {
             </Carousel>
           </div>
         </section>
-
-        {/* AI Recommendations Section */}
-        {aiRecommendationsEnabled && (
-          <section className="py-12 md:py-20">
-            <div className="container">
-              <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
-              <ProductRecommendations viewingHistory={viewingHistory} />
-            </div>
-          </section>
-        )}
 
       </main>
       <SiteFooter />
