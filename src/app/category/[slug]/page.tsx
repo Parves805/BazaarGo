@@ -33,7 +33,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <main className="flex-grow">
-        <section className="relative h-64 md:h-80 w-full">
+        <section className="relative h-56 w-full">
             <Image
                 src={category.bannerImage}
                 alt={`${category.name} banner`}
@@ -44,8 +44,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             />
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <div className="text-center text-white p-4">
-                    <h1 className="text-4xl md:text-6xl font-bold font-headline">{category.name}</h1>
-                    <p className="text-lg md:text-xl mt-2">Explore our collection of {category.name.toLowerCase()}.</p>
+                    <h1 className="text-3xl md:text-5xl font-bold font-headline">{category.name}</h1>
+                    <p className="text-md md:text-lg mt-2">Explore our collection of {category.name.toLowerCase()}.</p>
                 </div>
             </div>
         </section>
