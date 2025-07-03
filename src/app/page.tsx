@@ -15,35 +15,94 @@ export default function Home() {
   // Mock viewing history for the AI recommendations
   const viewingHistory = ['p2', 'p4', 'p6'];
 
+  const heroSlides = [
+    {
+      image: 'https://placehold.co/1200x800.png',
+      dataAiHint: 'mens fashion',
+      headline: 'Unbeatable Deals, Endless Choices.',
+      description: "Discover your next favorite thing at BazaarGo. Quality products at prices you'll love.",
+      buttonLink: '/shop',
+      buttonText: 'Shop Now',
+    },
+    {
+      image: 'https://placehold.co/1200x800.png',
+      dataAiHint: 'winter collection',
+      headline: 'New Winter Collection is Here!',
+      description: "Stay warm and stylish with our latest arrivals for the cold season.",
+      buttonLink: '/category/full-sleeve',
+      buttonText: 'Explore Collection',
+    },
+    {
+      image: 'https://placehold.co/1200x800.png',
+      dataAiHint: 't-shirt sale',
+      headline: 'T-Shirts Starting at ৳299',
+      description: "Upgrade your casual wardrobe with our comfortable and trendy t-shirts.",
+      buttonLink: '/category/half-sleeve',
+      buttonText: 'View Deals',
+    },
+    {
+      image: 'https://placehold.co/1200x800.png',
+      dataAiHint: 'polo shirts',
+      headline: 'Smart & Casual Polos',
+      description: "The perfect blend of comfort and style. Ideal for any occasion.",
+      buttonLink: '/category/polo-tshirt',
+      buttonText: 'Shop Polos',
+    },
+    {
+      image: 'https://placehold.co/1200x800.png',
+      dataAiHint: 'new arrivals',
+      headline: 'Fresh New Arrivals Daily',
+      description: "Check out the latest trends and styles just added to our store.",
+      buttonLink: '/shop',
+      buttonText: "See What's New",
+    },
+  ];
+
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative h-[60vh] md:h-[70vh] w-full bg-gradient-to-r from-primary/20 to-secondary/20">
-          <Image 
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhE3vw4FuPjwWhXPI_zLzVds58_VnpUi18AYKVwFGOAZnhIIF5gDRPdsZXNQwcsE8u5RHrP8LrWEKC8wKnk6dZ1cJtMMM8DCfzT_cG2iERZhMcc_h5V1dwc5Ct95cPgoS0SvEsFhU0S-hYu6Ilu7Y1GeQj-tBYTTJjTZLUBDmtdRMY_2dsad7xJNDma5so/s320/6812d7c606e6e.jpg" 
-            alt="Promotional banner"
-            fill
-            className="object-cover -z-10"
-            data-ai-hint="mens fashion"
-            priority
-          />
-          <div className="container h-full flex flex-col items-start justify-center text-left">
-            <div className="max-w-2xl bg-background/80 backdrop-blur-sm p-8 rounded-lg">
-                <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary">
-                Unbeatable Deals, Endless Choices.
-                </h1>
-                <p className="mt-4 text-lg md:text-xl text-foreground/80">
-                Discover your next favorite thing at BazaarGo. Quality products at prices you'll love.
-                </p>
-                <Link href="/shop">
-                  <Button size="lg" className="mt-6">
-                    Shop Now <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-            </div>
-          </div>
+        <section>
+          <Carousel
+            opts={{ loop: true }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {heroSlides.map((slide, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative h-[60vh] md:h-[70vh] w-full">
+                    <Image
+                      src={slide.image}
+                      alt={slide.headline}
+                      fill
+                      className="object-cover -z-10"
+                      data-ai-hint={slide.dataAiHint}
+                      priority={index === 0}
+                    />
+                    <div className="absolute inset-0 bg-black/30" />
+                    <div className="container relative z-10 h-full flex flex-col items-start justify-center text-left">
+                      <div className="max-w-2xl bg-background/80 backdrop-blur-sm p-8 rounded-lg">
+                          <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary">
+                            {slide.headline}
+                          </h1>
+                          <p className="mt-4 text-lg md:text-xl text-foreground/80">
+                            {slide.description}
+                          </p>
+                          <Link href={slide.buttonLink}>
+                            <Button size="lg" className="mt-6">
+                              {slide.buttonText} <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                          </Link>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+          </Carousel>
         </section>
 
         {/* Categories Section */}
