@@ -138,24 +138,24 @@ export function SiteHeader() {
                         <>
                           <DropdownMenuLabel>My Account</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                           <Link href="/profile" passHref>
-                            <DropdownMenuItem>
-                              <UserCircle className="mr-2 h-4 w-4" />
-                              <span>Profile</span>
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link href="/orders" passHref>
-                            <DropdownMenuItem>
-                              <ListOrdered className="mr-2 h-4 w-4" />
-                              <span>My Orders</span>
-                            </DropdownMenuItem>
-                          </Link>
-                           <Link href="/settings" passHref>
-                            <DropdownMenuItem>
-                              <Settings className="mr-2 h-4 w-4" />
-                              <span>Settings</span>
-                            </DropdownMenuItem>
-                          </Link>
+                           <DropdownMenuItem asChild>
+                             <Link href="/profile">
+                               <UserCircle className="mr-2 h-4 w-4" />
+                               <span>Profile</span>
+                             </Link>
+                           </DropdownMenuItem>
+                           <DropdownMenuItem asChild>
+                             <Link href="/orders">
+                               <ListOrdered className="mr-2 h-4 w-4" />
+                               <span>My Orders</span>
+                             </Link>
+                           </DropdownMenuItem>
+                           <DropdownMenuItem asChild>
+                             <Link href="/settings">
+                               <Settings className="mr-2 h-4 w-4" />
+                               <span>Settings</span>
+                             </Link>
+                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
@@ -166,18 +166,18 @@ export function SiteHeader() {
                         <>
                           <DropdownMenuLabel>Welcome</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <Link href="/login" passHref>
-                            <DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/login">
                               <LogIn className="mr-2 h-4 w-4" />
                               <span>Log In</span>
-                            </DropdownMenuItem>
-                          </Link>
-                          <Link href="/signup" passHref>
-                            <DropdownMenuItem>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/signup">
                               <UserPlus className="mr-2 h-4 w-4" />
                               <span>Sign Up</span>
-                            </DropdownMenuItem>
-                          </Link>
+                            </Link>
+                          </DropdownMenuItem>
                         </>
                       )}
                     </DropdownMenuContent>
@@ -211,11 +211,11 @@ export function SiteHeader() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center">
                   {categories.map((category) => (
-                    <Link key={category.id} href={`/category/${category.id}`} passHref>
-                      <DropdownMenuItem>
+                    <DropdownMenuItem key={category.id} asChild>
+                      <Link href={`/category/${category.id}`}>
                         {category.name}
-                      </DropdownMenuItem>
-                    </Link>
+                      </Link>
+                    </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
