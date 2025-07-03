@@ -1,3 +1,4 @@
+
 import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { categories } from '@/lib/data';
@@ -35,8 +36,8 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold mb-3 font-headline">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
+              <li><Link href="/privacy-policy" className="hover:text-primary">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="hover:text-primary">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
