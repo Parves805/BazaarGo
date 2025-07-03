@@ -39,7 +39,7 @@ export default function AdminOrdersPage() {
     const fetchOrders = () => {
         setIsLoading(true);
         try {
-            const savedOrders = localStorage.getItem('userOrders');
+            const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
                 const parsedOrders: Order[] = JSON.parse(savedOrders);
                 parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -59,14 +59,14 @@ export default function AdminOrdersPage() {
 
     const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
         try {
-            const savedOrders = localStorage.getItem('userOrders');
+            const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
                 let currentOrders: Order[] = JSON.parse(savedOrders);
                 const orderIndex = currentOrders.findIndex(o => o.id === orderId);
 
                 if (orderIndex > -1) {
                     currentOrders[orderIndex].status = newStatus;
-                    localStorage.setItem('userOrders', JSON.stringify(currentOrders));
+                    localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
                     fetchOrders(); // Re-fetch and re-sort
                     toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}.` });
                 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -20,7 +21,7 @@ export default function AdminCustomersPage() {
 
     useEffect(() => {
         try {
-            const savedOrders = localStorage.getItem('userOrders');
+            const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
                 const orders: Order[] = JSON.parse(savedOrders);
                 const customerData = new Map<string, Customer>();

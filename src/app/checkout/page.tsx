@@ -102,8 +102,8 @@ export default function CheckoutPage() {
     };
 
     try {
-        const existingOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-        localStorage.setItem('userOrders', JSON.stringify([order, ...existingOrders]));
+        const existingOrders = JSON.parse(localStorage.getItem('bazaargoUserOrders') || '[]');
+        localStorage.setItem('bazaargoUserOrders', JSON.stringify([order, ...existingOrders]));
     } catch (error) {
         console.error("Failed to save order to localStorage", error);
     }

@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         try {
-            const savedOrders = localStorage.getItem('userOrders');
+            const savedOrders = localStorage.getItem('bazaargoUserOrders');
             const orders: Order[] = savedOrders ? JSON.parse(savedOrders) : [];
             
             const savedProducts = localStorage.getItem(PRODUCTS_KEY);

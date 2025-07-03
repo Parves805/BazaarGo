@@ -26,7 +26,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     try {
-      const savedOrders = localStorage.getItem('userOrders');
+      const savedOrders = localStorage.getItem('bazaargoUserOrders');
       if (savedOrders) {
         setOrders(JSON.parse(savedOrders));
       }
