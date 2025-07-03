@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,7 +19,7 @@ import { useCart } from '@/context/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { DollarSign, CreditCard, Truck, Loader2 } from 'lucide-react';
+import { CreditCard, Truck, Loader2 } from 'lucide-react';
 
 const checkoutSchema = z.object({
   name: z.string().min(2, { message: 'Full name is required' }),
@@ -346,7 +347,7 @@ export default function CheckoutPage() {
                           <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                         <p className="font-medium">
-                          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price * item.quantity)}
+                          {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
                         </p>
                       </div>
                     ))}
@@ -355,16 +356,16 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Subtotal</span>
-                          <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(subtotal)}</span>
+                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(subtotal)}</span>
                       </div>
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Shipping</span>
-                          <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(shippingCost)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(subtotal + shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(subtotal + shippingCost)}</span>
                       </div>
                   </div>
                 </CardContent>
@@ -377,7 +378,7 @@ export default function CheckoutPage() {
                           </>
                       ) : (
                           <>
-                              <DollarSign className="mr-2 h-5 w-5" />
+                              <span className="mr-2 text-xl font-bold">৳</span>
                               Place Order
                           </>
                       )}

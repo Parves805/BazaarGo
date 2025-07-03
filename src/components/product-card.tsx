@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -80,7 +81,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-end justify-between mt-2">
             <Rating rating={product.rating} reviewCount={product.reviewCount} />
              <div className="text-primary font-bold text-xl">
-                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(product.price)}
+                 {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(product.price)}
             </div>
         </div>
       </CardContent>

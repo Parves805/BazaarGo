@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -77,7 +78,7 @@ export default function OrdersPage() {
                                         </div>
                                         <div className="flex items-center gap-4 justify-between">
                                             <p className="font-semibold text-lg">
-                                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(order.total)}
+                                                {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(order.total)}
                                             </p>
                                             <Badge variant="outline" className="flex items-center gap-2">
                                                 <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
@@ -103,7 +104,7 @@ export default function OrdersPage() {
                                                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                                 </div>
                                                 <p className="font-medium">
-                                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price * item.quantity)}
+                                                    {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
                                                 </p>
                                             </div>
                                         ))}

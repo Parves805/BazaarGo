@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -104,7 +105,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
         </div>
         <Rating rating={product.rating} reviewCount={product.reviewCount} />
         <p className="text-3xl font-bold text-primary">
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(product.price)}
+            {new Intl.NumberFormat('bn-BD', { style: 'currency', currency: 'BDT' }).format(product.price)}
         </p>
         <Separator />
         <p className="text-muted-foreground leading-relaxed">{product.description}</p>
