@@ -6,9 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 
 interface CartContextType {
   cartItems: CartItem[];
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (product: Product, quantity: number, selectedSize: string, selectedColor: { name: string; hex: string }) => void;
+  removeItem: (productId: string, selectedSize: string, selectedColorName: string) => void;
+  updateQuantity: (productId: string, selectedSize: string, selectedColorName: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -43,43 +43,58 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems]);
 
-  const addItem = (product: Product, quantity: number = 1) => {
+  const addItem = (product: Product, quantity: number = 1, selectedSize: string, selectedColor: { name: string; hex: string }) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+      const existingItem = prevItems.find(item => 
+        item.id === product.id && 
+        item.selectedSize === selectedSize && 
+        item.selectedColor.name === selectedColor.name
+      );
+
       if (existingItem) {
-        // Update quantity if item already exists
+        // Update quantity if item with same variant already exists
         return prevItems.map(item =>
-          item.id === product.id
+          item.id === product.id && item.selectedSize === selectedSize && item.selectedColor.name === selectedColor.name
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        // Add new item to cart
-        return [...prevItems, { ...product, quantity }];
+        // Add new item to cart with selected variants
+        const newItem: CartItem = { 
+            ...product, 
+            quantity, 
+            selectedSize, 
+            selectedColor 
+        };
+        return [...prevItems, newItem];
       }
     });
     toast({
         title: "Item added to cart",
-        description: `${product.name} has been added to your cart.`,
+        description: `${product.name} (${selectedColor.name}, ${selectedSize}) has been added to your cart.`,
     });
   };
 
-  const removeItem = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  const removeItem = (productId: string, selectedSize: string, selectedColorName: string) => {
+    setCartItems(prevItems => prevItems.filter(item => 
+        !(item.id === productId && item.selectedSize === selectedSize && item.selectedColor.name === selectedColorName)
+    ));
     toast({
         title: "Item removed",
         description: "The item has been removed from your cart.",
     });
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, selectedSize: string, selectedColorName: string, quantity: number) => {
      if (quantity < 1) {
-      removeItem(productId);
+      removeItem(productId, selectedSize, selectedColorName);
       return;
     }
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+        item.id === productId && item.selectedSize === selectedSize && item.selectedColor.name === selectedColorName 
+        ? { ...item, quantity } 
+        : item
       )
     );
   };

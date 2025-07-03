@@ -26,6 +26,12 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_1-dRP5Srup6Ukf2hf_HXKws9B2_u_x9_hY0vi2qF9kEp9sOd5ZPuHT9fVv5Prcg8tafAzF-E2fw6CfGP1gLoxiIqsrPVZxAJ1wZssw-uAvineJbwUuJ0yK91h02Gnn-ZFEVSfqn_eGTWYl5rmCm1pQvqchiauK0kD3blLbNNZErMc6aALqvHzjkwzrg/s320/643106a391a9e-square.jpg'],
     stock: 150,
     tags: ['t-shirt', 'cotton', 'new'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Black', hex: '#000000' },
+        { name: 'White', hex: '#FFFFFF' },
+        { name: 'Gray', hex: '#808080' },
+    ],
   },
   {
     id: 'p8',
@@ -39,6 +45,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNlw5SIZtcF-i5XzzpxDrm8FEqw4l1H6D9d5nqN5wVubtNixl6n4dp3GYzw484HUsMYVm3XCsRal6Hs4_Cce7Xbox47wOYtizG1BqgBfa769XO3kS01xf9VLUZ7vFZf-2EiCLPZbwDkcLbU8cVzhm7JaYP2ysgUIOpYhu9m6o77lvQFPz7vh18ByQAHFc/s320/615081c1422bc-square.jpg'],
     stock: 90,
     tags: ['vintage', 't-shirt', 'sale'],
+    sizes: ['S', 'M', 'L'],
+    colors: [
+        { name: 'Faded Blue', hex: '#6b8a9f' },
+        { name: 'Washed Black', hex: '#4a4a4a' },
+    ],
   },
   {
     id: 'p11',
@@ -52,6 +63,12 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJ2GHcYW3V1wWlIr8-x7Q5fJhaECLGV9RdntP8b_XoqAgOctqtVMotElXiq6W7N7r4rI9EOGSY2N-m2UgD01YPN7_dIxWPKrQZ8AjbayBnRVXuMlHt2FHls48Ips2VPEPkGRawJpp0lJCZrqA5fmLMv0qN7wPIAoWFppZnRLiiG6NVwmXdITWEAdf_acY/s320/61507e0206e56-square.jpg'],
     stock: 130,
     tags: ['graphic', 't-shirt', 'new'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: [
+        { name: 'Navy', hex: '#000080' },
+        { name: 'Burgundy', hex: '#800020' },
+        { name: 'Forest Green', hex: '#228B22' },
+    ],
   },
   
   // Full Sleeve T-shirts
@@ -67,6 +84,12 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgDCUB_-5LzYY1l4yZKR1xJ450aF6Q2HwkVi3ope0LhMEpfL-Rn3cOjvqXegtdFSShhUXAy1Vk8a7ee20ubnuUXcuXC4rafTNvouxmIan07_MdA6jvp_RcsQeYaT3hT_T8yDMPRLgTLrI-ODEQrMEREqvD4-lDgk4OqMroibW9rJxoz0vbyJCC75BkPOyM/s320/61c4131d3073e-square.jpg'],
     stock: 80,
     tags: ['henley', 'full-sleeve', 'casual'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Charcoal', hex: '#36454F' },
+        { name: 'Olive', hex: '#808000' },
+        { name: 'Beige', hex: '#F5F5DC' },
+    ],
   },
   {
     id: 'p10',
@@ -80,6 +103,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQ1gm5hLnZAyYUepuJx6oWbZs27G16baeRSHx3dS4hDgMfoq7HuanQtMGWpMA2IFYcqz8hL4H5-NAxOVqjSpN2oen3W5YBNcMOB1QnPnypOrwihKmWohOdUg3nrZFA0GZ6EGDYk2eFHImAL1-9GXRka5wyj4nBuOLtBBrMHwhsmU4ABjrVvvcKgdEd1L0/s320/6194db5781779-square.jpg'],
     stock: 85,
     tags: ['thermal', 'full-sleeve', 'winter'],
+    sizes: ['M', 'L', 'XL'],
+    colors: [
+        { name: 'Dark Gray', hex: '#A9A9A9' },
+        { name: 'Navy', hex: '#000080' },
+    ],
   },
   {
     id: 'p13',
@@ -93,6 +121,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjI-znpih2L48tKRDnSdf3frpv97U5Sc9mOroef5qAyrjEywdkcl-o2dZHkdSZTUc1CXUwfE_2VEKYKgYsecvoccEoizIkjWDRVlOSYcXS8NX1taRLwh6VwTtNf0yVcuSLjCt_X8s6JFLgq8FviUGjvrwVIeqkrYGTdV0fpTbEkutzZuzPla5evPu6qdRY/s320/618295f85eee1-square.jpg'],
     stock: 70,
     tags: ['stylish', 'full-sleeve'],
+    sizes: ['S', 'M', 'L'],
+    colors: [
+        { name: 'Maroon', hex: '#800000' },
+        { name: 'Black', hex: '#000000' },
+    ],
   },
   {
     id: 'p14',
@@ -106,6 +139,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0Ufx_yBX6I78H0fHx2pA1OYSFrTMs5mYsCBz1nrRj51IvdDKqcRzMgzdyPWEO5i6BG0KegOblyiXwG7zGb4QEi_m9G4h3l8IXBHmKNsj3kCzNeLaKICVeWHwq5qFKaPq4LhdoYOpWXChyvghgIsIVqd-g_naCgFwC6ghZ1Zl2HGw01p-p0Tj0jHPn3Q0/s320/618295f859863-square.jpg'],
     stock: 95,
     tags: ['casual', 'full-sleeve'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Heather Gray', hex: '#C0C0C0' },
+        { name: 'Blue', hex: '#0000FF' },
+    ],
   },
 
   // Polo T-shirts
@@ -121,6 +159,12 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgO-yMlAsx8RlDNnXCCpKoo1gT25kg43_toC9ccRBYldcV6bAQADPsL8dS-OUtfy8kqy3eFm0MvXRDOuGs3TmU4OWULHIKjto_Dz47ew5Eirqt61cNdNNJ7aOIP4vSkD8R8ZmtR7ommjbKMTcIJi1pqr2-L3x4ycnquhh5RUzwYfeBLMxVdyaj10b8Ex90/s320/621784538389b-square.jpg'],
     stock: 100,
     tags: ['polo', 'smart-casual', 'classic'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'White', hex: '#FFFFFF' },
+        { name: 'Navy', hex: '#000080' },
+        { name: 'Red', hex: '#FF0000' },
+    ],
   },
   {
     id: 'p9',
@@ -134,6 +178,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh1t7xezvuryEwkm18rKIZ660Gbcqi5-Ys-S05EXlzfd7-CB1F0tINwJpBpMJDFPdlzc8RKiwv6Xf8mbw5hT4ebBmGPskRwa3Qmc7ExVlKgSW64wq3K3YsyQV6v9LJzHjl9cuzKL9TeNPLqjwfnAzrxl1K61CDGlVaYO3BNj_2PZQ46CbP4ozL-ESMCK6U/s320/67285487491ac-square.jpg'],
     stock: 50,
     tags: ['polo', 'premium'],
+    sizes: ['M', 'L'],
+    colors: [
+        { name: 'Black', hex: '#000000' },
+        { name: 'Khaki', hex: '#F0E68C' },
+    ],
   },
   {
     id: 'p12',
@@ -147,6 +196,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjmfOh_c2ApBHe2NOTQB_JC6sZozny0x_PgELwKTVuAnj0K0pzpgdWJlOnXLuthSuTv_UgH7AYKaCQMq8fMfJZpchVpy3lJMUvWpqPgHf1a4qQd7-Piy-YUGGcGt7SW78dlrJnWXdkBwsraSv9FcCb_Kp7m_Oxm9V_yRyDtGrI1lspHRfATb9XaxERkKzw/s320/62178453a886d-square.jpg'],
     stock: 110,
     tags: ['polo', 'essential', 'classic'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Teal', hex: '#008080' },
+        { name: 'Gray', hex: '#808080' },
+    ],
   },
   {
     id: 'p15',
@@ -160,6 +214,11 @@ export const products: Product[] = [
     images: ['https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbbkGRkXNJWiPloVwyU2vOF32DTx7k4eSPJRL4uaH-r_UCl5mI1H3ssIDN_ek8JXD6PfGaJzUz-Dule7r8_LmgrzJO3A1gmMjjYisZX1KHxOv3E8k5a5DU3DCQzc4mrAfWcet1dcjTjSPk9IePJtxHpyrJta0soTX2ExSx2e32t1DIPH8gFtZywPeNnTg/s320/650182af39a77-square.jpeg'],
     stock: 90,
     tags: ['polo', 'sport', 'activewear'],
+    sizes: ['M', 'L', 'XL'],
+    colors: [
+        { name: 'Bright Blue', hex: '#0096FF' },
+        { name: 'Lime Green', hex: '#32CD32' },
+    ],
   },
 
   // Other categories
@@ -175,6 +234,11 @@ export const products: Product[] = [
     images: ['https://placehold.co/600x600.png'],
     stock: 60,
     tags: ['oversized', 'streetwear', 'new'],
+    sizes: ['M', 'L', 'XL'],
+    colors: [
+        { name: 'Cream', hex: '#FFFDD0' },
+        { name: 'Stone', hex: '#8A795D' },
+    ],
   },
   {
     id: 'p4',
@@ -188,6 +252,11 @@ export const products: Product[] = [
     images: ['https://placehold.co/600x600.png'],
     stock: 120,
     tags: ['sports', 'performance', 'activewear'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Volt', hex: '#CEFF00' },
+        { name: 'Carbon', hex: '#333333' },
+    ],
   },
   {
     id: 'p6',
@@ -201,6 +270,11 @@ export const products: Product[] = [
     images: ['https://placehold.co/600x600.png'],
     stock: 75,
     tags: ['oxford', 'formal', 'workwear'],
+    sizes: ['M', 'L', 'XL'],
+    colors: [
+        { name: 'Light Blue', hex: '#ADD8E6' },
+        { name: 'White', hex: '#FFFFFF' },
+    ],
   },
   {
     id: 'p7',
@@ -214,5 +288,9 @@ export const products: Product[] = [
     images: ['https://placehold.co/600x600.png'],
     stock: 300,
     tags: ['boxer-briefs', 'comfort', 'multipack'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: [
+        { name: 'Assorted', hex: '#808080' },
+    ],
   },
 ];

@@ -63,7 +63,7 @@ export function CartSheet() {
             <ScrollArea className="flex-grow pr-4 -mr-6">
               <div className="flex flex-col gap-6">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-start gap-4">
+                  <div key={`${item.id}-${item.selectedSize}-${item.selectedColor.name}`} className="flex items-start gap-4">
                     <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border">
                       <Image
                         src={item.images[0]}
@@ -75,6 +75,13 @@ export function CartSheet() {
                     </div>
                     <div className="flex-grow">
                       <p className="font-semibold">{item.name}</p>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <span>{item.selectedSize} / {item.selectedColor.name}</span>
+                        <div
+                            className="h-3 w-3 rounded-full border"
+                            style={{ backgroundColor: item.selectedColor.hex }}
+                        />
+                      </div>
                       <p className="text-sm text-muted-foreground">
                         {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price)}
                       </p>
@@ -85,7 +92,7 @@ export function CartSheet() {
                             onChange={(e) => {
                                 const newQuantity = parseInt(e.target.value, 10);
                                 if (!isNaN(newQuantity)) {
-                                    updateQuantity(item.id, newQuantity);
+                                    updateQuantity(item.id, item.selectedSize, item.selectedColor.name, newQuantity);
                                 }
                             }}
                             className="h-8 w-16" 
@@ -95,7 +102,7 @@ export function CartSheet() {
                             variant="ghost" 
                             size="icon" 
                             className="text-muted-foreground hover:text-accent -mr-2"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.id, item.selectedSize, item.selectedColor.name)}
                          >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Remove item</span>

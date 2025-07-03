@@ -10,6 +10,8 @@ export interface Product {
   images: string[];
   stock: number;
   tags: string[];
+  sizes: string[];
+  colors: { name: string; hex: string }[];
 }
 
 export interface Category {
@@ -22,6 +24,8 @@ export interface Category {
 
 export interface CartItem extends Product {
   quantity: number;
+  selectedSize: string;
+  selectedColor: { name: string; hex: string };
 }
 
 export interface Order {

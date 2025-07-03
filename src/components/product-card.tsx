@@ -7,7 +7,6 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import type { Product } from '@/lib/types';
 import { Badge } from './ui/badge';
-import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { cn } from '@/lib/utils';
 
@@ -34,13 +33,8 @@ function Rating({ rating, reviewCount }: { rating: number, reviewCount: number }
 
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
-
-  const handleAddToCart = () => {
-    addItem(product, 1);
-  };
   
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -91,7 +85,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 mt-auto">
-        <Button className="w-full" onClick={handleAddToCart}>Add to Cart</Button>
+        <Button asChild className="w-full">
+            <Link href={`/product/${product.id}`}>
+                Choose Options
+            </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

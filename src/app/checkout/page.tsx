@@ -336,12 +336,13 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   <div className="max-h-64 overflow-y-auto pr-2 space-y-4">
                     {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center gap-4">
+                      <div key={`${item.id}-${item.selectedSize}-${item.selectedColor.name}`} className="flex items-center gap-4">
                         <div className="relative h-16 w-16 rounded-md overflow-hidden border">
                           <Image src={item.images[0]} alt={item.name} fill className="object-cover" />
                         </div>
                         <div className="flex-grow">
                           <p className="font-medium">{item.name}</p>
+                          <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor.name}</p>
                           <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                         <p className="font-medium">
