@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
@@ -36,9 +37,11 @@ export default function Home() {
                 <p className="mt-4 text-lg md:text-xl text-foreground/80">
                 Discover your next favorite thing at BazaarGo. Quality products at prices you'll love.
                 </p>
-                <Button size="lg" className="mt-6">
-                Shop Now <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <Link href="/shop">
+                  <Button size="lg" className="mt-6">
+                    Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
             </div>
           </div>
         </section>
@@ -49,7 +52,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-center font-headline mb-6">Shop by Category</h2>
             <div className="flex gap-4 overflow-x-auto pb-4">
               {categories.map((category) => (
-                <a href="#" key={category.id} className="group text-center w-36 flex-shrink-0">
+                <Link href={`/category/${category.id}`} key={category.id} className="group text-center w-36 flex-shrink-0">
                   <Card className="overflow-hidden transition-all duration-300 hover:shadow-md hover:border-primary">
                     <CardContent className="p-0">
                       <div className="relative aspect-square">
@@ -64,7 +67,7 @@ export default function Home() {
                     </CardContent>
                   </Card>
                   <h3 className="mt-2 font-semibold text-sm group-hover:text-primary">{category.name}</h3>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

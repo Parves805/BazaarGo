@@ -1,4 +1,5 @@
 import { Search, User, Heart, ShoppingBag, Menu } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -22,25 +23,26 @@ export function SiteHeader() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                   <div className="py-6 px-4">
-                      <a href="/" className="mb-6 flex items-center space-x-2">
+                      <Link href="/" className="mb-6 flex items-center space-x-2">
                           <ShoppingBag className="h-6 w-6 text-primary" />
                           <span className="font-bold font-headline">BazaarGo</span>
-                      </a>
+                      </Link>
                       <nav className="flex flex-col space-y-3">
+                          <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop All</Link>
                           {categories.map((category) => (
-                          <a key={category.id} href="#" className="text-lg font-medium text-foreground/80 hover:text-primary">
+                          <Link key={category.id} href={`/category/${category.id}`} className="text-lg font-medium text-foreground/80 hover:text-primary">
                               {category.name}
-                          </a>
+                          </Link>
                           ))}
                       </nav>
                   </div>
               </SheetContent>
             </Sheet>
           </div>
-          <a href="/" className="hidden md:flex items-center space-x-2">
+          <Link href="/" className="hidden md:flex items-center space-x-2">
             <ShoppingBag className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">BazaarGo</span>
-          </a>
+          </Link>
         </div>
 
         {/* Center: Search Bar */}
@@ -84,6 +86,17 @@ export function SiteHeader() {
                <CartSheet />
             </nav>
         </div>
+      </div>
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex h-12 items-center justify-center border-t">
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+              <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop All</Link>
+              {categories.map((category) => (
+                  <Link key={category.id} href={`/category/${category.id}`} className="text-foreground transition-colors hover:text-primary">
+                      {category.name}
+                  </Link>
+              ))}
+          </nav>
       </div>
     </header>
   );

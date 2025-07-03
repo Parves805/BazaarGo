@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Star, StarHalf } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
@@ -32,13 +33,15 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col bg-card">
       <CardHeader className="p-0 border-b">
         <div className="relative aspect-square w-full">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            className="object-cover"
-            data-ai-hint={`${product.category} product`}
-          />
+          <Link href={`/product/${product.id}`}>
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover"
+              data-ai-hint={`${product.category} product`}
+            />
+          </Link>
            { product.tags.includes('new') && <Badge variant="default" className="absolute top-3 left-3 bg-primary">NEW</Badge> }
            { product.stock < 20 && <Badge variant="destructive" className="absolute top-3 right-3">LOW STOCK</Badge> }
         </div>
@@ -47,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex-grow">
           <p className="text-xs text-muted-foreground uppercase">{product.brand}</p>
           <CardTitle className="text-lg leading-tight font-headline mt-1">
-              <a href={`/product/${product.id}`} className="hover:text-primary">{product.name}</a>
+              <Link href={`/product/${product.id}`} className="hover:text-primary">{product.name}</Link>
           </CardTitle>
         </div>
         <div className="flex items-end justify-between mt-2">

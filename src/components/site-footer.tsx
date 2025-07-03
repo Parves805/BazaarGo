@@ -1,4 +1,6 @@
 import { ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { categories } from '@/lib/data';
 
 export function SiteFooter() {
   return (
@@ -6,19 +8,19 @@ export function SiteFooter() {
       <div className="container py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-             <a href="/" className="mb-4 flex items-center space-x-2">
+             <Link href="/" className="mb-4 flex items-center space-x-2">
                 <ShoppingBag className="h-6 w-6 text-primary" />
                 <span className="font-bold font-headline">BazaarGo</span>
-            </a>
+            </Link>
             <p className="text-muted-foreground text-sm">Your one-stop online marketplace.</p>
           </div>
           <div>
             <h4 className="font-semibold mb-3 font-headline">Shop</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Half Sleeve T-shirt</a></li>
-              <li><a href="#" className="hover:text-primary">Shirt</a></li>
-              <li><a href="#" className="hover:text-primary">Polo T-shirt</a></li>
-              <li><a href="#" className="hover:text-primary">Underwear</a></li>
+                <li><Link href="/shop" className="hover:text-primary">Shop All</Link></li>
+                {categories.slice(0, 4).map((category) => (
+                    <li key={category.id}><Link href={`/category/${category.id}`} className="hover:text-primary">{category.name}</Link></li>
+                ))}
             </ul>
           </div>
           <div>
