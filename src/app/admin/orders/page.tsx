@@ -41,9 +41,14 @@ export default function AdminOrdersPage() {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
-                const parsedOrders: Order[] = JSON.parse(savedOrders);
-                parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                setOrders(parsedOrders);
+                const parsed = JSON.parse(savedOrders);
+                 if (Array.isArray(parsed)) {
+                    const parsedOrders: Order[] = parsed;
+                    parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                    setOrders(parsedOrders);
+                 } else {
+                    setOrders([]);
+                 }
             }
         } catch (error) {
             console.error("Failed to load orders from localStorage", error);
@@ -61,14 +66,17 @@ export default function AdminOrdersPage() {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
-                let currentOrders: Order[] = JSON.parse(savedOrders);
-                const orderIndex = currentOrders.findIndex(o => o.id === orderId);
+                const parsed = JSON.parse(savedOrders);
+                 if (Array.isArray(parsed)) {
+                    let currentOrders: Order[] = parsed;
+                    const orderIndex = currentOrders.findIndex(o => o.id === orderId);
 
-                if (orderIndex > -1) {
-                    currentOrders[orderIndex].status = newStatus;
-                    localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
-                    fetchOrders(); // Re-fetch and re-sort
-                    toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}.` });
+                    if (orderIndex > -1) {
+                        currentOrders[orderIndex].status = newStatus;
+                        localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
+                        fetchOrders(); // Re-fetch and re-sort
+                        toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}.` });
+                    }
                 }
             }
         } catch (error) {

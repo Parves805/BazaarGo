@@ -23,27 +23,30 @@ export default function AdminCustomersPage() {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
-                const orders: Order[] = JSON.parse(savedOrders);
-                const customerData = new Map<string, Customer>();
+                const parsed = JSON.parse(savedOrders);
+                if (Array.isArray(parsed)) {
+                    const orders: Order[] = parsed;
+                    const customerData = new Map<string, Customer>();
 
-                orders.forEach(order => {
-                    const email = order.shippingInfo.email;
-                    if (customerData.has(email)) {
-                        const existingCustomer = customerData.get(email)!;
-                        existingCustomer.orderCount += 1;
-                        existingCustomer.totalSpent += order.total;
-                    } else {
-                        customerData.set(email, {
-                            email: email,
-                            name: order.shippingInfo.name,
-                            phone: order.shippingInfo.phone,
-                            orderCount: 1,
-                            totalSpent: order.total,
-                        });
-                    }
-                });
+                    orders.forEach(order => {
+                        const email = order.shippingInfo.email;
+                        if (customerData.has(email)) {
+                            const existingCustomer = customerData.get(email)!;
+                            existingCustomer.orderCount += 1;
+                            existingCustomer.totalSpent += order.total;
+                        } else {
+                            customerData.set(email, {
+                                email: email,
+                                name: order.shippingInfo.name,
+                                phone: order.shippingInfo.phone,
+                                orderCount: 1,
+                                totalSpent: order.total,
+                            });
+                        }
+                    });
 
-                setCustomers(Array.from(customerData.values()));
+                    setCustomers(Array.from(customerData.values()));
+                }
             }
         } catch (error) {
             console.error("Failed to process customer data from localStorage", error);

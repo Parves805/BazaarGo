@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { CreditCard, Truck, Loader2 } from 'lucide-react';
+import type { Order } from '@/lib/types';
 
 const checkoutSchema = z.object({
   name: z.string().min(2, { message: 'Full name is required' }),
@@ -92,7 +93,7 @@ export default function CheckoutPage() {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const order = {
+    const order: Order = {
       id: new Date().getTime().toString(),
       date: new Date().toISOString(),
       items: cartItems,
@@ -102,7 +103,18 @@ export default function CheckoutPage() {
     };
 
     try {
-        const existingOrders = JSON.parse(localStorage.getItem('bazaargoUserOrders') || '[]');
+        const saved = localStorage.getItem('bazaargoUserOrders');
+        let existingOrders: Order[] = [];
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    existingOrders = parsed;
+                }
+            } catch {
+                // Ignore parsing errors and start with an empty array
+            }
+        }
         localStorage.setItem('bazaargoUserOrders', JSON.stringify([order, ...existingOrders]));
     } catch (error) {
         console.error("Failed to save order to localStorage", error);

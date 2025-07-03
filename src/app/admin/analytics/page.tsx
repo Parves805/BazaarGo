@@ -36,7 +36,14 @@ export default function AnalyticsPage() {
     useEffect(() => {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
-            const orders: Order[] = savedOrders ? JSON.parse(savedOrders) : [];
+            let orders: Order[] = [];
+            if (savedOrders) {
+                const parsed = JSON.parse(savedOrders);
+                if (Array.isArray(parsed)) {
+                    orders = parsed;
+                }
+            }
+            
             const now = new Date();
             
             // --- Process Sales Data for Chart (last 6 months) ---

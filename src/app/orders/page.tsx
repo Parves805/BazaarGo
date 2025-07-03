@@ -28,7 +28,12 @@ export default function OrdersPage() {
     try {
       const savedOrders = localStorage.getItem('bazaargoUserOrders');
       if (savedOrders) {
-        setOrders(JSON.parse(savedOrders));
+        const parsed = JSON.parse(savedOrders);
+        if (Array.isArray(parsed)) {
+            setOrders(parsed as Order[]);
+        } else {
+            setOrders([]);
+        }
       }
     } catch (error) {
       console.error("Failed to load orders from localStorage", error);
