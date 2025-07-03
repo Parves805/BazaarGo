@@ -20,13 +20,15 @@ export function SiteHeader() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { wishlistCount } = useWishlist();
   const { totalItems } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // This code runs only on the client, after the component mounts.
+    // This effect runs once on the client after the component mounts.
     const authStatus = localStorage.getItem('isAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
+    setIsMounted(true);
   }, []);
 
   const handleLogout = () => {
@@ -95,7 +97,7 @@ export function SiteHeader() {
                   <Link href="/wishlist" passHref>
                     <Button variant="ghost" size="icon" className="relative">
                         <Heart className="h-6 w-6" />
-                        {wishlistCount > 0 && (
+                        {isMounted && wishlistCount > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
                                 {wishlistCount}
                             </span>
@@ -111,7 +113,7 @@ export function SiteHeader() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {isAuthenticated ? (
+                      {isMounted && isAuthenticated ? (
                         <>
                           <DropdownMenuLabel>My Account</DropdownMenuLabel>
                           <DropdownMenuSeparator />
@@ -163,7 +165,7 @@ export function SiteHeader() {
               <Link href="/cart" passHref>
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-6 w-6" />
-                  {totalItems > 0 && (
+                  {isMounted && totalItems > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
                       {totalItems}
                     </span>
