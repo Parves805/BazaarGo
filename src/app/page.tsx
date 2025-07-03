@@ -10,7 +10,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { ArrowRight } from 'lucide-react';
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 8);
+  const featuredProducts = products.slice(0, 6);
   // Mock viewing history for the AI recommendations
   const viewingHistory = ['p2', 'p4', 'p6'];
 

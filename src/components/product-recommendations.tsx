@@ -26,7 +26,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
         setError(null);
         const result = await getProductRecommendations({
           viewingHistory,
-          numberOfRecommendations: 4,
+          numberOfRecommendations: 6,
         });
 
         if (result.recommendedProducts) {
@@ -51,8 +51,8 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, i) => (
           <div key={i} className="flex flex-col space-y-3">
              <Skeleton className="h-[320px] w-full rounded-xl" />
              <div className="space-y-2">
