@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered } from 'lucide-react';
@@ -10,9 +11,11 @@ import { categories } from '@/lib/data';
 import { CartSheet } from './cart-sheet';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 export function SiteHeader() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -30,6 +33,7 @@ export function SiteHeader() {
       title: 'Logged Out',
       description: 'You have been successfully logged out.',
     });
+    router.push('/');
   };
 
   return (
