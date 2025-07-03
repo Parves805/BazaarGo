@@ -1,24 +1,25 @@
 
 'use client';
 
-import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { categories } from '@/lib/data';
-import { CartSheet } from './cart-sheet';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
 import { useWishlist } from '@/context/wishlist-context';
+import { useCart } from '@/context/cart-context';
 
 export function SiteHeader() {
   const { toast } = useToast();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { wishlistCount } = useWishlist();
+  const { totalItems } = useCart();
 
   useEffect(() => {
     // This code runs only on the client, after the component mounts.
@@ -159,7 +160,17 @@ export function SiteHeader() {
                     </DropdownMenuContent>
                   </DropdownMenu>
               </div>
-               <CartSheet />
+              <Link href="/cart" passHref>
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-6 w-6" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
+                      {totalItems}
+                    </span>
+                  )}
+                  <span className="sr-only">Cart</span>
+                </Button>
+              </Link>
             </nav>
         </div>
       </div>
