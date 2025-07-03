@@ -82,7 +82,7 @@ export default function Home() {
               onMouseLeave={plugin.current.reset}
             >
               <CarouselContent>
-                {heroSlides.map((slide, index) => (
+                {heroSlides.filter(slide => slide.url).map((slide, index) => (
                   <CarouselItem key={index}>
                     <div className="relative h-[60vh] md:h-[70vh] w-full">
                       <Image
