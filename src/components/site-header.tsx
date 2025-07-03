@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { categories } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
@@ -64,11 +63,6 @@ export function SiteHeader() {
                           <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary">Home</Link>
                           <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop All</Link>
                           <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary">About Us</Link>
-                          {categories.map((category) => (
-                          <Link key={category.id} href={`/category/${category.id}`} className="text-lg font-medium text-foreground/80 hover:text-primary">
-                              {category.name}
-                          </Link>
-                          ))}
                       </nav>
                   </div>
               </SheetContent>
@@ -184,11 +178,6 @@ export function SiteHeader() {
               <Link href="/" className="text-foreground transition-colors hover:text-primary">Home</Link>
               <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop All</Link>
               <Link href="/about" className="text-foreground transition-colors hover:text-primary">About Us</Link>
-              {categories.map((category) => (
-                  <Link key={category.id} href={`/category/${category.id}`} className="text-foreground transition-colors hover:text-primary">
-                      {category.name}
-                  </Link>
-              ))}
           </nav>
       </div>
     </header>
