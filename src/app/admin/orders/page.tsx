@@ -7,9 +7,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+} from "@/components/ui/dropdown-menu"
 import type { Order } from '@/lib/types';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 const statusColors: { [key: string]: string } = {
   Delivered: 'bg-green-500',
@@ -18,22 +29,53 @@ const statusColors: { [key: string]: string } = {
   Cancelled: 'bg-red-500',
 };
 
+const ORDER_STATUSES: Order['status'][] = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
+
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
 
-    useEffect(() => {
+    const fetchOrders = () => {
+        setIsLoading(true);
         try {
             const savedOrders = localStorage.getItem('userOrders');
             if (savedOrders) {
-                setOrders(JSON.parse(savedOrders));
+                const parsedOrders: Order[] = JSON.parse(savedOrders);
+                parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                setOrders(parsedOrders);
             }
         } catch (error) {
             console.error("Failed to load orders from localStorage", error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to load orders.' });
         } finally {
             setIsLoading(false);
         }
+    }
+
+    useEffect(() => {
+        fetchOrders();
     }, []);
+
+    const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
+        try {
+            const savedOrders = localStorage.getItem('userOrders');
+            if (savedOrders) {
+                let currentOrders: Order[] = JSON.parse(savedOrders);
+                const orderIndex = currentOrders.findIndex(o => o.id === orderId);
+
+                if (orderIndex > -1) {
+                    currentOrders[orderIndex].status = newStatus;
+                    localStorage.setItem('userOrders', JSON.stringify(currentOrders));
+                    fetchOrders(); // Re-fetch and re-sort
+                    toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}.` });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to update order status", error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to update status.' });
+        }
+    };
 
     if (isLoading) {
         return <p>Loading orders...</p>;
@@ -79,9 +121,24 @@ export default function AdminOrdersPage() {
                                         </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                                        <DropdownMenuItem>Update Status</DropdownMenuItem>
+                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                            <DropdownMenuItem disabled>View Details</DropdownMenuItem>
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger>Update Status</DropdownMenuSubTrigger>
+                                                <DropdownMenuPortal>
+                                                    <DropdownMenuSubContent>
+                                                        {ORDER_STATUSES.map(status => (
+                                                            <DropdownMenuItem 
+                                                                key={status} 
+                                                                onClick={() => handleStatusChange(order.id, status)}
+                                                                disabled={order.status === status}
+                                                            >
+                                                                {status}
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuSubContent>
+                                                </DropdownMenuPortal>
+                                            </DropdownMenuSub>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
