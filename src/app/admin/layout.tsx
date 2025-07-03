@@ -15,9 +15,10 @@ import {
 } from '@/components/ui/sidebar';
 import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useEffect, useState } from 'react';
 
 export default function AdminLayout({
   children,
@@ -25,8 +26,53 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // This effect runs once on the client after the component mounts.
+    const authStatus = localStorage.getItem('isAdminAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    } else {
+        if (pathname !== '/admin/login') {
+            router.replace('/admin/login');
+        }
+    }
+    setIsMounted(true);
+  }, [pathname, router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdminAuthenticated');
+    setIsAuthenticated(false);
+    router.push('/admin/login');
+  };
 
   const isActive = (path: string) => pathname === path;
+
+  // Don't render layout on login page.
+  // Also show a loading state until auth check is complete.
+  if (!isMounted) {
+      return (
+          <div className="flex min-h-screen items-center justify-center">
+              <p>Loading...</p>
+          </div>
+      );
+  }
+  
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+  
+  if (!isAuthenticated) {
+      // This will be shown briefly while redirecting
+      return (
+          <div className="flex min-h-screen items-center justify-center">
+              <p>Redirecting to login...</p>
+          </div>
+      );
+  }
 
   return (
     <SidebarProvider>
@@ -85,7 +131,7 @@ export default function AdminLayout({
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton onClick={handleLogout}>
                         <LogOut />
                         Logout
                     </SidebarMenuButton>
