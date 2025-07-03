@@ -24,50 +24,26 @@ export default function Home() {
     {
       image: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp',
       dataAiHint: 'electronics sale',
-      headline: 'Mega Electronics Sale!',
-      description: 'Get the best deals on the latest gadgets and electronics.',
-      buttonLink: '/shop',
-      buttonText: 'Shop Electronics',
     },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 'mens fashion',
-      headline: 'Unbeatable Deals, Endless Choices.',
-      description: "Discover your next favorite thing at BazaarGo. Quality products at prices you'll love.",
-      buttonLink: '/shop',
-      buttonText: 'Shop Now',
     },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 'winter collection',
-      headline: 'New Winter Collection is Here!',
-      description: "Stay warm and stylish with our latest arrivals for the cold season.",
-      buttonLink: '/category/full-sleeve',
-      buttonText: 'Explore Collection',
     },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 't-shirt sale',
-      headline: 'T-Shirts Starting at ৳299',
-      description: "Upgrade your casual wardrobe with our comfortable and trendy t-shirts.",
-      buttonLink: '/category/half-sleeve',
-      buttonText: 'View Deals',
     },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 'polo shirts',
-      headline: 'Smart & Casual Polos',
-      description: "The perfect blend of comfort and style. Ideal for any occasion.",
-      buttonLink: '/category/polo-tshirt',
-      buttonText: 'Shop Polos',
     },
     {
       image: 'https://placehold.co/1200x800.png',
       dataAiHint: 'new arrivals',
-      headline: 'Fresh New Arrivals Daily',
-      description: "Check out the latest trends and styles just added to our store.",
-      buttonLink: '/shop',
-      buttonText: "See What's New",
     },
   ];
 
@@ -94,28 +70,13 @@ export default function Home() {
                   <div className="relative h-[60vh] md:h-[70vh] w-full">
                     <Image
                       src={slide.image}
-                      alt={slide.headline}
+                      alt={`Hero slide ${index + 1}`}
                       fill
-                      className="object-cover -z-10"
+                      className="object-cover"
                       data-ai-hint={slide.dataAiHint}
                       priority={index === 0}
                     />
                     <div className="absolute inset-0 bg-black/30" />
-                    <div className="container relative z-10 h-full flex flex-col items-start justify-center text-left">
-                      <div className="max-w-2xl bg-background/80 backdrop-blur-sm p-8 rounded-lg">
-                          <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary">
-                            {slide.headline}
-                          </h1>
-                          <p className="mt-4 text-lg md:text-xl text-foreground/80">
-                            {slide.description}
-                          </p>
-                          <Link href={slide.buttonLink}>
-                            <Button size="lg" className="mt-6">
-                              {slide.buttonText} <ArrowRight className="ml-2 h-5 w-5" />
-                            </Button>
-                          </Link>
-                      </div>
-                    </div>
                   </div>
                 </CarouselItem>
               ))}
