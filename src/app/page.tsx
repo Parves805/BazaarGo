@@ -22,7 +22,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative h-[60vh] md:h-[70vh] w-full bg-gradient-to-r from-primary/20 to-secondary/20">
           <Image 
-            src="https://placehold.co/1920x1080.png" 
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhE3vw4FuPjwWhXPI_zLzVds58_VnpUi18AYKVwFGOAZnhIIF5gDRPdsZXNQwcsE8u5RHrP8LrWEKC8wKnk6dZ1cJtMMM8DCfzT_cG2iERZhMcc_h5V1dwc5Ct95cPgoS0SvEsFhU0S-hYu6Ilu7Y1GeQj-tBYTTJjTZLUBDmtdRMY_2dsad7xJNDma5so/s320/6812d7c606e6e.jpg" 
             alt="Promotional banner"
             fill
             className="object-cover -z-10"
