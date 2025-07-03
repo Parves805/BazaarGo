@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -12,39 +11,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { products } from '@/lib/data';
-import type { CartItem } from '@/lib/types';
 import Image from 'next/image';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from '@/context/cart-context';
 
 export function CartSheet() {
   const { toast } = useToast();
-  // Mock cart state with a couple of items
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    { ...products[0], quantity: 1 },
-    { ...products[1], quantity: 2 },
-  ]);
-
-  const handleRemoveItem = (itemId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-    toast({
-        title: "Item removed",
-        description: "The item has been removed from your cart.",
-    })
-  };
-
-  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      handleRemoveItem(itemId);
-      return;
-    }
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  const { 
+    cartItems, 
+    removeItem, 
+    updateQuantity,
+    clearCart,
+    totalItems, 
+    subtotal 
+  } = useCart();
   
   const handleCheckout = () => {
     if (cartItems.length === 0) {
@@ -56,15 +37,12 @@ export function CartSheet() {
       return;
     }
     // This is a mock checkout. In a real app, you'd handle payment processing.
-    setCartItems([]);
+    clearCart();
     toast({
       title: "Checkout Successful!",
       description: "Your order has been placed.",
     });
   };
-
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <Sheet>
@@ -110,7 +88,7 @@ export function CartSheet() {
                             onChange={(e) => {
                                 const newQuantity = parseInt(e.target.value, 10);
                                 if (!isNaN(newQuantity)) {
-                                    handleUpdateQuantity(item.id, newQuantity);
+                                    updateQuantity(item.id, newQuantity);
                                 }
                             }}
                             className="h-8 w-16" 
@@ -120,7 +98,7 @@ export function CartSheet() {
                             variant="ghost" 
                             size="icon" 
                             className="text-muted-foreground hover:text-accent -mr-2"
-                            onClick={() => handleRemoveItem(item.id)}
+                            onClick={() => removeItem(item.id)}
                          >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Remove item</span>

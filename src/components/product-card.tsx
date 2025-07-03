@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, StarHalf } from 'lucide-react';
@@ -5,6 +7,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import type { Product } from '@/lib/types';
 import { Badge } from './ui/badge';
+import { useCart } from '@/context/cart-context';
 
 interface ProductCardProps {
   product: Product;
@@ -29,6 +32,12 @@ function Rating({ rating, reviewCount }: { rating: number, reviewCount: number }
 
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    addItem(product, 1);
+  };
+  
   return (
     <Card className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col bg-card">
       <CardHeader className="p-0 border-b">
@@ -61,7 +70,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 mt-auto">
-        <Button className="w-full">Add to Cart</Button>
+        <Button className="w-full" onClick={handleAddToCart}>Add to Cart</Button>
       </CardFooter>
     </Card>
   );
