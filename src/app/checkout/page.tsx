@@ -111,11 +111,12 @@ export default function CheckoutPage() {
                 if (Array.isArray(parsed)) {
                     existingOrders = parsed;
                 }
-            } catch {
-                // Ignore parsing errors and start with an empty array
+            } catch (e) {
+                console.error("Could not parse existing orders, starting with a new list.", e);
             }
         }
-        localStorage.setItem('bazaargoUserOrders', JSON.stringify([order, ...existingOrders]));
+        const newOrders = [order, ...existingOrders];
+        localStorage.setItem('bazaargoUserOrders', JSON.stringify(newOrders));
     } catch (error) {
         console.error("Failed to save order to localStorage", error);
     }

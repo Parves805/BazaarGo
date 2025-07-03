@@ -47,12 +47,15 @@ export default function AdminOrdersPage() {
                     parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                     setOrders(parsedOrders);
                  } else {
-                    setOrders([]);
+                    setOrders([]); // Handle case where localStorage item is not an array
                  }
+            } else {
+                setOrders([]); // Handle case where there is no item in localStorage
             }
         } catch (error) {
             console.error("Failed to load orders from localStorage", error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to load orders.' });
+            setOrders([]); // Reset on error
         } finally {
             setIsLoading(false);
         }

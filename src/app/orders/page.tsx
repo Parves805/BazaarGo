@@ -25,6 +25,7 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     try {
       const savedOrders = localStorage.getItem('bazaargoUserOrders');
       if (savedOrders) {
@@ -34,9 +35,12 @@ export default function OrdersPage() {
         } else {
             setOrders([]);
         }
+      } else {
+        setOrders([]);
       }
     } catch (error) {
       console.error("Failed to load orders from localStorage", error);
+      setOrders([]);
     } finally {
       setIsLoading(false);
     }
