@@ -32,24 +32,24 @@ export default function CartPage() {
                 <CardContent className="p-0">
                   <div className="divide-y">
                     {cartItems.map(item => (
-                      <div key={`${item.id}-${item.selectedSize}-${item.selectedColor.name}`} className="flex flex-col sm:flex-row items-center gap-4 p-4">
+                      <div key={`${item.id}-${item.selectedSize}-${item.selectedColor?.name}`} className="flex flex-col sm:flex-row items-center gap-4 p-4">
                         <div className="relative h-24 w-24 flex-shrink-0 rounded-md overflow-hidden border">
                           <Image src={item.images[0]} alt={item.name} fill className="object-cover" />
                         </div>
                         <div className="flex-grow w-full grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                           <div className="md:col-span-1">
                             <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor.name}</p>
+                            <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor?.name}</p>
                             <p className="md:hidden mt-2 font-medium">
                                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price)} each
                             </p>
                           </div>
                           <div className="flex items-center border rounded-md w-fit justify-self-start md:justify-self-center">
-                            <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor.name, item.quantity - 1)}>
+                            <Button variant="ghost" size="icon" onClick={() => item.selectedColor && item.selectedSize && updateQuantity(item.id, item.selectedSize, item.selectedColor.name, item.quantity - 1)}>
                                 <Minus className="h-4 w-4" />
                             </Button>
                             <span className="w-12 text-center font-bold">{item.quantity}</span>
-                            <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.selectedSize, item.selectedColor.name, item.quantity + 1)}>
+                            <Button variant="ghost" size="icon" onClick={() => item.selectedColor && item.selectedSize && updateQuantity(item.id, item.selectedSize, item.selectedColor.name, item.quantity + 1)}>
                                 <Plus className="h-4 w-4" />
                             </Button>
                           </div>
@@ -57,7 +57,7 @@ export default function CartPage() {
                             <p className="font-medium text-lg hidden md:block">
                               {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(item.price * item.quantity)}
                             </p>
-                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeItem(item.id, item.selectedSize, item.selectedColor.name)}>
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => item.selectedColor && item.selectedSize && removeItem(item.id, item.selectedSize, item.selectedColor.name)}>
                               <Trash2 className="h-5 w-5" />
                               <span className="sr-only">Remove</span>
                             </Button>
