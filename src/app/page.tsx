@@ -1,5 +1,9 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
+import Autoplay from 'embla-carousel-autoplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
@@ -58,6 +62,10 @@ export default function Home() {
     },
   ];
 
+  const plugin = React.useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
+
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
@@ -65,8 +73,11 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           <Carousel
+            plugins={[plugin.current]}
             opts={{ loop: true }}
             className="w-full"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
           >
             <CarouselContent>
               {heroSlides.map((slide, index) => (
