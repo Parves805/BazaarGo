@@ -11,6 +11,8 @@ import * as AlertComponents from "@/components/ui/alert";
 import { Terminal } from 'lucide-react';
 
 const PRODUCTS_KEY = 'appProducts';
+const RECOMMENDATIONS_CACHE_KEY = 'aiProductRecommendations';
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 interface ProductRecommendationsProps {
   viewingHistory: string[];
@@ -40,9 +42,28 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     if (allProducts.length === 0) return;
 
     async function fetchRecommendations() {
+      setLoading(true);
+      setError(null);
+      
+      // Try to load from cache first
       try {
-        setLoading(true);
-        setError(null);
+        const cachedDataJSON = localStorage.getItem(RECOMMENDATIONS_CACHE_KEY);
+        if (cachedDataJSON) {
+          const { timestamp, data, history } = JSON.parse(cachedDataJSON);
+          // Check if cache is fresh and viewing history is the same
+          if ((Date.now() - timestamp < CACHE_TTL) && JSON.stringify(history) === JSON.stringify(viewingHistory)) {
+            setRecommendations(data);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to read recommendations from cache", e);
+        // If cache fails, just proceed to fetch
+      }
+      
+      // If no valid cache, fetch from API
+      try {
         const result = await getProductRecommendations({
           viewingHistory,
           numberOfRecommendations: 6,
@@ -52,11 +73,24 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
           const recommendedProds = result.recommendedProducts
             .map(id => allProducts.find(p => p.id === id))
             .filter((p): p is Product => p !== undefined);
+          
           setRecommendations(recommendedProds);
+          
+          // Save to cache
+          try {
+            const cacheEntry = {
+              timestamp: Date.now(),
+              data: recommendedProds,
+              history: viewingHistory, // Also cache the history for which this was generated
+            };
+            localStorage.setItem(RECOMMENDATIONS_CACHE_KEY, JSON.stringify(cacheEntry));
+          } catch (e) {
+            console.error("Failed to save recommendations to cache", e);
+          }
         }
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch recommendations. Please try again later.');
+        setError('Failed to fetch recommendations. This might be due to API rate limits. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -88,7 +122,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
      return (
         <AlertComponents.Alert variant="destructive">
             <Terminal className="h-4 w-4" />
-            <AlertComponents.AlertTitle>Error</AlertComponents.AlertTitle>
+            <AlertComponents.AlertTitle>Recommendation Error</AlertComponents.AlertTitle>
             <AlertComponents.AlertDescription>
                 {error}
             </AlertComponents.AlertDescription>
@@ -104,7 +138,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     <Carousel
       opts={{
         align: 'start',
-        loop: true,
+        loop: recommendations.length > 3, // Only loop if there are enough items
       }}
       className="w-full"
     >
