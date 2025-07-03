@@ -11,6 +11,7 @@ import { Trash2, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
 const defaultImages = [
   { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -21,9 +22,23 @@ const defaultImages = [
   { url: 'https://placehold.co/1200x800.png', dataAiHint: 'new arrivals' },
 ];
 
+interface WebsiteSettings {
+  storeName: string;
+  contactEmail: string;
+  contactPhone: string;
+}
+
+const defaultSettings: WebsiteSettings = {
+  storeName: 'BazaarGo',
+  contactEmail: 'support@bazaargo.com',
+  contactPhone: '+1 (234) 567-890',
+};
+
+
 export default function AdminSettingsPage() {
     const { toast } = useToast();
     const [slides, setSlides] = useState(defaultImages);
+    const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -33,9 +48,12 @@ export default function AdminSettingsPage() {
             if (savedImages) {
                 setSlides(JSON.parse(savedImages));
             }
+             const savedSettings = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettings) {
+                setSettings(JSON.parse(savedSettings));
+            }
         } catch (error) {
-            console.error("Failed to load slider images from localStorage", error);
-            // Stick with default images
+            console.error("Failed to load settings from localStorage", error);
         }
         setIsMounted(true);
     }, []);
@@ -44,6 +62,10 @@ export default function AdminSettingsPage() {
         const newSlides = [...slides];
         newSlides[index] = { ...newSlides[index], [field]: value };
         setSlides(newSlides);
+    };
+
+    const handleSettingChange = (field: keyof WebsiteSettings, value: string) => {
+        setSettings(prev => ({ ...prev, [field]: value }));
     };
 
     const addSlide = () => {
@@ -59,13 +81,15 @@ export default function AdminSettingsPage() {
         setIsLoading(true);
         try {
             localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slides));
+            localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
+
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
             toast({
                 title: "Settings Saved",
-                description: "Hero slider images have been updated successfully.",
+                description: "All changes have been updated successfully.",
             });
         } catch (error) {
-            console.error("Failed to save slider images to localStorage", error);
+            console.error("Failed to save settings to localStorage", error);
             toast({
                 variant: 'destructive',
                 title: "Save Failed",
@@ -87,9 +111,35 @@ export default function AdminSettingsPage() {
                     <CardTitle>Website Settings</CardTitle>
                     <CardDescription>Manage general settings for your website.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="text-center py-10 border-2 border-dashed rounded-lg">
-                         <p className="text-muted-foreground">More settings coming soon.</p>
+                <CardContent className="grid gap-6">
+                   <div className="grid gap-2">
+                        <Label htmlFor="storeName">Store Name</Label>
+                        <Input
+                            id="storeName"
+                            value={settings.storeName}
+                            onChange={(e) => handleSettingChange('storeName', e.target.value)}
+                            placeholder="Your Store Name"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="contactEmail">Contact Email</Label>
+                        <Input
+                            id="contactEmail"
+                            type="email"
+                            value={settings.contactEmail}
+                            onChange={(e) => handleSettingChange('contactEmail', e.target.value)}
+                            placeholder="support@example.com"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="contactPhone">Contact Phone</Label>
+                        <Input
+                            id="contactPhone"
+                            type="tel"
+                            value={settings.contactPhone}
+                            onChange={(e) => handleSettingChange('contactPhone', e.target.value)}
+                            placeholder="+1234567890"
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -136,18 +186,21 @@ export default function AdminSettingsPage() {
                             </Button>
                         </div>
                     ))}
-                    <div className="flex justify-between items-center pt-4">
+                    <div className="flex justify-start pt-4">
                         <Button variant="outline" onClick={addSlide}>
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Add Slide
                         </Button>
-                        <Button onClick={saveChanges} disabled={isLoading}>
-                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             Save Changes
-                        </Button>
                     </div>
                 </CardContent>
             </Card>
+
+             <div className="flex justify-end pt-2">
+                <Button onClick={saveChanges} disabled={isLoading} size="lg">
+                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                     Save All Settings
+                </Button>
+            </div>
         </div>
     );
 }
