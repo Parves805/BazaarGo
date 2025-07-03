@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
+import { useState, useRef, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -12,8 +12,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { User, Camera, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-// Mock user data. In a real app, this would come from an API.
-const initialUser = {
+// Default user data.
+const defaultUser = {
   name: 'John Doe',
   email: 'john.doe@example.com',
   phone: '123-456-7890',
@@ -26,12 +26,29 @@ const initialUser = {
   avatar: '', // Initially empty
 };
 
+const LOCAL_STORAGE_KEY = 'userProfile';
+
 export default function ProfilePage() {
   const { toast } = useToast();
-  const [user, setUser] = useState(initialUser);
+  const [user, setUser] = useState(defaultUser);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load user data from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedProfile = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedProfile) {
+        const { savedUser, savedPic } = JSON.parse(savedProfile);
+        if (savedUser) setUser(savedUser);
+        if (savedPic) setProfilePic(savedPic);
+      }
+    } catch (error) {
+      console.error("Failed to load user profile from localStorage", error);
+    }
+  }, []);
+
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,6 +93,18 @@ export default function ProfilePage() {
     setIsSaving(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Save to localStorage
+    try {
+      const profileToSave = {
+        savedUser: user,
+        savedPic: profilePic,
+      };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(profileToSave));
+    } catch (error) {
+       console.error("Failed to save user profile to localStorage", error);
+    }
+
     setIsSaving(false);
     toast({
       title: "Profile Updated",
