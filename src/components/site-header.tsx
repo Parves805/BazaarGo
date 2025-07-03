@@ -80,15 +80,6 @@ export function SiteHeader() {
           </nav>
         </div>
       </div>
-       <div className="hidden md:flex h-12 items-center justify-center border-t">
-          <nav className="container flex items-center justify-center space-x-6 text-sm font-medium text-foreground/80">
-            {categories.map((category) => (
-              <a key={category.id} href="#" className="transition-colors hover:text-primary">
-                {category.name}
-              </a>
-            ))}
-          </nav>
-        </div>
     </header>
   );
 }
