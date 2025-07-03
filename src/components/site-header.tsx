@@ -86,7 +86,7 @@ export function SiteHeader() {
                             </AccordionItem>
                           </Accordion>
 
-                          <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop All</Link>
+                          <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop</Link>
                           <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary">About Us</Link>
                       </nav>
                   </div>
@@ -220,7 +220,7 @@ export function SiteHeader() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop All</Link>
+              <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop</Link>
               <Link href="/about" className="text-foreground transition-colors hover:text-primary">About Us</Link>
           </nav>
       </div>

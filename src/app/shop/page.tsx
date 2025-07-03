@@ -9,7 +9,7 @@ export default function ShopPage() {
       <SiteHeader />
       <main className="flex-grow container py-8 md:py-12">
         <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold font-headline">Shop All Products</h1>
+            <h1 className="text-4xl font-bold font-headline">Shop</h1>
             <p className="text-muted-foreground mt-2">Browse our full collection of high-quality men's apparel.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

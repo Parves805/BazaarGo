@@ -18,7 +18,7 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold mb-3 font-headline">Shop</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/shop" className="hover:text-primary">Shop All</Link></li>
+                <li><Link href="/shop" className="hover:text-primary">Shop</Link></li>
                 {categories.slice(0, 4).map((category) => (
                     <li key={category.id}><Link href={`/category/${category.id}`} className="hover:text-primary">{category.name}</Link></li>
                 ))}
