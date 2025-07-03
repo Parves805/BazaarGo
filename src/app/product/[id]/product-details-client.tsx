@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
@@ -14,6 +14,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { FormItem } from '@/components/ui/form';
+
+const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
+const MAX_HISTORY_LENGTH = 10;
 
 function Rating({ rating, reviewCount }: { rating: number, reviewCount: number }) {
   const fullStars = Math.floor(rating);
@@ -42,6 +45,28 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string } | undefined>();
 
   const isWishlisted = isInWishlist(product.id);
+
+  useEffect(() => {
+    try {
+        const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
+        let history: string[] = historyJson ? JSON.parse(historyJson) : [];
+
+        // Remove the current product's ID if it exists, to move it to the front
+        history = history.filter(id => id !== product.id);
+
+        // Add the current product's ID to the beginning of the array
+        history.unshift(product.id);
+
+        // Trim the history to the maximum length
+        if (history.length > MAX_HISTORY_LENGTH) {
+            history = history.slice(0, MAX_HISTORY_LENGTH);
+        }
+
+        localStorage.setItem(VIEWING_HISTORY_KEY, JSON.stringify(history));
+    } catch (error) {
+        console.error('Failed to update viewing history:', error);
+    }
+  }, [product.id]);
 
   const handleAddToCart = () => {
     if (!selectedSize) {

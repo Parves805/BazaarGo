@@ -12,9 +12,12 @@ import type { Product } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProductRecommendations } from '@/components/product-recommendations';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
+const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
+const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -35,6 +38,9 @@ export default function Home() {
   const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = React.useState(true);
+  const [saleProducts, setSaleProducts] = React.useState<Product[]>([]);
+  const [viewingHistory, setViewingHistory] = React.useState<string[]>([]);
+  const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
 
   React.useEffect(() => {
     try {
@@ -51,11 +57,25 @@ export default function Home() {
         }
 
         const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-        if (savedProducts) {
-            setProducts(JSON.parse(savedProducts));
-        } else {
-            setProducts(initialProducts);
+        const allProducts = savedProducts ? JSON.parse(savedProducts) : initialProducts;
+        setProducts(allProducts);
+
+        // Filter for sale products
+        const onSale = allProducts.filter((p: Product) => p.tags.includes('sale'));
+        setSaleProducts(onSale);
+        
+        // Load viewing history
+        const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
+        if (historyJson) {
+            setViewingHistory(JSON.parse(historyJson));
         }
+        
+        // Load AI settings
+        const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
+        if (savedAiSettings) {
+            setAiSettings(JSON.parse(savedAiSettings));
+        }
+
     } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
         setHeroSlides(defaultSlides);
@@ -163,6 +183,41 @@ export default function Home() {
           </div>
         </section>
 
+        {/* On Sale Now Section */}
+        {saleProducts.length > 0 && (
+          <section className="py-12 md:py-20">
+            <div className="container">
+              <h2 className="text-3xl font-bold text-center font-headline mb-8">On Sale Now</h2>
+              <Carousel opts={{ align: "start", loop: saleProducts.length > 4 }} className="w-full">
+                <CarouselContent>
+                  {isLoadingProducts ? [...Array(4)].map((_, i) => (
+                    <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                      <div className="p-1"><Skeleton className="h-[400px]" /></div>
+                    </CarouselItem>
+                  )) : saleProducts.map((product) => (
+                    <CarouselItem key={product.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                      <div className="p-1">
+                        <ProductCard product={product} />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="ml-12" />
+                <CarouselNext className="mr-12" />
+              </Carousel>
+            </div>
+          </section>
+        )}
+
+        {/* Just For You Section */}
+        {aiSettings.recommendationsEnabled && viewingHistory.length > 0 && (
+          <section className="bg-secondary/50 py-12 md:py-20">
+            <div className="container">
+              <h2 className="text-3xl font-bold text-center font-headline mb-8">Just For You</h2>
+              <ProductRecommendations viewingHistory={viewingHistory} />
+            </div>
+          </section>
+        )}
       </main>
       <SiteFooter />
     </div>

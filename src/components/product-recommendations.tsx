@@ -127,17 +127,26 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="flex flex-col space-y-3">
-             <Skeleton className="h-[320px] w-full rounded-xl" />
-             <div className="space-y-2">
-                <Skeleton className="h-4 w-[200px]" />
-                <Skeleton className="h-4 w-[150px]" />
-             </div>
-          </div>
-        ))}
-      </div>
+      <Carousel
+        opts={{
+            align: 'start',
+        }}
+        className="w-full"
+      >
+        <CarouselContent>
+            {[...Array(6)].map((_, i) => (
+                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                    <div className="p-1 h-full space-y-3">
+                        <Skeleton className="h-[320px] w-full rounded-xl" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                    </div>
+                </CarouselItem>
+            ))}
+        </CarouselContent>
+      </Carousel>
     );
   }
 
@@ -161,7 +170,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     <Carousel
       opts={{
         align: 'start',
-        loop: recommendations.length > 3, // Only loop if there are enough items
+        loop: recommendations.length > 4, // Only loop if there are enough items
       }}
       className="w-full"
     >
