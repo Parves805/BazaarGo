@@ -1,22 +1,15 @@
 
-'use client'; // To use mock data and state for now
+'use client'; 
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-const mockOrders = [
-    { id: 'ORD001', customer: 'John Doe', date: '2024-05-20', total: 9999.99, status: 'Delivered' },
-    { id: 'ORD002', customer: 'Jane Smith', date: '2024-05-21', total: 15050.50, status: 'Processing' },
-    { id: 'ORD003', customer: 'Bob Johnson', date: '2024-05-21', total: 4500.00, status: 'Shipped' },
-    { id: 'ORD004', customer: 'Alice Williams', date: '2024-05-22', total: 20575.75, status: 'Delivered' },
-    { id: 'ORD005', customer: 'Chris Brown', date: '2024-05-22', total: 1299.99, status: 'Cancelled' },
-    { id: 'ORD006', customer: 'Patricia Miller', date: '2024-05-23', total: 3400.00, status: 'Processing' },
-    { id: 'ORD007', customer: 'Michael Davis', date: '2024-05-23', total: 8950.50, status: 'Shipped' },
-];
+import type { Order } from '@/lib/types';
+import { format } from 'date-fns';
 
 const statusColors: { [key: string]: string } = {
   Delivered: 'bg-green-500',
@@ -26,6 +19,26 @@ const statusColors: { [key: string]: string } = {
 };
 
 export default function AdminOrdersPage() {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        try {
+            const savedOrders = localStorage.getItem('userOrders');
+            if (savedOrders) {
+                setOrders(JSON.parse(savedOrders));
+            }
+        } catch (error) {
+            console.error("Failed to load orders from localStorage", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    if (isLoading) {
+        return <p>Loading orders...</p>;
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -45,11 +58,11 @@ export default function AdminOrdersPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockOrders.map((order) => (
+                        {orders.length > 0 ? orders.map((order) => (
                             <TableRow key={order.id}>
-                                <TableCell className="font-medium">{order.id}</TableCell>
-                                <TableCell>{order.customer}</TableCell>
-                                <TableCell>{order.date}</TableCell>
+                                <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
+                                <TableCell>{order.shippingInfo.name}</TableCell>
+                                <TableCell>{format(new Date(order.date), "PPP")}</TableCell>
                                 <TableCell>৳{order.total.toLocaleString('en-IN')}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className="flex items-center gap-2 w-fit">
@@ -73,7 +86,11 @@ export default function AdminOrdersPage() {
                                     </DropdownMenu>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center">No orders found.</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
