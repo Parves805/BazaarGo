@@ -1,31 +1,45 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { products, categories } from '@/lib/data';
+import { categories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import type { Product } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface CategoryPageProps {
-  params: {
-    slug: string;
-  };
-}
+const PRODUCTS_KEY = 'appProducts';
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const category = categories.find((c) => c.id === params.slug);
-  return {
-    title: category ? `${category.name} | BazaarGo` : 'Category | BazaarGo',
-  };
-}
-
-export default function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = params;
+export default function CategoryPage() {
+  const params = useParams();
+  const slug = params.slug as string;
   
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const category = categories.find((c) => c.id === slug);
   const filteredProducts = products.filter((p) => p.category === slug);
+
+  useEffect(() => {
+    try {
+      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts));
+      } else {
+        setProducts(initialProducts);
+      }
+    } catch (error) {
+      console.error("Failed to load products", error);
+      setProducts(initialProducts);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   if (!category) {
     notFound();
@@ -59,7 +73,19 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               <span>{category.name}</span>
             </div>
 
-            {filteredProducts.length > 0 ? (
+            {isLoading ? (
+               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex flex-col space-y-3">
+                    <Skeleton className="h-[320px] w-full rounded-xl" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[200px]" />
+                        <Skeleton className="h-4 w-[150px]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
@@ -75,11 +101,4 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       <SiteFooter />
     </div>
   );
-}
-
-// Generate static paths for all categories
-export async function generateStaticParams() {
-    return categories.map((category) => ({
-      slug: category.id,
-    }));
 }

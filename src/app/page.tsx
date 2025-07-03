@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { categories, products } from '@/lib/data';
+import { categories, products as initialProducts } from '@/lib/data';
+import type { Product } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { ProductRecommendations } from '@/components/product-recommendations';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -17,6 +18,7 @@ import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
+const PRODUCTS_KEY = 'appProducts';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -35,13 +37,15 @@ interface Slide {
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
   const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = React.useState(true);
 
   React.useEffect(() => {
     try {
         const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
         if (savedImages) {
             const parsedImages = JSON.parse(savedImages);
-            if (parsedImages.length > 0) {
+            if (Array.isArray(parsedImages) && parsedImages.length > 0) {
               setHeroSlides(parsedImages);
             } else {
               setHeroSlides(defaultSlides);
@@ -54,10 +58,24 @@ export default function Home() {
         setHeroSlides(defaultSlides);
     }
     setIsLoadingSlides(false);
+
+    try {
+      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts));
+      } else {
+        setProducts(initialProducts);
+      }
+    } catch (error) {
+      console.error("Failed to load products", error);
+      setProducts(initialProducts);
+    } finally {
+      setIsLoadingProducts(false);
+    }
   }, []);
 
 
-  const featuredProducts = products.slice(0, 6);
+  const featuredProducts = products.slice(0, 8);
   // Mock viewing history for the AI recommendations
   const viewingHistory = ['p2', 'p4', 'p6'];
 
@@ -137,7 +155,11 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
             <Carousel opts={{ align: "start", loop: true }} className="w-full">
               <CarouselContent>
-                {featuredProducts.map((product) => (
+                {isLoadingProducts ? [...Array(6)].map((_, i) => (
+                  <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <div className="p-1"><Skeleton className="h-[400px]" /></div>
+                  </CarouselItem>
+                )) : featuredProducts.map((product) => (
                   <CarouselItem key={product.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                     <div className="p-1">
                       <ProductCard product={product} />

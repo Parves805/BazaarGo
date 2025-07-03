@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { getProductRecommendations } from '@/ai/flows/product-recommendations';
-import { products as allProducts } from '@/lib/data';
+import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './product-card';
 import { Skeleton } from './ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import * as AlertComponents from "@/components/ui/alert";
 import { Terminal } from 'lucide-react';
+
+const PRODUCTS_KEY = 'appProducts';
 
 interface ProductRecommendationsProps {
   viewingHistory: string[];
@@ -18,8 +20,25 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
+    try {
+      const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+      if (savedProducts) {
+        setAllProducts(JSON.parse(savedProducts));
+      } else {
+        setAllProducts(initialProducts);
+      }
+    } catch (e) {
+      console.error("Failed to load products for recommendations", e);
+      setAllProducts(initialProducts);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (allProducts.length === 0) return;
+
     async function fetchRecommendations() {
       try {
         setLoading(true);
@@ -47,7 +66,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     } else {
         setLoading(false);
     }
-  }, [viewingHistory]);
+  }, [viewingHistory, allProducts]);
 
   if (loading) {
     return (
@@ -67,14 +86,14 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
 
   if (error) {
      return (
-        <Alert variant="destructive">
+        <AlertComponents.Alert variant="destructive">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
+            <AlertComponents.AlertTitle>Error</AlertComponents.AlertTitle>
+            <AlertComponents.AlertDescription>
                 {error}
-            </AlertDescription>
-        </Alert>
-     )
+            </AlertComponents.AlertDescription>
+        </AlertComponents.Alert>
+     );
   }
   
   if (recommendations.length === 0) {

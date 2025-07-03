@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { DollarSign, Package, ShoppingCart, Users, ArrowUp, ArrowDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { products } from "@/lib/data";
-import type { Order } from '@/lib/types';
+import { products as initialProducts } from "@/lib/data";
+import type { Order, Product } from '@/lib/types';
 import { format, subMonths, startOfMonth } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -18,6 +18,7 @@ const statusColors: { [key: string]: string } = {
   Cancelled: 'bg-red-500',
 };
 
+const PRODUCTS_KEY = 'appProducts';
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({
@@ -28,15 +29,18 @@ export default function AdminDashboardPage() {
         salesChange: 0,
     });
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+    const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-
-    const totalProducts = products.length;
 
     useEffect(() => {
         try {
             const savedOrders = localStorage.getItem('userOrders');
             const orders: Order[] = savedOrders ? JSON.parse(savedOrders) : [];
             
+            const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+            const products: Product[] = savedProducts ? JSON.parse(savedProducts) : initialProducts;
+            setTotalProducts(products.length);
+
             // --- Calculate Stats ---
             const now = new Date();
             const lastMonthStart = startOfMonth(subMonths(now, 1));
