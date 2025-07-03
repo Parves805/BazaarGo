@@ -100,8 +100,15 @@ export function ProductForm() {
             }
         } else {
             form.reset({
+                name: '',
+                description: '',
+                price: 0,
+                stock: 0,
+                category: '',
+                brand: '',
                 images: [{value: ''}],
                 sizes: [{value: 'M'}],
+                tags: [],
                 colors: [{name: 'Black', hex: '#000000'}],
             });
             setIsFetching(false);
@@ -125,8 +132,18 @@ export function ProductForm() {
         };
         
         try {
-            const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-            let products: Product[] = savedProducts ? JSON.parse(savedProducts) : [];
+            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+            let products: Product[] = [];
+            if (savedProductsJSON) {
+                try {
+                    const parsed = JSON.parse(savedProductsJSON);
+                    if (Array.isArray(parsed)) {
+                        products = parsed;
+                    }
+                } catch (e) {
+                    console.error("Could not parse products from localStorage, starting with a new list.", e);
+                }
+            }
 
             if (isEditMode) {
                 const productIndex = products.findIndex(p => p.id === id);

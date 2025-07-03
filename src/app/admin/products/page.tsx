@@ -33,23 +33,28 @@ export default function AdminProductsPage() {
     const { toast } = useToast();
 
     useEffect(() => {
+        setIsLoading(true);
         try {
-            const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-            if (savedProducts) {
-                const parsed = JSON.parse(savedProducts);
-                if (Array.isArray(parsed) && parsed.length > 0) {
+            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+            if (savedProductsJSON) {
+                const parsed = JSON.parse(savedProductsJSON);
+                if (Array.isArray(parsed)) {
+                    // It's a valid array (even if empty), use it.
                     setProducts(parsed);
                 } else {
-                     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
-                     setProducts(initialProducts);
+                    // It's something else, re-initialize.
+                    setProducts(initialProducts);
+                    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
                 }
             } else {
-                localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
+                // It doesn't exist, initialize.
                 setProducts(initialProducts);
+                localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
             }
         } catch (error) {
-            console.error("Failed to load products", error);
+            console.error("Failed to load products, re-initializing.", error);
             setProducts(initialProducts);
+            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
         } finally {
             setIsLoading(false);
         }
