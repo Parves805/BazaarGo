@@ -63,6 +63,7 @@ export function SiteHeader() {
                       <nav className="flex flex-col space-y-3">
                           <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary">Home</Link>
                           <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop All</Link>
+                          <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary">About Us</Link>
                           {categories.map((category) => (
                           <Link key={category.id} href={`/category/${category.id}`} className="text-lg font-medium text-foreground/80 hover:text-primary">
                               {category.name}
@@ -182,6 +183,7 @@ export function SiteHeader() {
           <nav className="flex items-center space-x-6 text-sm font-medium">
               <Link href="/" className="text-foreground transition-colors hover:text-primary">Home</Link>
               <Link href="/shop" className="text-foreground transition-colors hover:text-primary">Shop All</Link>
+              <Link href="/about" className="text-foreground transition-colors hover:text-primary">About Us</Link>
               {categories.map((category) => (
                   <Link key={category.id} href={`/category/${category.id}`} className="text-foreground transition-colors hover:text-primary">
                       {category.name}
