@@ -59,34 +59,56 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
         }
       } catch (e) {
         console.error("Failed to read recommendations from cache", e);
-        // If cache fails, just proceed to fetch
       }
       
+      const viewedProductObjects = viewingHistory
+        .map(id => allProducts.find(p => p.id === id))
+        .filter((p): p is Product => p !== undefined);
+
+      if (viewedProductObjects.length === 0) {
+        setLoading(false);
+        return;
+      }
+      
+      const simplifiedProducts = allProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          category: p.category,
+      }));
+
       // If no valid cache, fetch from API
       try {
         const result = await getProductRecommendations({
-          viewingHistory,
+          viewedProducts: viewedProductObjects.map(p => ({
+              id: p.id,
+              name: p.name,
+              description: p.description,
+              category: p.category,
+          })),
+          allProducts: simplifiedProducts,
           numberOfRecommendations: 6,
         });
 
-        if (result.recommendedProducts) {
+        if (result && result.recommendedProducts) {
           const recommendedProds = result.recommendedProducts
             .map(id => allProducts.find(p => p.id === id))
             .filter((p): p is Product => p !== undefined);
           
           setRecommendations(recommendedProds);
           
-          // Save to cache
           try {
             const cacheEntry = {
               timestamp: Date.now(),
               data: recommendedProds,
-              history: viewingHistory, // Also cache the history for which this was generated
+              history: viewingHistory,
             };
             localStorage.setItem(RECOMMENDATIONS_CACHE_KEY, JSON.stringify(cacheEntry));
           } catch (e) {
             console.error("Failed to save recommendations to cache", e);
           }
+        } else {
+           setError('AI failed to generate valid recommendations.');
         }
       } catch (err) {
         console.error(err);
@@ -95,6 +117,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
         setLoading(false);
       }
     }
+
     if (viewingHistory.length > 0) {
       fetchRecommendations();
     } else {
