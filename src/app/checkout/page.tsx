@@ -347,7 +347,7 @@ export default function CheckoutPage() {
                           <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                         <p className="font-medium">
-                          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
+                          {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(item.price * item.quantity)}
                         </p>
                       </div>
                     ))}
@@ -356,16 +356,16 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Subtotal</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(subtotal)}</span>
+                          <span>{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(subtotal)}</span>
                       </div>
                       <div className="flex justify-between">
                           <span className="text-muted-foreground">Shipping</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(shippingCost)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(subtotal + shippingCost)}</span>
+                          <span>{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(subtotal + shippingCost)}</span>
                       </div>
                   </div>
                 </CardContent>
@@ -378,8 +378,7 @@ export default function CheckoutPage() {
                           </>
                       ) : (
                           <>
-                              <span className="mr-2 text-xl font-bold">৳</span>
-                              Place Order
+                              Place Order ({new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(subtotal + shippingCost)})
                           </>
                       )}
                   </Button>

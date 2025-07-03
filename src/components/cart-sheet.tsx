@@ -84,7 +84,7 @@ export function CartSheet() {
                         />
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(item.price)}
+                        {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(item.price)}
                       </p>
                       <div className="mt-2 flex items-center justify-between">
                         <Input 
@@ -118,7 +118,7 @@ export function CartSheet() {
               <div className="w-full space-y-4">
                 <div className="flex justify-between font-semibold">
                   <span>Subtotal</span>
-                  <span>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(subtotal)}</span>
+                  <span>{new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(subtotal)}</span>
                 </div>
                 <SheetClose asChild>
                     <Button size="lg" className="w-full" onClick={handleCheckout}>

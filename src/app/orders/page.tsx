@@ -78,7 +78,7 @@ export default function OrdersPage() {
                                         </div>
                                         <div className="flex items-center gap-4 justify-between">
                                             <p className="font-semibold text-lg">
-                                                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(order.total)}
+                                                {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(order.total)}
                                             </p>
                                             <Badge variant="outline" className="flex items-center gap-2">
                                                 <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
@@ -104,7 +104,7 @@ export default function OrdersPage() {
                                                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                                 </div>
                                                 <p className="font-medium">
-                                                    {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(item.price * item.quantity)}
+                                                    {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'BDT', currencyDisplay: 'narrowSymbol' }).format(item.price * item.quantity)}
                                                 </p>
                                             </div>
                                         ))}
