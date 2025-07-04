@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -21,11 +22,11 @@ const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
-    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'mens fashion' },
-    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'winter collection' },
-    { url: 'https://placehold.co/1200x800.png', dataAiHint: 't-shirt sale' },
-    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'polo shirts' },
-    { url: 'https://placehold.co/1200x800.png', dataAiHint: 'new arrivals' },
+    { url: 'https://placehold.co/1200x400.png', dataAiHint: 'mens fashion' },
+    { url: 'https://placehold.co/1200x400.png', dataAiHint: 'winter collection' },
+    { url: 'https://placehold.co/1200x400.png', dataAiHint: 't-shirt sale' },
+    { url: 'https://placehold.co/1200x400.png', dataAiHint: 'polo shirts' },
+    { url: 'https://placehold.co/1200x400.png', dataAiHint: 'new arrivals' },
 ];
 
 interface Slide {
@@ -112,7 +113,7 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (
-            <Skeleton className="h-[50vh] md:h-[70vh] w-full" />
+            <Skeleton className="w-full aspect-video md:aspect-auto md:h-[70vh]" />
           ) : (
             <Carousel
               plugins={[plugin.current]}
@@ -124,7 +125,7 @@ export default function Home() {
               <CarouselContent>
                 {heroSlides.filter(slide => slide.url).map((slide, index) => (
                   <CarouselItem key={index}>
-                    <div className="relative h-[50vh] md:h-[70vh] w-full">
+                    <div className="relative w-full aspect-video md:aspect-auto md:h-[70vh]">
                       <Image
                         src={slide.url}
                         alt={`Hero slide ${index + 1}`}

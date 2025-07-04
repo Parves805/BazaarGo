@@ -18,11 +18,11 @@ const AI_SETTINGS_KEY = 'aiSettings';
 
 const defaultImages = [
   { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
-  { url: 'https://placehold.co/1200x800.png', dataAiHint: 'mens fashion' },
-  { url: 'https://placehold.co/1200x800.png', dataAiHint: 'winter collection' },
-  { url: 'https://placehold.co/1200x800.png', dataAiHint: 't-shirt sale' },
-  { url: 'https://placehold.co/1200x800.png', dataAiHint: 'polo shirts' },
-  { url: 'https://placehold.co/1200x800.png', dataAiHint: 'new arrivals' },
+  { url: 'https://placehold.co/1200x400.png', dataAiHint: 'mens fashion' },
+  { url: 'https://placehold.co/1200x400.png', dataAiHint: 'winter collection' },
+  { url: 'https://placehold.co/1200x400.png', dataAiHint: 't-shirt sale' },
+  { url: 'https://placehold.co/1200x400.png', dataAiHint: 'polo shirts' },
+  { url: 'https://placehold.co/1200x400.png', dataAiHint: 'new arrivals' },
 ];
 
 interface Slide {
