@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,12 +23,35 @@ const contactSchema = z.object({
 
 type ContactFormInputs = z.infer<typeof contactSchema>;
 
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+
+const defaultContactInfo = {
+    email: 'support@bazaargo.com',
+    phone: '+880 123 456 7890'
+};
+
 export default function ContactPage() {
     const { toast } = useToast();
     const [isSending, setIsSending] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormInputs>({
         resolver: zodResolver(contactSchema)
     });
+    const [contactInfo, setContactInfo] = useState(defaultContactInfo);
+
+    useEffect(() => {
+        try {
+            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettingsJson) {
+                const settings = JSON.parse(savedSettingsJson);
+                setContactInfo(prev => ({
+                    email: settings.contactEmail || prev.email,
+                    phone: settings.contactPhone || prev.phone,
+                }));
+            }
+        } catch (error) {
+            console.error("Failed to load settings for Contact page", error);
+        }
+    }, []);
 
     const onSubmit: SubmitHandler<ContactFormInputs> = async (data) => {
         setIsSending(true);
@@ -109,14 +132,14 @@ export default function ContactPage() {
                             <Mail className="h-6 w-6 text-primary mt-1" />
                             <div>
                                 <h3 className="font-semibold">Email Us</h3>
-                                <p className="text-muted-foreground">support@bazaargo.com</p>
+                                <p className="text-muted-foreground">{contactInfo.email}</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
                             <Phone className="h-6 w-6 text-primary mt-1" />
                             <div>
                                 <h3 className="font-semibold">Call Us</h3>
-                                <p className="text-muted-foreground">+880 123 456 7890</p>
+                                <p className="text-muted-foreground">{contactInfo.phone}</p>
                             </div>
                         </div>
                     </div>

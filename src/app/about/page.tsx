@@ -1,21 +1,38 @@
+'use client';
+
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Building2, Users, Target } from 'lucide-react';
-import type { Metadata } from 'next';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
-export const metadata: Metadata = {
-  title: 'About Us | BazaarGo',
-};
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
 export default function AboutPage() {
+  const [storeName, setStoreName] = useState('BazaarGo');
+
+  useEffect(() => {
+    try {
+        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+        if (savedSettingsJson) {
+            const settings = JSON.parse(savedSettingsJson);
+            if (settings && settings.storeName) {
+                setStoreName(settings.storeName);
+                document.title = `About Us | ${settings.storeName}`;
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load store name for About page", error);
+    }
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold font-headline">About BazaarGo</h1>
+            <h1 className="text-4xl font-bold font-headline">About {storeName}</h1>
             <p className="text-muted-foreground mt-2">Your favorite online shopping destination.</p>
         </div>
         
@@ -25,7 +42,7 @@ export default function AboutPage() {
                     <div className="p-8 flex flex-col justify-center">
                         <h2 className="text-3xl font-bold font-headline mb-4">Our Story</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            BazaarGo started with a simple idea: to make quality products accessible to everyone. We are a passionate team dedicated to curating the best items and providing an exceptional shopping experience. From trendy fashion to everyday essentials, we bring the bazaar to your fingertips.
+                            {storeName} started with a simple idea: to make quality products accessible to everyone. We are a passionate team dedicated to curating the best items and providing an exceptional shopping experience. From trendy fashion to everyday essentials, we bring the bazaar to your fingertips.
                         </p>
                     </div>
                      <div className="relative h-64 md:h-auto rounded-b-lg md:rounded-r-lg md:rounded-bl-none overflow-hidden">

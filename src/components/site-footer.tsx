@@ -1,9 +1,29 @@
+'use client';
 
 import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { categories } from '@/lib/data';
+import { useState, useEffect } from 'react';
+
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
 export function SiteFooter() {
+  const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
+
+  useEffect(() => {
+    try {
+        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+        if (savedSettingsJson) {
+            const savedSettings = JSON.parse(savedSettingsJson);
+            if (savedSettings && savedSettings.storeName) {
+                setSettings(savedSettings);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load settings for footer", error);
+    }
+  }, []);
+
   return (
     <footer className="mt-auto border-t bg-secondary/30">
       <div className="container py-12">
@@ -11,7 +31,7 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-3 md:col-span-1">
              <Link href="/" className="mb-4 flex items-center space-x-2">
                 <ShoppingBag className="h-6 w-6 text-primary" />
-                <span className="font-bold font-headline">BazaarGo</span>
+                <span className="font-bold font-headline">{settings.storeName}</span>
             </Link>
             <p className="text-muted-foreground text-sm">Your one-stop online marketplace.</p>
           </div>
@@ -49,7 +69,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} BazaarGo. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {settings.storeName}. All rights reserved.</p>
         </div>
       </div>
     </footer>

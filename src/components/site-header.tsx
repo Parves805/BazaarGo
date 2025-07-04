@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart, ChevronDown, Bell } from 'lucide-react';
@@ -21,6 +20,8 @@ import {
 import { categories } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+
 export function SiteHeader() {
   const { toast } = useToast();
   const router = useRouter();
@@ -30,6 +31,7 @@ export function SiteHeader() {
   const [isMounted, setIsMounted] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string; message: string; timestamp: string; read: boolean }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
 
   const loadNotifications = () => {
     const savedNotifications = localStorage.getItem('bazaargoNotifications');
@@ -53,10 +55,36 @@ export function SiteHeader() {
       setIsAuthenticated(true);
     }
 
+    try {
+        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+        if (savedSettingsJson) {
+            const savedSettings = JSON.parse(savedSettingsJson);
+            if (savedSettings && savedSettings.storeName) {
+                setSettings(savedSettings);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load settings for header", error);
+    }
+
+
     loadNotifications();
 
     // Poll for new notifications every 5 seconds
-    const interval = setInterval(loadNotifications, 5000);
+    const interval = setInterval(() => {
+        loadNotifications();
+        try {
+            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettingsJson) {
+                const savedSettings = JSON.parse(savedSettingsJson);
+                if (savedSettings && savedSettings.storeName) {
+                    setSettings(savedSettings);
+                }
+            }
+        } catch (error) {
+            // fail silently
+        }
+    }, 5000);
 
     setIsMounted(true);
     
@@ -103,7 +131,7 @@ export function SiteHeader() {
                       <SheetClose asChild>
                         <Link href="/" className="inline-flex items-center space-x-2">
                             <ShoppingBag className="h-6 w-6 text-primary" />
-                            <span className="font-bold font-headline">BazaarGo</span>
+                            <span className="font-bold font-headline">{settings.storeName}</span>
                         </Link>
                       </SheetClose>
                   </div>
@@ -142,7 +170,7 @@ export function SiteHeader() {
           </div>
           <Link href="/" className="hidden md:flex items-center space-x-2">
             <ShoppingBag className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">BazaarGo</span>
+            <span className="hidden font-bold sm:inline-block font-headline">{settings.storeName}</span>
           </Link>
         </div>
 

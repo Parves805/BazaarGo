@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -50,48 +49,55 @@ const defaultAiSettings: AiSettings = {
   recommendationsEnabled: true,
 };
 
+// Helper function to safely parse JSON from localStorage
+function safeJSONParse<T>(key: string, fallback: T): T {
+    if (typeof window === 'undefined') return fallback;
+    try {
+        const item = localStorage.getItem(key);
+        if (!item) return fallback;
+        const parsed = JSON.parse(item);
+        // Basic check to ensure the parsed object has the expected keys, allows for partial saves
+        if (typeof parsed === 'object' && parsed !== null) {
+            return { ...fallback, ...parsed };
+        }
+        return fallback;
+    } catch (error) {
+        console.error(`Failed to parse ${key} from localStorage`, error);
+        return fallback;
+    }
+}
+
 
 export default function AdminSettingsPage() {
     const { toast } = useToast();
     const [slides, setSlides] = useState<Slide[]>([]);
-    const [settings, setSettings] = useState<WebsiteSettings | null>(null);
-    const [aiSettings, setAiSettings] = useState<AiSettings | null>(null);
+    const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
+    const [aiSettings, setAiSettings] = useState<AiSettings>(defaultAiSettings);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        try {
-            const savedImagesJson = localStorage.getItem(SLIDER_IMAGES_KEY);
-            if (savedImagesJson) {
+        // Load Slides
+        const savedImagesJson = localStorage.getItem(SLIDER_IMAGES_KEY);
+        if (savedImagesJson) {
+            try {
                 const savedImages = JSON.parse(savedImagesJson);
-                if (Array.isArray(savedImages)) {
+                if (Array.isArray(savedImages) && savedImages.length > 0) {
                   setSlides(savedImages.map((img: Omit<Slide, 'id'>, i: number) => ({...img, id: Date.now() + i })));
                 } else {
-                  setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
+                  setSlides(defaultImages.map((img, i) => ({ ...img, id: Date.now() + i })));
                 }
-            } else {
-                 setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
+            } catch {
+                setSlides(defaultImages.map((img, i) => ({ ...img, id: Date.now() + i })));
             }
-
-            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-            if (savedSettingsJson) {
-                setSettings(JSON.parse(savedSettingsJson));
-            } else {
-                setSettings(defaultSettings);
-            }
-
-            const savedAiSettingsJson = localStorage.getItem(AI_SETTINGS_KEY);
-            if (savedAiSettingsJson) {
-                setAiSettings(JSON.parse(savedAiSettingsJson));
-            } else {
-                setAiSettings(defaultAiSettings);
-            }
-        } catch (error) {
-            console.error("Failed to load settings from localStorage, using defaults", error);
-            setSlides(defaultImages.map((img, i) => ({ ...img, id: i + 1 })));
-            setSettings(defaultSettings);
-            setAiSettings(defaultAiSettings);
+        } else {
+            setSlides(defaultImages.map((img, i) => ({ ...img, id: Date.now() + i })));
         }
+
+        // Load Settings
+        setSettings(safeJSONParse(WEBSITE_SETTINGS_KEY, defaultSettings));
+        setAiSettings(safeJSONParse(AI_SETTINGS_KEY, defaultAiSettings));
+        
         setIsMounted(true);
     }, []);
 
@@ -104,11 +110,11 @@ export default function AdminSettingsPage() {
     };
 
     const handleSettingChange = (field: keyof WebsiteSettings, value: string) => {
-        setSettings(prev => prev ? ({ ...prev, [field]: value }) : null);
+        setSettings(prev => ({ ...prev, [field]: value }));
     };
 
     const handleAiSettingChange = (field: keyof AiSettings, value: boolean) => {
-        setAiSettings(prev => prev ? ({ ...prev, [field]: value }) : null);
+        setAiSettings(prev => ({ ...prev, [field]: value }));
     };
 
     const addSlide = () => {
@@ -120,11 +126,10 @@ export default function AdminSettingsPage() {
     };
 
     const saveChanges = async () => {
-        if (!settings || !aiSettings) return; 
         setIsLoading(true);
         try {
             const slidesToSave = slides.map(({ id, ...rest }) => rest);
-            localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave));
+            localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave.filter(s => s.url)));
             localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
             localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(aiSettings));
 
@@ -145,7 +150,7 @@ export default function AdminSettingsPage() {
         }
     };
     
-    if (!isMounted || !settings || !aiSettings) {
+    if (!isMounted) {
         return <p>Loading settings...</p>;
     }
 
