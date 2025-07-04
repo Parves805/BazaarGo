@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -11,7 +12,9 @@ import { MessageSquare, Send, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useChat } from '@/context/chat-context';
 
-const MESSAGES_KEY = 'bazaargoMessages';
+const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
+const GUEST_ID_KEY = 'bazaargoGuestId';
+const USER_PROFILE_KEY = 'userProfile';
 
 interface Message {
     sender: 'user' | 'admin';
@@ -20,49 +23,85 @@ interface Message {
 }
 
 interface MessageThread {
-    threadId: 'user_main_thread'; 
+    threadId: string;
+    userName: string;
     messages: Message[];
+    lastMessageTimestamp: string;
 }
 
 export function ChatWidget() {
     const { toast } = useToast();
-    const { isChatOpen, toggleChat, setChatOpen } = useChat();
+    const { isChatOpen, toggleChat } = useChat();
     const [messageText, setMessageText] = useState('');
     const [messageThread, setMessageThread] = useState<MessageThread | null>(null);
     const [isSending, setIsSending] = useState(false);
+    const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-    const loadMessages = () => {
-        try {
-            const savedMessages = localStorage.getItem(MESSAGES_KEY);
-            if (savedMessages) {
-                setMessageThread(JSON.parse(savedMessages));
-            } else {
-                setMessageThread({ threadId: 'user_main_thread', messages: [] });
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const authStatus = localStorage.getItem('isAuthenticated');
+            let userId: string | null = null;
+            let userName = 'Guest';
+
+            if (authStatus === 'true') {
+                const profileJson = localStorage.getItem(USER_PROFILE_KEY);
+                if (profileJson) {
+                    try {
+                        const profile = JSON.parse(profileJson);
+                        userId = profile.savedUser?.email;
+                        userName = profile.savedUser?.name || 'User';
+                    } catch (e) { console.error('Failed to parse user profile', e); }
+                }
             }
+            
+            if (!userId) {
+                let guestId = localStorage.getItem(GUEST_ID_KEY);
+                if (!guestId) {
+                    guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+                    localStorage.setItem(GUEST_ID_KEY, guestId);
+                }
+                userId = guestId;
+                userName = `Guest (${guestId.slice(-4)})`;
+            }
+
+            setCurrentUser({ id: userId, name: userName });
+        }
+    }, []);
+
+    const loadMessages = () => {
+        if (!currentUser) return;
+        try {
+            const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
+            const allThreads = allThreadsJson ? JSON.parse(allThreadsJson) : {};
+            const userThread = allThreads[currentUser.id] || { 
+                threadId: currentUser.id, 
+                userName: currentUser.name,
+                messages: [],
+                lastMessageTimestamp: new Date().toISOString()
+            };
+            setMessageThread(userThread);
         } catch (error) {
             console.error("Failed to load messages from localStorage", error);
-            setMessageThread({ threadId: 'user_main_thread', messages: [] });
         }
     }
 
     useEffect(() => {
-        loadMessages();
-        // Poll for new messages from admin
-        const interval = setInterval(loadMessages, 5000); // Poll every 5 seconds
-        return () => clearInterval(interval);
-    }, []);
+        if (currentUser) {
+            loadMessages();
+            const interval = setInterval(loadMessages, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [currentUser]);
 
     useEffect(() => {
-        // Scroll to bottom when new messages are added
         const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
         if (viewport) {
             viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
         }
-    }, [messageThread?.messages.length, isChatOpen]);
+    }, [messageThread?.messages.length]);
     
     useEffect(() => {
-      // scroll to bottom when chat opens
       if (isChatOpen) {
           const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
           if (viewport) {
@@ -72,24 +111,30 @@ export function ChatWidget() {
     }, [isChatOpen]);
 
     const handleSendMessage = () => {
-        if (!messageText.trim()) return;
+        if (!messageText.trim() || !currentUser) return;
         setIsSending(true);
 
-        const newMessage: Message = {
-            sender: 'user',
-            text: messageText,
-            timestamp: new Date().toISOString()
-        };
-
-        const currentThread = messageThread || { threadId: 'user_main_thread', messages: [] };
-        
-        const updatedThread: MessageThread = {
-            ...currentThread,
-            messages: [...currentThread.messages, newMessage]
-        };
+        const newMessage: Message = { sender: 'user', text: messageText, timestamp: new Date().toISOString() };
 
         try {
-            localStorage.setItem(MESSAGES_KEY, JSON.stringify(updatedThread));
+            const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
+            const allThreads = allThreadsJson ? JSON.parse(allThreadsJson) : {};
+            
+            const currentThread = allThreads[currentUser.id] || {
+                threadId: currentUser.id,
+                userName: currentUser.name,
+                messages: [],
+            };
+            
+            const updatedThread: MessageThread = {
+                ...currentThread,
+                messages: [...currentThread.messages, newMessage],
+                lastMessageTimestamp: newMessage.timestamp,
+            };
+
+            allThreads[currentUser.id] = updatedThread;
+
+            localStorage.setItem(ALL_CHATS_KEY, JSON.stringify(allThreads));
             setMessageThread(updatedThread);
             setMessageText('');
             toast({ title: 'Message Sent', description: 'The admin has received your message.' });
@@ -103,7 +148,6 @@ export function ChatWidget() {
     
     return (
         <div className="fixed bottom-20 right-4 z-50 md:bottom-4">
-            {/* Chat Popup */}
             {isChatOpen && (
                  <Card className="w-80 h-[28rem] flex flex-col shadow-2xl mb-2">
                     <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
@@ -162,7 +206,6 @@ export function ChatWidget() {
                 </Card>
             )}
 
-            {/* Floating Button */}
             <Button
                 size="icon"
                 className="rounded-full w-16 h-16 shadow-lg"

@@ -21,8 +21,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
-const MESSAGES_KEY = 'bazaargoMessages';
-const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenMessageCount';
+const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
+const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
 
 
 export default function AdminLayout({
@@ -50,14 +50,24 @@ export default function AdminLayout({
     
     const checkForNewMessages = () => {
         try {
-            const savedMessages = localStorage.getItem(MESSAGES_KEY);
-            const savedLastSeenCount = localStorage.getItem(ADMIN_LAST_SEEN_KEY);
-
-            const totalMessages = savedMessages ? JSON.parse(savedMessages).messages.length : 0;
-            const lastSeenCount = savedLastSeenCount ? parseInt(savedLastSeenCount, 10) : 0;
+            const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
+            const lastSeenCountsJson = localStorage.getItem(ADMIN_LAST_SEEN_KEY);
             
-            const newCount = totalMessages - lastSeenCount;
-            setNewMessagesCount(newCount > 0 ? newCount : 0);
+            const allThreads = allThreadsJson ? JSON.parse(allThreadsJson) : {};
+            const lastSeenCounts = lastSeenCountsJson ? JSON.parse(lastSeenCountsJson) : {};
+
+            let totalNewCount = 0;
+            for (const threadId in allThreads) {
+                const thread = allThreads[threadId];
+                const totalMessages = thread.messages?.length || 0;
+                const seenCount = lastSeenCounts[threadId] || 0;
+                const newCountInThread = totalMessages - seenCount;
+                if (newCountInThread > 0) {
+                    totalNewCount += newCountInThread;
+                }
+            }
+            setNewMessagesCount(totalNewCount);
+
         } catch(e) {
             console.error("Failed to check for new messages", e);
             setNewMessagesCount(0);
@@ -65,7 +75,7 @@ export default function AdminLayout({
     };
     
     checkForNewMessages(); // Check immediately on mount
-    const interval = setInterval(checkForNewMessages, 5000); // Poll every 5 seconds
+    const interval = setInterval(checkForNewMessages, 3000); // Poll every 3 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
 
@@ -75,7 +85,14 @@ export default function AdminLayout({
   // The actual "seen" count is updated on the communications page itself
   useEffect(() => {
     if (pathname === '/admin/communications') {
-        setNewMessagesCount(0);
+        // The logic on the communications page itself will handle seen counts.
+        // We can optimistically set this to 0 for a faster UI update.
+        const currentCount = newMessagesCount;
+        setTimeout(() => {
+            if (newMessagesCount === currentCount) {
+                setNewMessagesCount(0);
+            }
+        }, 1000);
     }
   }, [pathname]);
 
