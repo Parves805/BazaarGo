@@ -218,35 +218,35 @@ export function ProductDetailsClient({ product }: { product: Product }) {
             )}
         </div>
 
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center border rounded-md">
-                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
-                    <Minus className="h-4 w-4" />
+        <div className="mt-4 flex flex-col gap-4">
+            <div className="flex items-stretch gap-2">
+                <div className="flex items-center border rounded-md">
+                    <Button variant="ghost" size="icon" className="h-full" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
+                        <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-12 text-center font-bold flex items-center justify-center">{quantity}</span>
+                    <Button variant="ghost" size="icon" className="h-full" onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}>
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
+                
+                <Button size="lg" variant="outline" className="flex-grow" onClick={handleAddToCart} disabled={product.stock === 0}>
+                    Add to Cart
                 </Button>
-                <span className="w-12 text-center font-bold">{quantity}</span>
-                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}>
-                    <Plus className="h-4 w-4" />
+
+                <Button size="icon" variant="outline" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
+                    <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
+                </Button>
+
+                <Button size="icon" variant="outline" onClick={handleMessageSeller} aria-label="Message Seller">
+                    <MessageSquare className="h-5 w-5" />
                 </Button>
             </div>
             
-            <div className="flex-grow grid grid-cols-2 gap-2">
-                 <Button size="lg" variant="outline" className="w-full" onClick={handleAddToCart} disabled={product.stock === 0}>
-                    Add to Cart
-                </Button>
-                <Button size="lg" className="w-full" onClick={handleBuyNow} disabled={product.stock === 0}>
-                    <ShoppingBag className="mr-2 h-5 w-5" />
-                    Buy Now
-                </Button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button size="icon" variant="outline" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
-                <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
-              </Button>
-              <Button size="icon" variant="outline" onClick={handleMessageSeller} aria-label="Message Seller">
-                <MessageSquare className="h-5 w-5" />
-              </Button>
-            </div>
+            <Button size="lg" className="w-full" onClick={handleBuyNow} disabled={product.stock === 0}>
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Buy Now
+            </Button>
         </div>
       </div>
     </div>
