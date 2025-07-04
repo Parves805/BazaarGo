@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
@@ -129,14 +129,16 @@ export function SiteHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
-                  <div className="p-4 border-b">
+                  <SheetHeader className="p-4 border-b">
+                    <SheetTitle>
                       <SheetClose asChild>
                         <Link href="/" className="inline-flex items-center space-x-2">
                             <ShoppingBag className="h-6 w-6 text-primary" />
                             <span className="font-bold font-headline">{settings.storeName}</span>
                         </Link>
                       </SheetClose>
-                  </div>
+                    </SheetTitle>
+                  </SheetHeader>
                   <nav className="flex flex-col space-y-1 p-4">
                       <SheetClose asChild>
                         <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary py-2">Home</Link>
@@ -348,3 +350,5 @@ export function SiteHeader() {
     </header>
   );
 }
+
+    
