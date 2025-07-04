@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Trash2, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
@@ -33,6 +35,7 @@ interface WebsiteSettings {
   storeName: string;
   contactEmail: string;
   contactPhone: string;
+  address: string;
 }
 
 interface AiSettings {
@@ -43,6 +46,7 @@ const defaultSettings: WebsiteSettings = {
   storeName: 'BazaarGo',
   contactEmail: 'support@bazaargo.com',
   contactPhone: '+1 (234) 567-890',
+  address: '123 Bazaar Street, Dhaka, Bangladesh',
 };
 
 const defaultAiSettings: AiSettings = {
@@ -189,6 +193,16 @@ export default function AdminSettingsPage() {
                             value={settings.contactPhone}
                             onChange={(e) => handleSettingChange('contactPhone', e.target.value)}
                             placeholder="+1234567890"
+                        />
+                    </div>
+                     <div className="grid gap-2">
+                        <Label htmlFor="address">Address</Label>
+                        <Textarea
+                            id="address"
+                            value={settings.address}
+                            onChange={(e) => handleSettingChange('address', e.target.value)}
+                            placeholder="123 Bazaar Street, Dhaka, Bangladesh"
+                            rows={3}
                         />
                     </div>
                 </CardContent>

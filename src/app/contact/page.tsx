@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -27,7 +28,8 @@ const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
 const defaultContactInfo = {
     email: 'support@bazaargo.com',
-    phone: '+880 123 456 7890'
+    phone: '+880 123 456 7890',
+    address: '123 Bazaar Street, Dhaka, Bangladesh'
 };
 
 export default function ContactPage() {
@@ -46,6 +48,7 @@ export default function ContactPage() {
                 setContactInfo(prev => ({
                     email: settings.contactEmail || prev.email,
                     phone: settings.contactPhone || prev.phone,
+                    address: settings.address || prev.address,
                 }));
             }
         } catch (error) {
@@ -125,7 +128,7 @@ export default function ContactPage() {
                             <MapPin className="h-6 w-6 text-primary mt-1" />
                             <div>
                                 <h3 className="font-semibold">Our Address</h3>
-                                <p className="text-muted-foreground">123 Bazaar Street, Dhaka, Bangladesh</p>
+                                <p className="text-muted-foreground">{contactInfo.address}</p>
                             </div>
                         </div>
                          <div className="flex items-start gap-4">
