@@ -9,8 +9,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarTrigger,
-  SidebarInset,
 } from '@/components/ui/sidebar';
 import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell, Globe, Mail } from 'lucide-react';
 import Link from 'next/link';
@@ -124,8 +122,6 @@ export default function AdminLayout({
       );
   }
 
-  const mainContentLayoutClass = '';
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-secondary/30">
@@ -138,19 +134,12 @@ export default function AdminLayout({
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
+              {/* Core Operations */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin')}>
                   <Link href="/admin">
                     <LayoutDashboard />
                     Dashboard
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
-                  <Link href="/admin/products">
-                    <Package />
-                    Products
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -162,19 +151,21 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-               <SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
+                  <Link href="/admin/products">
+                    <Package />
+                    Products
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              {/* User Management */}
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
                   <Link href="/admin/customers">
                     <Users />
                     Customers
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                  <Link href="/admin/analytics">
-                    <BarChart />
-                    Analytics
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -189,6 +180,34 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Growth & Marketing */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                  <Link href="/admin/analytics">
+                    <BarChart />
+                    Analytics
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                  <Link href="/admin/seo">
+                    <Globe />
+                    SEO Management
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                  <Link href="/admin/email-marketing">
+                    <Mail />
+                    Email Marketing
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Platform */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
                   <Link href="/admin/notifications">
@@ -202,22 +221,6 @@ export default function AdminLayout({
                   <Link href="/admin/settings">
                     <Settings />
                     Settings
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                  <Link href="/admin/seo">
-                    <Globe />
-                    SEO Management
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                  <Link href="/admin/email-marketing">
-                    <Mail />
-                    Email Marketing
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -243,10 +246,8 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <main className="flex-1 p-6">
-            <div className={mainContentLayoutClass}>
-              {children}
-            </div>
+          <main className="flex-1 p-6">           
+            {children}
           </main>
         </SidebarInset>
       </div>
