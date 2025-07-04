@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 
 const NOTIFICATIONS_KEY = 'bazaargoNotifications';
 const MESSAGES_KEY = 'bazaargoMessages';
+const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenMessageCount';
 
 interface Notification {
     id: string;
@@ -51,9 +52,13 @@ export default function CommunicationsPage() {
         try {
             const savedMessages = localStorage.getItem(MESSAGES_KEY);
             if (savedMessages) {
-                setMessageThread(JSON.parse(savedMessages));
+                const thread = JSON.parse(savedMessages);
+                setMessageThread(thread);
+                // When admin views this page, mark all messages as "seen"
+                localStorage.setItem(ADMIN_LAST_SEEN_KEY, JSON.stringify(thread.messages.length));
             } else {
                 setMessageThread({ threadId: 'user_main_thread', messages: [] });
+                localStorage.setItem(ADMIN_LAST_SEEN_KEY, '0');
             }
         } catch (error) {
             console.error("Failed to load messages from localStorage", error);

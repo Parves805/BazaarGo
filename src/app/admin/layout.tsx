@@ -19,6 +19,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+
+const MESSAGES_KEY = 'bazaargoMessages';
+const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenMessageCount';
+
 
 export default function AdminLayout({
   children,
@@ -29,6 +34,7 @@ export default function AdminLayout({
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [newMessagesCount, setNewMessagesCount] = useState(0);
 
   useEffect(() => {
     // This effect runs once on the client after the component mounts.
@@ -41,7 +47,37 @@ export default function AdminLayout({
         }
     }
     setIsMounted(true);
+    
+    const checkForNewMessages = () => {
+        try {
+            const savedMessages = localStorage.getItem(MESSAGES_KEY);
+            const savedLastSeenCount = localStorage.getItem(ADMIN_LAST_SEEN_KEY);
+
+            const totalMessages = savedMessages ? JSON.parse(savedMessages).messages.length : 0;
+            const lastSeenCount = savedLastSeenCount ? parseInt(savedLastSeenCount, 10) : 0;
+            
+            const newCount = totalMessages - lastSeenCount;
+            setNewMessagesCount(newCount > 0 ? newCount : 0);
+        } catch(e) {
+            console.error("Failed to check for new messages", e);
+            setNewMessagesCount(0);
+        }
+    };
+    
+    checkForNewMessages(); // Check immediately on mount
+    const interval = setInterval(checkForNewMessages, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+
   }, [pathname, router]);
+
+  // When user navigates to the communications page, reset the counter visually
+  // The actual "seen" count is updated on the communications page itself
+  useEffect(() => {
+    if (pathname === '/admin/communications') {
+        setNewMessagesCount(0);
+    }
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
@@ -130,7 +166,10 @@ export default function AdminLayout({
                 <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
                   <Link href="/admin/communications">
                     <MessageSquare />
-                    Communications
+                    <span>Communications</span>
+                    {newMessagesCount > 0 && (
+                      <Badge className="ml-auto">{newMessagesCount}</Badge>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
