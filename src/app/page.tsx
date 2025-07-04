@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -113,7 +112,7 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (
-            <Skeleton className="h-[60vh] md:h-[70vh] w-full" />
+            <Skeleton className="h-[50vh] md:h-[70vh] w-full" />
           ) : (
             <Carousel
               plugins={[plugin.current]}
@@ -125,7 +124,7 @@ export default function Home() {
               <CarouselContent>
                 {heroSlides.filter(slide => slide.url).map((slide, index) => (
                   <CarouselItem key={index}>
-                    <div className="relative h-[60vh] md:h-[70vh] w-full">
+                    <div className="relative h-[50vh] md:h-[70vh] w-full">
                       <Image
                         src={slide.url}
                         alt={`Hero slide ${index + 1}`}
