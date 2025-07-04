@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -228,10 +227,8 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-16 items-center justify-start border-b bg-card px-6">
-            <div className="md:hidden">
-              <SidebarTrigger />
-            </div>
+          <header className="flex h-16 items-center justify-start border-b bg-card px-6 md:hidden">
+            <SidebarTrigger />
           </header>
           <main className="flex-1 p-6">{children}</main>
         </SidebarInset>
