@@ -124,15 +124,7 @@ export default function AdminLayout({
       );
   }
 
-  const mainContentLayoutClass = 
-    pathname === '/admin/products/new' || 
-    pathname.startsWith('/admin/products/edit') ||
-    pathname === '/admin/settings' ||
-    pathname === '/admin/notifications' ||
-    pathname === '/admin/seo' ||
-    pathname === '/admin/email-marketing'
-    ? 'max-w-3xl mx-auto'
-    : '';
+  const mainContentLayoutClass = '';
 
   return (
     <SidebarProvider>
