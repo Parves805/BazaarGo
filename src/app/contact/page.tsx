@@ -149,7 +149,7 @@ export default function ContactPage() {
                                     }
                                 }}
                             />
-                            <Button onClick={handleSendMessage} disabled={isSending} size="icon" className="h-auto">
+                            <Button onClick={handleSendMessage} disabled={isSending || !messageText.trim()} size="icon" className="h-auto">
                                 {isSending ? <Loader2 className="animate-spin" /> : <Send />}
                                 <span className="sr-only">Send</span>
                             </Button>

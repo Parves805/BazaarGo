@@ -63,8 +63,9 @@ export default function CommunicationsPage() {
 
     useEffect(() => {
         // Scroll to bottom when new messages are added
-        if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+        const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
+        if (viewport) {
+            viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
         }
     }, [messageThread?.messages.length]);
 
@@ -185,7 +186,7 @@ export default function CommunicationsPage() {
                                         }
                                     }}
                                 />
-                                <Button onClick={handleReply} disabled={isReplying} size="icon" className="h-auto">
+                                <Button onClick={handleReply} disabled={isReplying || !replyMessage.trim()} size="icon" className="h-auto">
                                     {isReplying ? <Loader2 className="animate-spin" /> : <Send />}
                                     <span className="sr-only">Send</span>
                                 </Button>
@@ -210,7 +211,7 @@ export default function CommunicationsPage() {
                                     rows={5}
                                 />
                             </div>
-                            <Button onClick={handleSendNotification} disabled={isSending}>
+                            <Button onClick={handleSendNotification} disabled={isSending || !notificationMessage.trim()}>
                                 {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Send Notification
                             </Button>
