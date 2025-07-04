@@ -118,7 +118,7 @@ export default function Home() {
             <div className="overflow-hidden rounded-lg">
                 <Carousel
                 plugins={[plugin.current]}
-                opts={{ loop: true }}
+                opts={{ loop: true, align: 'start' }}
                 className="w-full"
                 onMouseEnter={plugin.current.stop}
                 onMouseLeave={plugin.current.reset}
@@ -140,8 +140,8 @@ export default function Home() {
                     </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10" />
+                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10" />
                 </Carousel>
             </div>
           )}
