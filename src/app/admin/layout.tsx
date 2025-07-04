@@ -12,11 +12,9 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell } from 'lucide-react';
+import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell, Globe, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -126,6 +124,16 @@ export default function AdminLayout({
       );
   }
 
+  const mainContentLayoutClass = 
+    pathname === '/admin/products/new' || 
+    pathname.startsWith('/admin/products/edit') ||
+    pathname === '/admin/settings' ||
+    pathname === '/admin/notifications' ||
+    pathname === '/admin/seo' ||
+    pathname === '/admin/email-marketing'
+    ? 'max-w-3xl mx-auto'
+    : '';
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-secondary/30">
@@ -205,6 +213,22 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                  <Link href="/admin/seo">
+                    <Globe />
+                    SEO Management
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                  <Link href="/admin/email-marketing">
+                    <Mail />
+                    Email Marketing
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
@@ -227,10 +251,14 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-16 items-center justify-start border-b bg-card px-6 md:hidden">
-            <SidebarTrigger />
+          <header className="hidden h-16 items-center justify-start border-b bg-card px-6 md:flex">
+             {/* Header content removed as per user request */}
           </header>
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6">
+            <div className={mainContentLayoutClass}>
+              {children}
+            </div>
+          </main>
         </SidebarInset>
       </div>
     </SidebarProvider>
