@@ -119,7 +119,7 @@ export default function AdminDashboardPage() {
     );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto w-full">
       <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
       
       {/* Stat Cards */}

@@ -60,46 +60,48 @@ export default function AdminCustomersPage() {
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Customers</CardTitle>
-                <CardDescription>A list of your customers and their purchase history.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Customer</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Phone</TableHead>
-                            <TableHead className="text-center">Orders</TableHead>
-                            <TableHead className="text-right">Total Spent</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {customers.length > 0 ? customers.map((customer) => (
-                            <TableRow key={customer.email}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar className="h-9 w-9">
-                                            <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span className="font-medium">{customer.name}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{customer.email}</TableCell>
-                                <TableCell>{customer.phone}</TableCell>
-                                <TableCell className="text-center">{customer.orderCount}</TableCell>
-                                <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                            </TableRow>
-                        )) : (
+        <div className="max-w-7xl mx-auto w-full">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Customers</CardTitle>
+                    <CardDescription>A list of your customers and their purchase history.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center">No customers found.</TableCell>
+                                <TableHead>Customer</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Phone</TableHead>
+                                <TableHead className="text-center">Orders</TableHead>
+                                <TableHead className="text-right">Total Spent</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
+                        </TableHeader>
+                        <TableBody>
+                            {customers.length > 0 ? customers.map((customer) => (
+                                <TableRow key={customer.email}>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-9 w-9">
+                                                <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span className="font-medium">{customer.name}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{customer.email}</TableCell>
+                                    <TableCell>{customer.phone}</TableCell>
+                                    <TableCell className="text-center">{customer.orderCount}</TableCell>
+                                    <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center">No customers found.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
     );
 }

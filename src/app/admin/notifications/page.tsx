@@ -76,9 +76,9 @@ export default function AdminNotificationsPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-2xl mx-auto w-full">
             <h1 className="text-3xl font-bold font-headline">Send Notification</h1>
-            <Card className="max-w-2xl">
+            <Card>
                 <CardHeader>
                     <CardTitle>Compose Notification</CardTitle>
                     <CardDescription>Create a message to send to all users. It will appear in their notification dropdown.</CardDescription>

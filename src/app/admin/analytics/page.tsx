@@ -92,7 +92,7 @@ export default function AnalyticsPage() {
     }, []);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-7xl mx-auto w-full">
             <h1 className="text-3xl font-bold font-headline">Analytics</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
@@ -207,142 +208,144 @@ export function ProductForm() {
     );
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="space-y-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{isEditMode ? 'Edit Product' : 'Add New Product'}</CardTitle>
-                            <CardDescription>Fill in the details for the product.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem className="md:col-span-2">
-                                        <FormLabel>Product Name</FormLabel>
-                                        <FormControl><Input {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem className="md:col-span-2">
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl><Textarea {...field} rows={5} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="price"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Price</FormLabel>
-                                        <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="stock"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Stock Quantity</FormLabel>
-                                        <FormControl><Input type="number" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="category"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Category</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="brand"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Brand</FormLabel>
-                                        <FormControl><Input {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
+        <div className="max-w-5xl mx-auto w-full">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <div className="space-y-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>{isEditMode ? 'Edit Product' : 'Add New Product'}</CardTitle>
+                                <CardDescription>Fill in the details for the product.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem className="md:col-span-2">
+                                            <FormLabel>Product Name</FormLabel>
+                                            <FormControl><Input {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem className="md:col-span-2">
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl><Textarea {...field} rows={5} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="price"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Price</FormLabel>
+                                            <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name="stock"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Stock Quantity</FormLabel>
+                                            <FormControl><Input type="number" {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Category</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="brand"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Brand</FormLabel>
+                                            <FormControl><Input {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
+                        </Card>
 
-                     <Card>
-                        <CardHeader><CardTitle>Attributes</CardTitle></CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {renderArrayField("Images", imageFields, removeImage, appendImage, "https://example.com/image.png", "images")}
-                            {renderArrayField("Sizes", sizeFields, removeSize, appendSize, "e.g., M", "sizes")}
-                            {renderArrayField("Tags", tagFields, removeTag, appendTag, "e.g., new", "tags")}
+                         <Card>
+                            <CardHeader><CardTitle>Attributes</CardTitle></CardHeader>
+                            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {renderArrayField("Images", imageFields, removeImage, appendImage, "https://example.com/image.png", "images")}
+                                {renderArrayField("Sizes", sizeFields, removeSize, appendSize, "e.g., M", "sizes")}
+                                {renderArrayField("Tags", tagFields, removeTag, appendTag, "e.g., new", "tags")}
 
-                            <div className="space-y-2">
-                                <Label>Colors</Label>
-                                {colorFields.map((field, index) => (
-                                    <div key={field.id} className="flex items-start gap-2">
-                                        <FormField
-                                            control={form.control}
-                                            name={`colors.${index}.name`}
-                                            render={({ field }) => (
-                                                <FormItem className="flex-grow">
-                                                    <FormControl><Input placeholder="Color Name" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name={`colors.${index}.hex`}
-                                            render={({ field }) => (
-                                                <FormItem className="flex-grow">
-                                                    <FormControl><Input placeholder="#000000" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <Button type="button" variant="destructive" size="icon" onClick={() => removeColor(index)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '' })}>
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Color
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                <div className="space-y-2">
+                                    <Label>Colors</Label>
+                                    {colorFields.map((field, index) => (
+                                        <div key={field.id} className="flex items-start gap-2">
+                                            <FormField
+                                                control={form.control}
+                                                name={`colors.${index}.name`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-grow">
+                                                        <FormControl><Input placeholder="Color Name" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name={`colors.${index}.hex`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-grow">
+                                                        <FormControl><Input placeholder="#000000" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button type="button" variant="destructive" size="icon" onClick={() => removeColor(index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '' })}>
+                                        <PlusCircle className="mr-2 h-4 w-4" /> Add Color
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                    <div className="flex justify-end">
-                        <Button type="submit" disabled={isLoading} size="lg">
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isEditMode ? 'Save Changes' : 'Create Product'}
-                        </Button>
+                        <div className="flex justify-end">
+                            <Button type="submit" disabled={isLoading} size="lg">
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isEditMode ? 'Save Changes' : 'Create Product'}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </Form>
+                </form>
+            </Form>
+        </div>
     );
 }
