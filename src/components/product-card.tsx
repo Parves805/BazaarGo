@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, StarHalf, Heart } from 'lucide-react';
 import { Button } from './ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import type { Product } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { useWishlist } from '@/context/wishlist-context';
@@ -85,13 +85,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 mt-auto">
-        <Button asChild className="w-full">
-            <Link href={`/product/${product.id}`}>
-                Choose Options
-            </Link>
-        </Button>
-      </CardFooter>
     </Card>
   );
 }
