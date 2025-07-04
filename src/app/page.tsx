@@ -151,9 +151,9 @@ export default function Home() {
         <section className="py-8 md:py-12">
           <div className="container">
             <h2 className="text-2xl font-bold text-center font-headline mb-6">Shop by Category</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-x-4 gap-y-6">
               {categories.map((category) => (
-                <Link href={`/category/${category.id}`} key={category.id} className="group text-center w-36 flex-shrink-0">
+                <Link href={`/category/${category.id}`} key={category.id} className="group text-center">
                   <Card className="overflow-hidden transition-all duration-300 hover:shadow-md hover:border-primary">
                     <CardContent className="p-0">
                       <div className="relative aspect-square">
@@ -167,7 +167,7 @@ export default function Home() {
                       </div>
                     </CardContent>
                   </Card>
-                  <h3 className="mt-2 font-semibold text-sm group-hover:text-primary">{category.name}</h3>
+                  <h3 className="mt-2 font-semibold text-xs leading-tight group-hover:text-primary">{category.name}</h3>
                 </Link>
               ))}
             </div>
