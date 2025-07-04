@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,6 @@ import { SiteFooter } from '@/components/site-footer';
 import { categories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { notFound, useParams } from 'next/navigation';
-import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
