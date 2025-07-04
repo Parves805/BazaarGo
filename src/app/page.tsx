@@ -113,35 +113,37 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (
-            <Skeleton className="w-full h-36 md:h-[70vh]" />
+            <Skeleton className="w-full h-56 md:h-[70vh] rounded-lg" />
           ) : (
-            <Carousel
-              plugins={[plugin.current]}
-              opts={{ loop: true }}
-              className="w-full"
-              onMouseEnter={plugin.current.stop}
-              onMouseLeave={plugin.current.reset}
-            >
-              <CarouselContent>
-                {heroSlides.filter(slide => slide.url).map((slide, index) => (
-                  <CarouselItem key={index}>
-                    <div className="relative w-full h-36 md:h-[70vh]">
-                      <Image
-                        src={slide.url}
-                        alt={`Hero slide ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={slide.dataAiHint}
-                        priority={index === 0}
-                      />
-                      <div className="absolute inset-0 bg-black/30" />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-              <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-            </Carousel>
+            <div className="overflow-hidden rounded-lg">
+                <Carousel
+                plugins={[plugin.current]}
+                opts={{ loop: true }}
+                className="w-full"
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
+                >
+                <CarouselContent>
+                    {heroSlides.filter(slide => slide.url).map((slide, index) => (
+                    <CarouselItem key={index}>
+                        <div className="relative w-full h-56 md:h-[70vh]">
+                        <Image
+                            src={slide.url}
+                            alt={`Hero slide ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={slide.dataAiHint}
+                            priority={index === 0}
+                        />
+                        <div className="absolute inset-0 bg-black/30" />
+                        </div>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                </Carousel>
+            </div>
           )}
         </section>
 
