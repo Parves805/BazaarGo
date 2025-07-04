@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare } from 'lucide-react';
+import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -191,6 +191,14 @@ export default function AdminLayout({
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
+                  <Link href="/admin/notifications">
+                    <Bell />
+                    Notifications
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
                   <Link href="/admin/settings">
                     <Settings />
@@ -225,6 +233,12 @@ export default function AdminLayout({
               <SidebarTrigger />
             </div>
             <div className="ml-auto flex items-center gap-4">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link href="/admin/notifications">
+                        <Bell className="h-5 w-5" />
+                        <span className="sr-only">Notifications</span>
+                    </Link>
+                </Button>
                 <Button variant="ghost" size="icon" asChild>
                     <Link href="/admin/settings">
                         <Settings className="h-5 w-5" />
