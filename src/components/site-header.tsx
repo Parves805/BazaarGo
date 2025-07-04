@@ -115,6 +115,50 @@ export function SiteHeader() {
       }
   }
 
+  const notificationDropdownContent = (
+    <DropdownMenuContent align="end" className="w-80">
+        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {notifications.length > 0 ? (
+            notifications.slice(0, 5).map(notification => (
+                <DropdownMenuItem key={notification.id} className="flex-col items-start gap-2 p-3 focus:bg-accent cursor-default">
+                    {notification.imageUrl && (
+                        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                            <Image
+                                src={notification.imageUrl}
+                                alt="Notification Image"
+                                fill
+                                sizes="280px"
+                                className="object-cover"
+                            />
+                        </div>
+                    )}
+                    <div className="space-y-1 w-full">
+                        <p className="text-sm font-medium whitespace-normal">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {new Date(notification.timestamp).toLocaleString()}
+                        </p>
+                    </div>
+                </DropdownMenuItem>
+            ))
+        ) : (
+            <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
+        )}
+    </DropdownMenuContent>
+  );
+
+  const notificationTrigger = (
+     <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-6 w-6" />
+        {isMounted && unreadCount > 0 && (
+            <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0">
+                {unreadCount > 9 ? '9+' : unreadCount}
+            </Badge>
+        )}
+        <span className="sr-only">Notifications</span>
+    </Button>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -193,6 +237,7 @@ export function SiteHeader() {
         {/* Right Side: Icons */}
         <div className="flex items-center">
             <nav className="flex items-center">
+              {/* Desktop Icons */}
               <div className="hidden md:flex items-center space-x-1">
                   <Button asChild variant="ghost" size="icon" className="relative">
                     <Link href="/wishlist">
@@ -208,45 +253,9 @@ export function SiteHeader() {
 
                   <DropdownMenu onOpenChange={(open) => { if (open) handleMarkNotificationsAsRead(); }}>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative">
-                            <Bell className="h-6 w-6" />
-                            {isMounted && unreadCount > 0 && (
-                                <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0">
-                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                </Badge>
-                            )}
-                            <span className="sr-only">Notifications</span>
-                        </Button>
+                      {notificationTrigger}
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80">
-                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {notifications.length > 0 ? (
-                            notifications.slice(0, 5).map(notification => (
-                                <DropdownMenuItem key={notification.id} className="flex-col items-start gap-2 p-3 focus:bg-accent cursor-default">
-                                    {notification.imageUrl && (
-                                        <div className="relative w-full aspect-video rounded-md overflow-hidden">
-                                            <Image
-                                                src={notification.imageUrl}
-                                                alt="Notification Image"
-                                                fill
-                                                sizes="280px"
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    )}
-                                    <div className="space-y-1 w-full">
-                                        <p className="text-sm font-medium whitespace-normal">{notification.message}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {new Date(notification.timestamp).toLocaleString()}
-                                        </p>
-                                    </div>
-                                </DropdownMenuItem>
-                            ))
-                        ) : (
-                            <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
-                        )}
-                    </DropdownMenuContent>
+                    {notificationDropdownContent}
                 </DropdownMenu>
 
                   <DropdownMenu>
@@ -306,6 +315,18 @@ export function SiteHeader() {
                     </DropdownMenuContent>
                   </DropdownMenu>
               </div>
+
+               {/* Mobile Icons */}
+              <div className="md:hidden">
+                <DropdownMenu onOpenChange={(open) => { if (open) handleMarkNotificationsAsRead(); }}>
+                    <DropdownMenuTrigger asChild>
+                      {notificationTrigger}
+                    </DropdownMenuTrigger>
+                    {notificationDropdownContent}
+                </DropdownMenu>
+              </div>
+
+
                <Button asChild variant="ghost" size="icon" className="relative">
                 <Link href="/cart">
                   <ShoppingCart className="h-6 w-6" />
@@ -350,5 +371,7 @@ export function SiteHeader() {
     </header>
   );
 }
+
+    
 
     
