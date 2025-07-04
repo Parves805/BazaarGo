@@ -113,7 +113,7 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (
-            <Skeleton className="w-full h-56 md:h-[70vh] rounded-lg" />
+            <Skeleton className="w-full h-[135.25px] md:h-[70vh] rounded-lg" />
           ) : (
             <div className="overflow-hidden rounded-lg">
                 <Carousel
@@ -126,7 +126,7 @@ export default function Home() {
                 <CarouselContent>
                     {heroSlides.filter(slide => slide.url).map((slide, index) => (
                     <CarouselItem key={index}>
-                        <div className="relative w-full h-56 md:h-[70vh]">
+                        <div className="relative w-full h-[135.25px] md:h-[70vh]">
                         <Image
                             src={slide.url}
                             alt={`Hero slide ${index + 1}`}
