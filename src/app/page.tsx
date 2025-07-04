@@ -113,7 +113,7 @@ export default function Home() {
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (
-            <Skeleton className="w-full aspect-video md:aspect-auto md:h-[70vh]" />
+            <Skeleton className="w-full h-36 md:h-[70vh]" />
           ) : (
             <Carousel
               plugins={[plugin.current]}
@@ -125,7 +125,7 @@ export default function Home() {
               <CarouselContent>
                 {heroSlides.filter(slide => slide.url).map((slide, index) => (
                   <CarouselItem key={index}>
-                    <div className="relative w-full aspect-video md:aspect-auto md:h-[70vh]">
+                    <div className="relative w-full h-36 md:h-[70vh]">
                       <Image
                         src={slide.url}
                         alt={`Hero slide ${index + 1}`}
