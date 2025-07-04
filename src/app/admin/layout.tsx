@@ -251,9 +251,6 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="hidden h-16 items-center justify-start border-b bg-card px-6 md:flex">
-             {/* Header content removed as per user request */}
-          </header>
           <main className="flex-1 p-6">
             <div className={mainContentLayoutClass}>
               {children}
