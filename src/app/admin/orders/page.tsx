@@ -113,7 +113,7 @@ export default function AdminOrdersPage() {
     const shipping = selectedOrder ? selectedOrder.total - subtotal : 0;
 
     return (
-        <div className="max-w-7xl mx-auto w-full">
+        <div>
             <Card>
                 <CardHeader>
                     <CardTitle>Orders</CardTitle>

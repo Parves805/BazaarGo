@@ -113,7 +113,7 @@ export default function AdminCustomersPage() {
     );
 
     return (
-        <div className="max-w-7xl mx-auto w-full">
+        <div>
             <Card>
                 <CardHeader>
                     <CardTitle>Customers</CardTitle>

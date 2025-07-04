@@ -233,18 +233,6 @@ export default function AdminLayout({
               <SidebarTrigger />
             </div>
             <div className="ml-auto flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/admin/notifications">
-                        <Bell className="h-5 w-5" />
-                        <span className="sr-only">Notifications</span>
-                    </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/admin/settings">
-                        <Settings className="h-5 w-5" />
-                        <span className="sr-only">Settings</span>
-                    </Link>
-                </Button>
                 <Avatar className="h-9 w-9">
                     <AvatarImage src="https://placehold.co/100x100.png" alt="@admin" />
                     <AvatarFallback>A</AvatarFallback>

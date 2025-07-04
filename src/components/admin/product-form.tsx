@@ -208,7 +208,7 @@ export function ProductForm() {
     );
 
     return (
-        <div className="max-w-5xl mx-auto w-full">
+        <div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-8">

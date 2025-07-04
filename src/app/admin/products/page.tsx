@@ -72,7 +72,7 @@ export default function AdminProductsPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto w-full">
+        <div>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
