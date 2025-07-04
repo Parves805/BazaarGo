@@ -50,7 +50,7 @@ export default function OrdersPage() {
       return (
         <div className="flex flex-col min-h-screen">
             <SiteHeader />
-            <main className="flex-grow container py-8 md:py-12 flex items-center justify-center">
+            <main className="flex-grow container py-8 md:py-12 flex items-center justify-center pb-16 md:pb-0">
                 <p>Loading orders...</p>
             </main>
             <SiteFooter />
@@ -61,7 +61,7 @@ export default function OrdersPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <Card className="max-w-4xl mx-auto">
             <CardHeader>
                 <div className="flex items-center gap-4">

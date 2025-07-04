@@ -109,7 +109,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow">
+      <main className="flex-grow pb-16 md:pb-0">
         {/* Hero Section */}
         <section>
           {isLoadingSlides ? (

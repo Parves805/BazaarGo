@@ -40,7 +40,7 @@ export default function FAQPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <div className="text-center mb-12">
             <HelpCircle className="mx-auto h-12 w-12 text-primary mb-4" />
             <h1 className="text-4xl font-bold font-headline">Frequently Asked Questions</h1>

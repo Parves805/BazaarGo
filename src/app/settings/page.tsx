@@ -63,7 +63,7 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <Card className="max-w-3xl mx-auto">
             <CardHeader>
                 <div className="flex items-center gap-4">

@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
+import { BottomNav } from '@/components/bottom-nav';
 
 export const metadata: Metadata = {
   title: 'BazaarGo',
@@ -26,6 +27,7 @@ export default function RootLayout({
           <CartProvider>
               {children}
               <Toaster />
+              <BottomNav />
           </CartProvider>
         </WishlistProvider>
       </body>

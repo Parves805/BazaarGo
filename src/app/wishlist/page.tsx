@@ -12,7 +12,7 @@ export default function WishlistPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold font-headline">My Wishlist</h1>
           <p className="text-muted-foreground mt-2">Your favorite items, all in one place.</p>

@@ -16,7 +16,7 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <div className="text-center mb-12">
             <h1 className="text-4xl font-bold font-headline">Contact Us</h1>
             <p className="text-muted-foreground mt-2">We'd love to hear from you! Reach out with any questions or feedback.</p>

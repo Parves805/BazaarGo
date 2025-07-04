@@ -55,7 +55,7 @@ export default function CategoryPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow">
+      <main className="flex-grow pb-16 md:pb-0">
         <section className="relative h-56 w-full">
             <Image
                 src={category.bannerImage}

@@ -51,7 +51,7 @@ export default function ProductPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         {isLoading ? (
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div className="grid gap-4">

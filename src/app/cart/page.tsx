@@ -19,7 +19,7 @@ export default function CartPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <main className="flex-grow container py-8 md:py-12">
+      <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
         <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8 text-center">Your Shopping Cart</h1>
         {totalItems > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
