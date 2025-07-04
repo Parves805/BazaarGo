@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarInset,
 } from '@/components/ui/sidebar';
 import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell, Globe, Mail } from 'lucide-react';
 import Link from 'next/link';
