@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { BottomNav } from '@/components/bottom-nav';
+import { ChatProvider } from '@/context/chat-context';
+import { ChatWidget } from '@/components/chat-widget';
 
 export const metadata: Metadata = {
   title: 'BazaarGo',
@@ -25,9 +27,12 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <WishlistProvider>
           <CartProvider>
+            <ChatProvider>
               {children}
               <Toaster />
               <BottomNav />
+              <ChatWidget />
+            </ChatProvider>
           </CartProvider>
         </WishlistProvider>
       </body>

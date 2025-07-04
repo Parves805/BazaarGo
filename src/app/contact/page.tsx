@@ -1,161 +1,126 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, MessageSquare, Send } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Loader2, Mail, Phone, MapPin } from 'lucide-react';
 
-const MESSAGES_KEY = 'bazaargoMessages';
+const contactSchema = z.object({
+  name: z.string().min(2, { message: 'Name is required' }),
+  email: z.string().email({ message: 'A valid email is required' }),
+  subject: z.string().min(5, { message: 'Subject must be at least 5 characters' }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters' }),
+});
 
-interface Message {
-    sender: 'user' | 'admin';
-    text: string;
-    timestamp: string;
-}
-
-interface MessageThread {
-    threadId: 'user_main_thread'; 
-    messages: Message[];
-}
+type ContactFormInputs = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
     const { toast } = useToast();
-    const [messageText, setMessageText] = useState('');
-    const [messageThread, setMessageThread] = useState<MessageThread | null>(null);
     const [isSending, setIsSending] = useState(false);
-    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormInputs>({
+        resolver: zodResolver(contactSchema)
+    });
 
-    const loadMessages = () => {
-        try {
-            const savedMessages = localStorage.getItem(MESSAGES_KEY);
-            if (savedMessages) {
-                setMessageThread(JSON.parse(savedMessages));
-            } else {
-                setMessageThread({ threadId: 'user_main_thread', messages: [] });
-            }
-        } catch (error) {
-            console.error("Failed to load messages from localStorage", error);
-            setMessageThread({ threadId: 'user_main_thread', messages: [] });
-        }
-    }
-
-    useEffect(() => {
-        loadMessages();
-        // Poll for new messages from admin
-        const interval = setInterval(loadMessages, 5000); // Poll every 5 seconds
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        // Scroll to bottom when new messages are added
-        const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
-        if (viewport) {
-            viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
-        }
-    }, [messageThread?.messages.length]);
-
-    const handleSendMessage = () => {
-        if (!messageText.trim()) return;
+    const onSubmit: SubmitHandler<ContactFormInputs> = async (data) => {
         setIsSending(true);
-
-        const newMessage: Message = {
-            sender: 'user',
-            text: messageText,
-            timestamp: new Date().toISOString()
-        };
-
-        const currentThread = messageThread || { threadId: 'user_main_thread', messages: [] };
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        const updatedThread: MessageThread = {
-            ...currentThread,
-            messages: [...currentThread.messages, newMessage]
-        };
-
-        try {
-            localStorage.setItem(MESSAGES_KEY, JSON.stringify(updatedThread));
-            setMessageThread(updatedThread);
-            setMessageText('');
-            toast({ title: 'Message Sent', description: 'The admin has received your message.' });
-        } catch(e) {
-            console.error("Failed to send message", e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to send message.' });
-        } finally {
-            setIsSending(false);
-        }
+        console.log("Form Data:", data);
+        
+        setIsSending(false);
+        toast({
+            title: "Message Sent!",
+            description: "Thank you for contacting us. We'll get back to you shortly.",
+        });
+        reset();
     };
 
     return (
         <div className="flex flex-col min-h-screen">
             <SiteHeader />
-            <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12 flex justify-center">
-                <Card className="w-full max-w-2xl">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-2xl font-bold font-headline">
-                            <MessageSquare className="h-6 w-6 text-primary" />
-                            Message Admin
-                        </CardTitle>
-                        <CardDescription>Send a message directly to our support team. We'll reply here.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                         <ScrollArea className="h-[400px] w-full rounded-md border p-4" ref={scrollAreaRef}>
-                            {messageThread && messageThread.messages.length > 0 ? (
-                                <div className="space-y-4">
-                                    {messageThread.messages.map((msg, index) => (
-                                        <div key={index} className={cn("flex items-end gap-2", msg.sender === 'user' ? "justify-end" : "justify-start")}>
-                                             {msg.sender === 'admin' && (
-                                                <Avatar className="h-8 w-8">
-                                                    <AvatarFallback>A</AvatarFallback>
-                                                </Avatar>
-                                             )}
-                                            <div className={cn(
-                                                "max-w-xs rounded-lg p-3 text-sm",
-                                                msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                                            )}>
-                                                <p>{msg.text}</p>
-                                                <p className={cn("text-xs mt-1", msg.sender === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground')}>
-                                                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </p>
-                                            </div>
-                                             {msg.sender === 'user' && (
-                                                <Avatar className="h-8 w-8">
-                                                    <AvatarFallback>U</AvatarFallback>
-                                                </Avatar>
-                                             )}
-                                        </div>
-                                    ))}
+            <main className="flex-grow container pt-8 pb-24 md:pt-12 md:pb-12">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl font-bold font-headline">Contact Us</h1>
+                    <p className="text-muted-foreground mt-2">We'd love to hear from you. Get in touch with us.</p>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-12">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Send us a Message</CardTitle>
+                            <CardDescription>Fill out the form and we'll get back to you.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                <div>
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input id="name" {...register('name')} />
+                                    {errors.name && <p className="text-sm text-destructive mt-1">{errors.name.message}</p>}
                                 </div>
-                            ) : (
-                                <div className="flex items-center justify-center h-full text-muted-foreground">
-                                    Send a message to start the conversation.
+                                <div>
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input id="email" type="email" {...register('email')} />
+                                    {errors.email && <p className="text-sm text-destructive mt-1">{errors.email.message}</p>}
                                 </div>
-                            )}
-                        </ScrollArea>
-                        <div className="flex gap-2">
-                            <Textarea 
-                                placeholder="Type your message here..."
-                                value={messageText}
-                                onChange={(e) => setMessageText(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleSendMessage();
-                                    }
-                                }}
-                            />
-                            <Button onClick={handleSendMessage} disabled={isSending || !messageText.trim()} size="icon" className="h-auto">
-                                {isSending ? <Loader2 className="animate-spin" /> : <Send />}
-                                <span className="sr-only">Send</span>
-                            </Button>
+                                 <div>
+                                    <Label htmlFor="subject">Subject</Label>
+                                    <Input id="subject" {...register('subject')} />
+                                    {errors.subject && <p className="text-sm text-destructive mt-1">{errors.subject.message}</p>}
+                                </div>
+                                <div>
+                                    <Label htmlFor="message">Message</Label>
+                                    <Textarea id="message" rows={5} {...register('message')} />
+                                    {errors.message && <p className="text-sm text-destructive mt-1">{errors.message.message}</p>}
+                                </div>
+                                <Button type="submit" disabled={isSending}>
+                                    {isSending ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Sending...
+                                        </>
+                                    ) : (
+                                        'Send Message'
+                                    )}
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <div className="space-y-8">
+                        <h2 className="text-2xl font-bold font-headline">Contact Information</h2>
+                         <div className="flex items-start gap-4">
+                            <MapPin className="h-6 w-6 text-primary mt-1" />
+                            <div>
+                                <h3 className="font-semibold">Our Address</h3>
+                                <p className="text-muted-foreground">123 Bazaar Street, Dhaka, Bangladesh</p>
+                            </div>
                         </div>
-                    </CardContent>
-                </Card>
+                         <div className="flex items-start gap-4">
+                            <Mail className="h-6 w-6 text-primary mt-1" />
+                            <div>
+                                <h3 className="font-semibold">Email Us</h3>
+                                <p className="text-muted-foreground">support@bazaargo.com</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <Phone className="h-6 w-6 text-primary mt-1" />
+                            <div>
+                                <h3 className="font-semibold">Call Us</h3>
+                                <p className="text-muted-foreground">+880 123 456 7890</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
             <SiteFooter />
         </div>

@@ -7,13 +7,14 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import type { Product } from '@/lib/types';
-import { Star, StarHalf, Heart, Check, Minus, Plus } from 'lucide-react';
+import { Star, StarHalf, Heart, Check, Minus, Plus, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { FormItem } from '@/components/ui/form';
+import { useChat } from '@/context/chat-context';
 
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const MAX_HISTORY_LENGTH = 10;
@@ -38,6 +39,7 @@ function Rating({ rating, reviewCount }: { rating: number, reviewCount: number }
 export function ProductDetailsClient({ product }: { product: Product }) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { setChatOpen } = useChat();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(product.images[0]);
@@ -84,6 +86,10 @@ export function ProductDetailsClient({ product }: { product: Product }) {
       return;
     }
     addItem(product, quantity, selectedSize, selectedColor);
+  };
+
+  const handleMessageSeller = () => {
+    setChatOpen(true);
   };
 
   return (
@@ -191,7 +197,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
             )}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
+        <div className="flex flex-col sm:flex-row items-stretch gap-4 mt-4">
             <div className="flex items-center border rounded-md">
                 <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
                     <Minus className="h-4 w-4" />
@@ -201,12 +207,14 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>
-          <Button size="lg" className="flex-grow w-full sm:w-auto" onClick={handleAddToCart} disabled={product.stock === 0}>
+          <Button size="lg" className="flex-grow" onClick={handleAddToCart} disabled={product.stock === 0}>
             Add to Cart
           </Button>
-          <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={() => toggleWishlist(product)}>
-            <Heart className={cn("mr-2 h-5 w-5", isWishlisted && "fill-current text-accent")} />
-            {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          <Button size="lg" variant="outline" className="p-3" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
+            <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
+          </Button>
+          <Button size="lg" variant="outline" className="p-3" onClick={handleMessageSeller} aria-label="Message Seller">
+            <MessageSquare className="h-5 w-5" />
           </Button>
         </div>
       </div>
