@@ -218,7 +218,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
             )}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch gap-4 mt-4">
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center border rounded-md">
                 <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
                     <Minus className="h-4 w-4" />
@@ -228,7 +228,8 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>
-            <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-2">
+            
+            <div className="flex-grow grid grid-cols-2 gap-2">
                  <Button size="lg" variant="outline" className="w-full" onClick={handleAddToCart} disabled={product.stock === 0}>
                     Add to Cart
                 </Button>
@@ -237,12 +238,15 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                     Buy Now
                 </Button>
             </div>
-          <Button size="lg" variant="outline" className="p-3" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
-            <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
-          </Button>
-          <Button size="lg" variant="outline" className="p-3" onClick={handleMessageSeller} aria-label="Message Seller">
-            <MessageSquare className="h-5 w-5" />
-          </Button>
+
+            <div className="flex items-center gap-2">
+              <Button size="icon" variant="outline" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
+                <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
+              </Button>
+              <Button size="icon" variant="outline" onClick={handleMessageSeller} aria-label="Message Seller">
+                <MessageSquare className="h-5 w-5" />
+              </Button>
+            </div>
         </div>
       </div>
     </div>
