@@ -31,14 +31,18 @@ interface UserThread {
 }
 
 const formatTimestamp = (timestamp: string) => {
-    const date = parseISO(timestamp);
-    if (isToday(date)) {
-        return format(date, 'p'); // e.g., 2:30 PM
+    try {
+        const date = parseISO(timestamp);
+        if (isToday(date)) {
+            return format(date, 'p'); // e.g., 2:30 PM
+        }
+        if (isYesterday(date)) {
+            return 'Yesterday';
+        }
+        return format(date, 'MMM d'); // e.g., 'Nov 5'
+    } catch (e) {
+        return "Invalid date";
     }
-    if (isYesterday(date)) {
-        return 'Yesterday';
-    }
-    return format(date, 'MMM d'); // e.g., 'Nov 5'
 }
 
 export default function CommunicationsPage() {
@@ -68,7 +72,13 @@ export default function CommunicationsPage() {
                 };
             }).filter((t): t is UserThread => t !== null);
 
-            loadedThreads.sort((a, b) => parseISO(b.lastMessageTimestamp).getTime() - parseISO(a.lastMessageTimestamp).getTime());
+            loadedThreads.sort((a, b) => {
+                try {
+                    return parseISO(b.lastMessageTimestamp).getTime() - parseISO(a.lastMessageTimestamp).getTime()
+                } catch {
+                    return 0;
+                }
+            });
             
             setThreads(loadedThreads);
 
@@ -91,7 +101,7 @@ export default function CommunicationsPage() {
     useEffect(() => {
         const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
         if (viewport) {
-            viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+            setTimeout(() => viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' }), 100);
         }
     }, [selectedThread?.messages.length]);
 
@@ -103,6 +113,7 @@ export default function CommunicationsPage() {
             lastSeenCounts[thread.threadId] = thread.messages.length;
             localStorage.setItem(ADMIN_LAST_SEEN_KEY, JSON.stringify(lastSeenCounts));
 
+            // Optimistic update for immediate UI feedback
             setThreads(prev => prev.map(t => t.threadId === thread.threadId ? { ...t, unreadCount: 0 } : t));
         } catch (e) {
             console.error("Failed to update seen count", e);
@@ -125,12 +136,8 @@ export default function CommunicationsPage() {
                 threadToUpdate.lastMessageTimestamp = newReply.timestamp;
                 localStorage.setItem(ALL_CHATS_KEY, JSON.stringify(allThreads));
                 
-                const updatedThreadForState = { ...threadToUpdate, unreadCount: selectedThread.unreadCount };
-                setSelectedThread(updatedThreadForState);
-                
-                setThreads(prev => prev.map(t => t.threadId === threadToUpdate.threadId ? { ...updatedThreadForState, unreadCount: 0 } : t)
-                                     .sort((a, b) => parseISO(b.lastMessageTimestamp).getTime() - parseISO(a.lastMessageTimestamp).getTime()));
-                
+                // Reload all threads to get the latest state and order
+                loadThreads(); 
                 setReplyMessage('');
             }
         } catch(e) {
@@ -171,7 +178,7 @@ export default function CommunicationsPage() {
                                             <p className="font-semibold truncate">{thread.userName}</p>
                                             <p className="text-sm text-muted-foreground truncate">{thread.messages[thread.messages.length - 1].text}</p>
                                         </div>
-                                        <div className="flex flex-col items-end text-xs text-muted-foreground gap-1.5">
+                                        <div className="flex flex-col items-end text-xs text-muted-foreground gap-1.5 flex-shrink-0">
                                             <span>{formatTimestamp(thread.lastMessageTimestamp)}</span>
                                             {thread.unreadCount > 0 && <Badge className="w-5 h-5 flex items-center justify-center p-0">{thread.unreadCount}</Badge>}
                                         </div>
