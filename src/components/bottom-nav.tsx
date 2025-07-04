@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, Heart, User, LayoutGrid, ShoppingBag } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Home, Heart, User, LayoutGrid, ShoppingBag, UserCircle, ListOrdered, Settings, LogOut, LogIn, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWishlist } from '@/context/wishlist-context';
 import {
@@ -15,6 +15,9 @@ import {
 } from '@/components/ui/sheet';
 import { categories } from '@/lib/data';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Separator } from './ui/separator';
 
 const NavLink = ({ href, pathname, children }: { href: string, pathname: string, children: React.ReactNode }) => (
   <Link href={href} className={cn(
@@ -25,9 +28,44 @@ const NavLink = ({ href, pathname, children }: { href: string, pathname: string,
   </Link>
 );
 
+const MenuLink = ({ href, children, onSelect }: { href: string, children: React.ReactNode, onSelect?: () => void }) => (
+    <Link
+        href={href}
+        className="flex items-center gap-4 p-4 text-lg font-medium text-foreground/80 hover:text-primary transition-colors"
+        onClick={onSelect}
+    >
+        {children}
+    </Link>
+);
+
+
 export function BottomNav() {
   const pathname = usePathname();
   const { wishlistCount } = useWishlist();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAccountSheetOpen, setIsAccountSheetOpen] = useState(false);
+
+  useEffect(() => {
+    // This check ensures we don't try to access localStorage on the server.
+    if (typeof window !== 'undefined') {
+        const authStatus = localStorage.getItem('isAuthenticated');
+        setIsAuthenticated(authStatus === 'true');
+    }
+  }, [pathname]); // Re-check on route change if needed
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    setIsAuthenticated(false);
+    toast({
+      title: 'Logged Out',
+      description: 'You have been successfully logged out.',
+    });
+    setIsAccountSheetOpen(false);
+    router.push('/');
+  };
+
 
   // Don't show on auth or admin pages
   if (pathname.startsWith('/admin') || pathname.startsWith('/login') || pathname.startsWith('/signup')) {
@@ -92,11 +130,60 @@ export function BottomNav() {
             </div>
           <span>Wishlist</span>
         </NavLink>
-
-        <NavLink href="/profile" pathname={pathname}>
-          <User className="h-6 w-6" />
-          <span>Account</span>
-        </NavLink>
+        
+        <Sheet open={isAccountSheetOpen} onOpenChange={setIsAccountSheetOpen}>
+          <SheetTrigger asChild>
+             <button className={cn(
+                "flex flex-col items-center justify-center gap-1 text-xs transition-colors w-full h-full",
+                pathname.startsWith('/profile') || pathname.startsWith('/orders') || pathname.startsWith('/settings') ? "text-primary" : "text-muted-foreground hover:text-primary"
+              )}>
+                <User className="h-6 w-6" />
+                <span>Account</span>
+            </button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-auto flex flex-col rounded-t-lg">
+             <SheetHeader className="p-4 border-b text-left">
+              <SheetTitle>{isAuthenticated ? 'My Account' : 'Welcome'}</SheetTitle>
+            </SheetHeader>
+             <nav className="flex flex-col p-2">
+                 {isAuthenticated ? (
+                        <>
+                            <MenuLink href="/profile" onSelect={() => setIsAccountSheetOpen(false)}>
+                                <UserCircle className="h-6 w-6" />
+                                <span>Profile</span>
+                            </MenuLink>
+                            <MenuLink href="/orders" onSelect={() => setIsAccountSheetOpen(false)}>
+                                <ListOrdered className="h-6 w-6" />
+                                <span>My Orders</span>
+                            </MenuLink>
+                            <MenuLink href="/settings" onSelect={() => setIsAccountSheetOpen(false)}>
+                                <Settings className="h-6 w-6" />
+                                <span>Settings</span>
+                            </MenuLink>
+                            <Separator className="my-2" />
+                            <button
+                                className="flex items-center gap-4 p-4 text-lg font-medium text-destructive transition-colors w-full text-left"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-6 w-6" />
+                                <span>Log Out</span>
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <MenuLink href="/login" onSelect={() => setIsAccountSheetOpen(false)}>
+                                <LogIn className="h-6 w-6" />
+                                <span>Log In</span>
+                            </MenuLink>
+                             <MenuLink href="/signup" onSelect={() => setIsAccountSheetOpen(false)}>
+                                <UserPlus className="h-6 w-6" />
+                                <span>Sign Up</span>
+                            </MenuLink>
+                        </>
+                    )}
+             </nav>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );
