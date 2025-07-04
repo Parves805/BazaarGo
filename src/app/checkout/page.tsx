@@ -22,6 +22,8 @@ import { SiteFooter } from '@/components/site-footer';
 import { CreditCard, Truck, Loader2 } from 'lucide-react';
 import type { Order } from '@/lib/types';
 
+const PAYMENT_SETTINGS_KEY = 'paymentGatewaySettings';
+
 const checkoutSchema = z.object({
   name: z.string().min(2, { message: 'Full name is required' }),
   email: z.string().email({ message: 'Invalid email address' }),
@@ -44,6 +46,12 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState({
+    cash: true,
+    bkash: true,
+    nagad: true,
+    rocket: true,
+  });
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -85,6 +93,17 @@ export default function CheckoutPage() {
     } catch (error) {
       console.error("Failed to load user profile from localStorage", error);
     }
+    
+    try {
+        const savedPaymentSettings = localStorage.getItem(PAYMENT_SETTINGS_KEY);
+        if (savedPaymentSettings) {
+            const { cashOnDelivery, bkash, nagad, rocket } = JSON.parse(savedPaymentSettings);
+            setPaymentOptions({ cash: cashOnDelivery, bkash, nagad, rocket });
+        }
+    } catch (error) {
+        console.error("Failed to load payment settings from localStorage", error);
+    }
+
   }, [totalItems, router, isProcessing, form]);
 
 
@@ -283,6 +302,7 @@ export default function CheckoutPage() {
                             defaultValue={field.value}
                             className="space-y-4"
                             >
+                                {paymentOptions.cash && (
                                 <FormItem>
                                     <Label className="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                                         <FormControl>
@@ -295,6 +315,8 @@ export default function CheckoutPage() {
                                         </div>
                                     </Label>
                                 </FormItem>
+                                )}
+                                {paymentOptions.bkash && (
                                 <FormItem>
                                     <Label className="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                                         <FormControl>
@@ -307,6 +329,8 @@ export default function CheckoutPage() {
                                         </div>
                                     </Label>
                                 </FormItem>
+                                )}
+                                {paymentOptions.nagad && (
                                 <FormItem>
                                     <Label className="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                                         <FormControl>
@@ -319,6 +343,8 @@ export default function CheckoutPage() {
                                         </div>
                                     </Label>
                                 </FormItem>
+                                )}
+                                {paymentOptions.rocket && (
                                 <FormItem>
                                     <Label className="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                                         <FormControl>
@@ -331,6 +357,7 @@ export default function CheckoutPage() {
                                         </div>
                                     </Label>
                                 </FormItem>
+                                )}
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />

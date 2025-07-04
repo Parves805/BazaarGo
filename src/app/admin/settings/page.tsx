@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const AI_SETTINGS_KEY = 'aiSettings';
+const PAYMENT_SETTINGS_KEY = 'paymentGatewaySettings';
 
 const defaultImages = [
   { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -42,6 +43,13 @@ interface AiSettings {
   recommendationsEnabled: boolean;
 }
 
+interface PaymentGatewaySettings {
+  cashOnDelivery: boolean;
+  bkash: boolean;
+  nagad: boolean;
+  rocket: boolean;
+}
+
 const defaultSettings: WebsiteSettings = {
   storeName: 'BazaarGo',
   contactEmail: 'support@bazaargo.com',
@@ -51,6 +59,13 @@ const defaultSettings: WebsiteSettings = {
 
 const defaultAiSettings: AiSettings = {
   recommendationsEnabled: true,
+};
+
+const defaultPaymentSettings: PaymentGatewaySettings = {
+  cashOnDelivery: true,
+  bkash: true,
+  nagad: true,
+  rocket: false,
 };
 
 // Helper function to safely parse JSON from localStorage
@@ -77,6 +92,7 @@ export default function AdminSettingsPage() {
     const [slides, setSlides] = useState<Slide[]>([]);
     const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
     const [aiSettings, setAiSettings] = useState<AiSettings>(defaultAiSettings);
+    const [paymentSettings, setPaymentSettings] = useState<PaymentGatewaySettings>(defaultPaymentSettings);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -101,6 +117,7 @@ export default function AdminSettingsPage() {
         // Load Settings
         setSettings(safeJSONParse(WEBSITE_SETTINGS_KEY, defaultSettings));
         setAiSettings(safeJSONParse(AI_SETTINGS_KEY, defaultAiSettings));
+        setPaymentSettings(safeJSONParse(PAYMENT_SETTINGS_KEY, defaultPaymentSettings));
         
         setIsMounted(true);
     }, []);
@@ -121,6 +138,10 @@ export default function AdminSettingsPage() {
         setAiSettings(prev => ({ ...prev, [field]: value }));
     };
 
+    const handlePaymentSettingChange = (field: keyof PaymentGatewaySettings, value: boolean) => {
+        setPaymentSettings(prev => ({ ...prev, [field]: value }));
+    };
+
     const addSlide = () => {
         setSlides(prevSlides => [...prevSlides, { id: Date.now(), url: '', dataAiHint: '' }]);
     };
@@ -136,6 +157,7 @@ export default function AdminSettingsPage() {
             localStorage.setItem(SLIDER_IMAGES_KEY, JSON.stringify(slidesToSave.filter(s => s.url)));
             localStorage.setItem(WEBSITE_SETTINGS_KEY, JSON.stringify(settings));
             localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(aiSettings));
+            localStorage.setItem(PAYMENT_SETTINGS_KEY, JSON.stringify(paymentSettings));
 
             await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
             toast({
@@ -274,6 +296,59 @@ export default function AdminSettingsPage() {
                             id="ai-recommendations" 
                             checked={aiSettings.recommendationsEnabled} 
                             onCheckedChange={(checked) => handleAiSettingChange('recommendationsEnabled', checked)} 
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle>Payment Gateway Settings</CardTitle>
+                    <CardDescription>Enable or disable payment methods for checkout.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="pg-cash" className="font-medium">Cash on Delivery</Label>
+                            <p className="text-sm text-muted-foreground">Allow customers to pay with cash upon delivery.</p>
+                        </div>
+                        <Switch 
+                            id="pg-cash" 
+                            checked={paymentSettings.cashOnDelivery} 
+                            onCheckedChange={(checked) => handlePaymentSettingChange('cashOnDelivery', checked)} 
+                        />
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="pg-bkash" className="font-medium">bKash</Label>
+                            <p className="text-sm text-muted-foreground">Allow customers to pay via bKash.</p>
+                        </div>
+                        <Switch 
+                            id="pg-bkash" 
+                            checked={paymentSettings.bkash} 
+                            onCheckedChange={(checked) => handlePaymentSettingChange('bkash', checked)} 
+                        />
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="pg-nagad" className="font-medium">Nagad</Label>
+                            <p className="text-sm text-muted-foreground">Allow customers to pay via Nagad.</p>
+                        </div>
+                        <Switch 
+                            id="pg-nagad" 
+                            checked={paymentSettings.nagad} 
+                            onCheckedChange={(checked) => handlePaymentSettingChange('nagad', checked)} 
+                        />
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div>
+                            <Label htmlFor="pg-rocket" className="font-medium">Rocket</Label>
+                            <p className="text-sm text-muted-foreground">Allow customers to pay via Rocket.</p>
+                        </div>
+                        <Switch 
+                            id="pg-rocket" 
+                            checked={paymentSettings.rocket} 
+                            onCheckedChange={(checked) => handlePaymentSettingChange('rocket', checked)} 
                         />
                     </div>
                 </CardContent>
