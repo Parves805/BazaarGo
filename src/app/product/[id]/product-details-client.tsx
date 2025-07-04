@@ -3,11 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import type { Product } from '@/lib/types';
-import { Star, StarHalf, Heart, Check, Minus, Plus, MessageSquare } from 'lucide-react';
+import { Star, StarHalf, Heart, Check, Minus, Plus, MessageSquare, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -41,6 +42,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { setChatOpen } = useChat();
   const { toast } = useToast();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(product.images[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>();
@@ -86,6 +88,25 @@ export function ProductDetailsClient({ product }: { product: Product }) {
       return;
     }
     addItem(product, quantity, selectedSize, selectedColor);
+  };
+  
+  const handleBuyNow = () => {
+    if (!selectedSize) {
+      toast({
+        title: 'Please select a size',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (!selectedColor) {
+      toast({
+        title: 'Please select a color',
+        variant: 'destructive',
+      });
+      return;
+    }
+    addItem(product, quantity, selectedSize, selectedColor);
+    router.push('/checkout');
   };
 
   const handleMessageSeller = () => {
@@ -207,9 +228,15 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>
-          <Button size="lg" className="flex-grow" onClick={handleAddToCart} disabled={product.stock === 0}>
-            Add to Cart
-          </Button>
+            <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-2">
+                 <Button size="lg" variant="outline" className="w-full" onClick={handleAddToCart} disabled={product.stock === 0}>
+                    Add to Cart
+                </Button>
+                <Button size="lg" className="w-full" onClick={handleBuyNow} disabled={product.stock === 0}>
+                    <ShoppingBag className="mr-2 h-5 w-5" />
+                    Buy Now
+                </Button>
+            </div>
           <Button size="lg" variant="outline" className="p-3" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
             <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
           </Button>
