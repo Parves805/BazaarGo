@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart, ChevronDown, Bell } from 'lucide-react';
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import { categories } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
@@ -29,7 +31,7 @@ export function SiteHeader() {
   const { wishlistCount } = useWishlist();
   const { totalItems } = useCart();
   const [isMounted, setIsMounted] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: string; message: string; timestamp: string; read: boolean }[]>([]);
+  const [notifications, setNotifications] = useState<{ id: string; message: string; imageUrl?: string; timestamp: string; read: boolean }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
 
@@ -219,11 +221,24 @@ export function SiteHeader() {
                         <DropdownMenuSeparator />
                         {notifications.length > 0 ? (
                             notifications.slice(0, 5).map(notification => (
-                                <DropdownMenuItem key={notification.id} className="flex flex-col items-start gap-1 whitespace-normal">
-                                    <p className="text-sm">{notification.message}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {new Date(notification.timestamp).toLocaleString()}
-                                    </p>
+                                <DropdownMenuItem key={notification.id} className="flex-col items-start gap-2 p-3 focus:bg-accent cursor-default">
+                                    {notification.imageUrl && (
+                                        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                                            <Image
+                                                src={notification.imageUrl}
+                                                alt="Notification Image"
+                                                fill
+                                                sizes="280px"
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="space-y-1 w-full">
+                                        <p className="text-sm font-medium whitespace-normal">{notification.message}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {new Date(notification.timestamp).toLocaleString()}
+                                        </p>
+                                    </div>
                                 </DropdownMenuItem>
                             ))
                         ) : (

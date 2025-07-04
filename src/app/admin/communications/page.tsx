@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -11,6 +12,7 @@ import { Loader2, Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 
 const NOTIFICATIONS_KEY = 'bazaargoNotifications';
 const MESSAGES_KEY = 'bazaargoMessages';
@@ -18,6 +20,7 @@ const MESSAGES_KEY = 'bazaargoMessages';
 interface Notification {
     id: string;
     message: string;
+    imageUrl?: string;
     timestamp: string;
     read: boolean;
 }
@@ -37,6 +40,7 @@ interface MessageThread {
 export default function CommunicationsPage() {
     const { toast } = useToast();
     const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationImageUrl, setNotificationImageUrl] = useState('');
     const [replyMessage, setReplyMessage] = useState('');
     const [messageThread, setMessageThread] = useState<MessageThread | null>(null);
     const [isSending, setIsSending] = useState(false);
@@ -82,6 +86,7 @@ export default function CommunicationsPage() {
             const newNotification: Notification = {
                 id: new Date().getTime().toString(),
                 message: notificationMessage,
+                imageUrl: notificationImageUrl.trim() ? notificationImageUrl.trim() : undefined,
                 timestamp: new Date().toISOString(),
                 read: false
             };
@@ -91,6 +96,7 @@ export default function CommunicationsPage() {
 
             toast({ title: 'Notification Sent', description: 'The notification has been sent to users.' });
             setNotificationMessage('');
+            setNotificationImageUrl('');
         } catch (error) {
             console.error("Failed to send notification", error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to send notification.' });
@@ -209,6 +215,15 @@ export default function CommunicationsPage() {
                                     value={notificationMessage}
                                     onChange={(e) => setNotificationMessage(e.target.value)}
                                     rows={5}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="notification-image-url">Image URL (Optional)</Label>
+                                <Input
+                                    id="notification-image-url"
+                                    placeholder="https://example.com/image.png"
+                                    value={notificationImageUrl}
+                                    onChange={(e) => setNotificationImageUrl(e.target.value)}
                                 />
                             </div>
                             <Button onClick={handleSendNotification} disabled={isSending || !notificationMessage.trim()}>
