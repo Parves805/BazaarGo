@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from 'next/navigation';
@@ -31,14 +31,7 @@ export function SiteHeader() {
   const [notifications, setNotifications] = useState<{ id: string; message: string; timestamp: string; read: boolean }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    // This effect runs once on the client after the component mounts.
-    const authStatus = localStorage.getItem('isAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-
-    // Load notifications
+  const loadNotifications = () => {
     const savedNotifications = localStorage.getItem('bazaargoNotifications');
     if (savedNotifications) {
         try {
@@ -51,8 +44,23 @@ export function SiteHeader() {
             console.error("Failed to parse notifications", e);
         }
     }
+  };
+
+  useEffect(() => {
+    // This effect runs once on the client after the component mounts.
+    const authStatus = localStorage.getItem('isAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+
+    loadNotifications();
+
+    // Poll for new notifications every 5 seconds
+    const interval = setInterval(loadNotifications, 5000);
 
     setIsMounted(true);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
@@ -90,36 +98,45 @@ export function SiteHeader() {
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                  <div className="py-6 px-4">
-                      <Link href="/" className="mb-6 flex items-center space-x-2">
-                          <ShoppingBag className="h-6 w-6 text-primary" />
-                          <span className="font-bold font-headline">BazaarGo</span>
-                      </Link>
-                      <nav className="flex flex-col space-y-3">
-                          <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary">Home</Link>
-                          
-                           <Accordion type="single" collapsible className="w-full">
-                            <AccordionItem value="categories" className="border-b-0">
-                              <AccordionTrigger className="py-2 text-lg font-medium text-foreground/80 hover:text-primary hover:no-underline">
-                                  Categories
-                              </AccordionTrigger>
-                              <AccordionContent className="pl-4 pt-2">
-                                <nav className="grid gap-2">
-                                  {categories.map((category) => (
-                                    <Link key={category.id} href={`/category/${category.id}`} className="text-base text-foreground/70 hover:text-primary">
-                                      {category.name}
-                                    </Link>
-                                  ))}
-                                </nav>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-
-                          <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary">Shop</Link>
-                          <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary">About Us</Link>
-                      </nav>
+              <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
+                  <div className="p-4 border-b">
+                      <SheetClose asChild>
+                        <Link href="/" className="inline-flex items-center space-x-2">
+                            <ShoppingBag className="h-6 w-6 text-primary" />
+                            <span className="font-bold font-headline">BazaarGo</span>
+                        </Link>
+                      </SheetClose>
                   </div>
+                  <nav className="flex flex-col space-y-1 p-4">
+                      <SheetClose asChild>
+                        <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary py-2">Home</Link>
+                      </SheetClose>
+                      
+                       <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="categories" className="border-b-0">
+                          <AccordionTrigger className="py-2 text-lg font-medium text-foreground/80 hover:text-primary hover:no-underline">
+                              Categories
+                          </AccordionTrigger>
+                          <AccordionContent className="pl-4 pt-2">
+                            <nav className="grid gap-2">
+                              {categories.map((category) => (
+                                <SheetClose asChild key={category.id}>
+                                  <Link href={`/category/${category.id}`} className="text-base text-foreground/70 hover:text-primary">
+                                    {category.name}
+                                  </Link>
+                                </SheetClose>
+                              ))}
+                            </nav>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                      <SheetClose asChild>
+                        <Link href="/shop" className="text-lg font-medium text-foreground/80 hover:text-primary py-2">Shop</Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link href="/about" className="text-lg font-medium text-foreground/80 hover:text-primary py-2">About Us</Link>
+                      </SheetClose>
+                  </nav>
               </SheetContent>
             </Sheet>
           </div>
@@ -145,8 +162,8 @@ export function SiteHeader() {
         <div className="flex items-center">
             <nav className="flex items-center">
               <div className="hidden md:flex items-center space-x-1">
-                  <Link href="/wishlist" passHref>
-                    <Button variant="ghost" size="icon" className="relative">
+                  <Button asChild variant="ghost" size="icon" className="relative">
+                    <Link href="/wishlist">
                         <Heart className="h-6 w-6" />
                         {isMounted && wishlistCount > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
@@ -154,8 +171,8 @@ export function SiteHeader() {
                             </span>
                         )}
                         <span className="sr-only">Wishlist</span>
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
                   <DropdownMenu onOpenChange={(open) => { if (open) handleMarkNotificationsAsRead(); }}>
                     <DropdownMenuTrigger asChild>
@@ -244,8 +261,8 @@ export function SiteHeader() {
                     </DropdownMenuContent>
                   </DropdownMenu>
               </div>
-              <Link href="/cart" passHref>
-                <Button variant="ghost" size="icon" className="relative">
+               <Button asChild variant="ghost" size="icon" className="relative">
+                <Link href="/cart">
                   <ShoppingCart className="h-6 w-6" />
                   {isMounted && totalItems > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs">
@@ -253,8 +270,8 @@ export function SiteHeader() {
                     </span>
                   )}
                   <span className="sr-only">Cart</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </nav>
         </div>
       </div>
