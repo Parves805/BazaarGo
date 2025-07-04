@@ -2,6 +2,7 @@
 'use client'; 
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +19,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Separator } from '@/components/ui/separator';
 import type { Order } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -34,6 +44,7 @@ const ORDER_STATUSES: Order['status'][] = ['Processing', 'Shipped', 'Delivered',
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const { toast } = useToast();
 
     const fetchOrders = () => {
@@ -78,6 +89,12 @@ export default function AdminOrdersPage() {
                         currentOrders[orderIndex].status = newStatus;
                         localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
                         fetchOrders(); // Re-fetch and re-sort
+                        
+                        // Also update selectedOrder if it's the one being changed
+                        if (selectedOrder && selectedOrder.id === orderId) {
+                            setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
+                        }
+
                         toast({ title: 'Status Updated', description: `Order status changed to ${newStatus}.` });
                     }
                 }
@@ -91,6 +108,9 @@ export default function AdminOrdersPage() {
     if (isLoading) {
         return <p>Loading orders...</p>;
     }
+    
+    const subtotal = selectedOrder?.items.reduce((acc, item) => acc + item.price * item.quantity, 0) ?? 0;
+    const shipping = selectedOrder ? selectedOrder.total - subtotal : 0;
 
     return (
         <Card>
@@ -133,7 +153,7 @@ export default function AdminOrdersPage() {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem disabled>View Details</DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={() => setSelectedOrder(order)}>View Details</DropdownMenuItem>
                                             <DropdownMenuSub>
                                                 <DropdownMenuSubTrigger>Update Status</DropdownMenuSubTrigger>
                                                 <DropdownMenuPortal>
@@ -161,6 +181,84 @@ export default function AdminOrdersPage() {
                         )}
                     </TableBody>
                 </Table>
+
+                {selectedOrder && (
+                    <Dialog open={!!selectedOrder} onOpenChange={(isOpen) => !isOpen && setSelectedOrder(null)}>
+                        <DialogContent className="sm:max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle>Order Details</DialogTitle>
+                                <DialogDescription>
+                                    Order #{selectedOrder.id.slice(-6)} &bull; Placed on {format(new Date(selectedOrder.date), "PPP")}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-6 pt-4 max-h-[70vh] overflow-y-auto pr-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <h3 className="font-semibold">Customer Information</h3>
+                                        <div className="text-sm text-muted-foreground space-y-1">
+                                            <p><strong className="text-foreground">Name:</strong> {selectedOrder.shippingInfo.name}</p>
+                                            <p><strong className="text-foreground">Email:</strong> {selectedOrder.shippingInfo.email}</p>
+                                            <p><strong className="text-foreground">Phone:</strong> {selectedOrder.shippingInfo.phone}</p>
+                                        </div>
+                                         <h3 className="font-semibold pt-2">Shipping Address</h3>
+                                        <div className="text-sm text-muted-foreground">
+                                            <p>{selectedOrder.shippingInfo.street}</p>
+                                            <p>{selectedOrder.shippingInfo.city}, {selectedOrder.shippingInfo.state} {selectedOrder.shippingInfo.zip}</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h3 className="font-semibold">Order Summary</h3>
+                                        <div className="text-sm space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Subtotal</span>
+                                                <span>৳{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            </div>
+                                             <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Shipping</span>
+                                                <span>৳{shipping.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            </div>
+                                             <div className="flex justify-between font-bold text-base border-t pt-2 mt-2">
+                                                <span>Total</span>
+                                                <span>৳{selectedOrder.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Payment</span>
+                                                <span className="capitalize">{selectedOrder.shippingInfo.paymentMethod}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-muted-foreground">Status</span>
+                                                <Badge variant="outline" className="flex items-center gap-2 w-fit">
+                                                    <span className={`h-2 w-2 rounded-full ${statusColors[selectedOrder.status]}`}></span>
+                                                    {selectedOrder.status}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold mb-4">Items Ordered</h3>
+                                    <div className="space-y-4">
+                                        {selectedOrder.items.map(item => (
+                                            <div key={`${item.id}-${item.selectedSize}-${item.selectedColor.name}`} className="flex items-center gap-4">
+                                                <Image src={item.images[0]} alt={item.name} width={64} height={64} className="rounded-md border aspect-square object-cover" />
+                                                <div className="flex-grow">
+                                                    <p className="font-medium">{item.name}</p>
+                                                    <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor.name}</p>
+                                                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                                                </div>
+                                                <p className="ml-auto font-medium">৳{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setSelectedOrder(null)}>Close</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )}
             </CardContent>
         </Card>
     )
