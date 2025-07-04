@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { ProductDetailsClient } from './product-details-client';
@@ -12,9 +11,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const PRODUCTS_KEY = 'appProducts';
 
-export default function ProductPage() {
-  const params = useParams();
-  const id = params.id as string;
+export default function ProductPage({ params }: { params: { id: string } }) {
+  const id = params.id;
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

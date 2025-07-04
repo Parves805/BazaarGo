@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { categories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
@@ -14,9 +14,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const PRODUCTS_KEY = 'appProducts';
 
-export default function CategoryPage() {
-  const params = useParams();
-  const slug = params.slug as string;
+export default function CategoryPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug;
   
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);

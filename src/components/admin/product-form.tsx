@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,15 +38,18 @@ const productSchema = z.object({
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
-export function ProductForm() {
+// EditProductPage now passes productId for edit mode. NewProductPage does not.
+interface ProductFormProps {
+    productId?: string;
+}
+
+export function ProductForm({ productId }: ProductFormProps) {
     const router = useRouter();
-    const params = useParams();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
 
-    const id = params.id as string | undefined;
-    const isEditMode = !!id;
+    const isEditMode = !!productId;
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
@@ -75,7 +77,7 @@ export function ProductForm() {
             try {
                 const savedProducts = localStorage.getItem(PRODUCTS_KEY);
                 const products: Product[] = savedProducts ? JSON.parse(savedProducts) : initialProducts;
-                const productToEdit = products.find(p => p.id === id);
+                const productToEdit = products.find(p => p.id === productId);
 
                 if (productToEdit) {
                     form.reset({
@@ -114,7 +116,7 @@ export function ProductForm() {
             });
             setIsFetching(false);
         }
-    }, [id, isEditMode, form, router, toast]);
+    }, [productId, isEditMode, form, router, toast]);
 
     const onSubmit = (data: ProductFormValues) => {
         setIsLoading(true);
@@ -147,7 +149,7 @@ export function ProductForm() {
             }
 
             if (isEditMode) {
-                const productIndex = products.findIndex(p => p.id === id);
+                const productIndex = products.findIndex(p => p.id === productId);
                 if (productIndex !== -1) {
                     products[productIndex] = { ...products[productIndex], ...transformedData };
                 }
