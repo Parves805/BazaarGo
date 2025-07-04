@@ -94,7 +94,7 @@ export default function AdminLayout({
             }
         }, 1000);
     }
-  }, [pathname]);
+  }, [pathname, newMessagesCount]);
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
@@ -228,15 +228,9 @@ export default function AdminLayout({
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-16 items-center justify-between border-b px-6 bg-card">
+          <header className="flex h-16 items-center justify-start border-b bg-card px-6">
             <div className="md:hidden">
               <SidebarTrigger />
-            </div>
-            <div className="ml-auto flex items-center gap-4">
-                <Avatar className="h-9 w-9">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="@admin" />
-                    <AvatarFallback>A</AvatarFallback>
-                </Avatar>
             </div>
           </header>
           <main className="flex-1 p-6">{children}</main>
