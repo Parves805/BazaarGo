@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart, ChevronDown } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, LogIn, UserPlus, UserCircle, Settings, LogOut, ListOrdered, ShoppingCart, ChevronDown, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { categories } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
 
 export function SiteHeader() {
   const { toast } = useToast();
@@ -27,6 +28,8 @@ export function SiteHeader() {
   const { wishlistCount } = useWishlist();
   const { totalItems } = useCart();
   const [isMounted, setIsMounted] = useState(false);
+  const [notifications, setNotifications] = useState<{ id: string; message: string; timestamp: string; read: boolean }[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     // This effect runs once on the client after the component mounts.
@@ -34,6 +37,21 @@ export function SiteHeader() {
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
+
+    // Load notifications
+    const savedNotifications = localStorage.getItem('bazaargoNotifications');
+    if (savedNotifications) {
+        try {
+            const parsed = JSON.parse(savedNotifications);
+            if(Array.isArray(parsed)) {
+                setNotifications(parsed);
+                setUnreadCount(parsed.filter((n: any) => !n.read).length);
+            }
+        } catch(e) {
+            console.error("Failed to parse notifications", e);
+        }
+    }
+
     setIsMounted(true);
   }, []);
 
@@ -46,6 +64,18 @@ export function SiteHeader() {
     });
     router.push('/');
   };
+  
+  const handleMarkNotificationsAsRead = () => {
+      if (unreadCount === 0) return;
+      try {
+        const updatedNotifications = notifications.map(n => ({ ...n, read: true }));
+        setNotifications(updatedNotifications);
+        setUnreadCount(0);
+        localStorage.setItem('bazaargoNotifications', JSON.stringify(updatedNotifications));
+      } catch (e) {
+        console.error("Failed to mark notifications as read", e);
+      }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -126,6 +156,37 @@ export function SiteHeader() {
                         <span className="sr-only">Wishlist</span>
                     </Button>
                   </Link>
+
+                  <DropdownMenu onOpenChange={(open) => { if (open) handleMarkNotificationsAsRead(); }}>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="relative">
+                            <Bell className="h-6 w-6" />
+                            {isMounted && unreadCount > 0 && (
+                                <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </Badge>
+                            )}
+                            <span className="sr-only">Notifications</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-80">
+                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {notifications.length > 0 ? (
+                            notifications.slice(0, 5).map(notification => (
+                                <DropdownMenuItem key={notification.id} className="flex flex-col items-start gap-1 whitespace-normal">
+                                    <p className="text-sm">{notification.message}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {new Date(notification.timestamp).toLocaleString()}
+                                    </p>
+                                </DropdownMenuItem>
+                            ))
+                        ) : (
+                            <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
