@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -9,6 +10,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import {
   ShoppingBag,
@@ -291,9 +293,15 @@ export default function AdminLayout({
              </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-          <main className="flex-1 p-6">           
-            {children}
-          </main>
+          <div className="flex flex-col flex-1 w-full overflow-x-hidden">
+             <header className="flex h-14 items-center gap-4 border-b bg-background px-4 md:hidden">
+                <SidebarTrigger />
+                <h1 className="text-lg font-semibold">Admin Menu</h1>
+              </header>
+            <main className="flex-1 p-6 overflow-y-auto">           
+              {children}
+            </main>
+          </div>
       </div>
     </SidebarProvider>
   );
