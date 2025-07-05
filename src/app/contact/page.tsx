@@ -41,19 +41,28 @@ export default function ContactPage() {
     const [contactInfo, setContactInfo] = useState(defaultContactInfo);
 
     useEffect(() => {
-        try {
-            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-            if (savedSettingsJson) {
-                const settings = JSON.parse(savedSettingsJson);
-                setContactInfo(prev => ({
-                    email: settings.contactEmail || prev.email,
-                    phone: settings.contactPhone || prev.phone,
-                    address: settings.address || prev.address,
-                }));
+        const loadSettings = () => {
+            try {
+                const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+                if (savedSettingsJson) {
+                    const settings = JSON.parse(savedSettingsJson);
+                    setContactInfo(prev => {
+                        const newInfo = {
+                            email: settings.contactEmail || prev.email,
+                            phone: settings.contactPhone || prev.phone,
+                            address: settings.address || prev.address,
+                        };
+                        return JSON.stringify(prev) !== JSON.stringify(newInfo) ? newInfo : prev;
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to load settings for Contact page", error);
             }
-        } catch (error) {
-            console.error("Failed to load settings for Contact page", error);
-        }
+        };
+
+        loadSettings();
+        const interval = setInterval(loadSettings, 2000);
+        return () => clearInterval(interval);
     }, []);
 
     const onSubmit: SubmitHandler<ContactFormInputs> = async (data) => {

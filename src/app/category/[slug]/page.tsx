@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -27,48 +28,35 @@ export default function CategoryPage() {
   const filteredProducts = products.filter((p) => p.category === slug);
 
   useEffect(() => {
+    const loadData = () => {
+        try {
+            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+            const newProducts = savedProductsJSON ? JSON.parse(savedProductsJSON) : initialProducts;
+            setProducts(prev => JSON.stringify(prev) !== JSON.stringify(newProducts) ? newProducts : prev);
+
+            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
+            setCategories(prev => JSON.stringify(prev) !== JSON.stringify(newCategories) ? newCategories : prev);
+        } catch (error) {
+            console.error("Failed to load data from localStorage, using defaults.", error);
+            setProducts(initialProducts);
+            setCategories(initialCategories);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
     setIsLoading(true);
-    try {
-      // Load products
-      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProductsJSON) {
-        const parsed = JSON.parse(savedProductsJSON);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-        } else {
-          setProducts(initialProducts);
-        }
-      } else {
-        setProducts(initialProducts);
-      }
-
-      // Load categories
-      const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-      if (savedCategoriesJSON) {
-        const parsed = JSON.parse(savedCategoriesJSON);
-        if (Array.isArray(parsed)) {
-          setCategories(parsed);
-        } else {
-          setCategories(initialCategories);
-        }
-      } else {
-        setCategories(initialCategories);
-      }
-
-    } catch (error) {
-      console.error("Failed to load data from localStorage, using defaults.", error);
-      setProducts(initialProducts);
-      setCategories(initialCategories);
-    } finally {
-      setIsLoading(false);
-    }
+    loadData();
+    const interval = setInterval(loadData, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (!isLoading && !category) {
       notFound();
     }
-  }, [isLoading, category]);
+  }, [isLoading, category, slug]);
 
 
   if (isLoading || !category) {

@@ -39,80 +39,71 @@ export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [products, setProducts] = React.useState<Product[]>([]);
-  const [saleProducts, setSaleProducts] = React.useState<Product[]>([]);
   const [viewingHistory, setViewingHistory] = React.useState<string[]>([]);
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
 
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setIsLoading(true);
+    const loadData = () => {
+      try {
+        // Load hero slides
+        const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
+        setHeroSlides(prev => {
+            const parsed = savedImages ? JSON.parse(savedImages) : defaultSlides;
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                const newSlides = parsed.filter((slide: Slide) => slide.url);
+                return JSON.stringify(prev) !== JSON.stringify(newSlides) ? newSlides : prev;
+            } else if (!savedImages) {
+                 return defaultSlides;
+            }
+            return prev;
+        });
+        
+        // Load products
+        const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+        setProducts(prev => {
+            const allProducts = savedProductsJSON ? JSON.parse(savedProductsJSON) : initialProducts;
+            return JSON.stringify(prev) !== JSON.stringify(allProducts) ? allProducts : prev;
+        });
+        
+        // Load categories
+        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+        setCategories(prev => {
+            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
+            return JSON.stringify(prev) !== JSON.stringify(newCategories) ? newCategories : prev;
+        });
 
-    try {
-      // Load hero slides
-      const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
-      if (savedImages) {
-        const parsedImages = JSON.parse(savedImages);
-        if (Array.isArray(parsedImages) && parsedImages.length > 0) {
-          setHeroSlides(parsedImages.filter(slide => slide.url));
-        } else {
-          setHeroSlides(defaultSlides);
-        }
-      } else {
-        setHeroSlides(defaultSlides);
-      }
+        // Load viewing history
+        const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
+        setViewingHistory(prev => {
+            const newHistory = historyJson ? JSON.parse(historyJson) : [];
+            return JSON.stringify(prev) !== JSON.stringify(newHistory) ? newHistory : prev;
+        });
 
-      // Load products
-      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-      let allProducts: Product[] = initialProducts;
-      if (savedProductsJSON) {
-        const parsed = JSON.parse(savedProductsJSON);
-        if (Array.isArray(parsed)) {
-          allProducts = parsed;
-        }
-      }
-      setProducts(allProducts);
-      const onSale = allProducts.filter((p: Product) => p.tags.includes('sale'));
-      setSaleProducts(onSale);
-      
-      // Load categories
-      const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-      if (savedCategoriesJSON) {
-        const parsed = JSON.parse(savedCategoriesJSON);
-        if (Array.isArray(parsed)) {
-          setCategories(parsed);
-        }
-      } else {
-        setCategories(initialCategories);
-      }
+        // Load AI settings
+        const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
+        setAiSettings(prev => {
+            const newSettings = savedAiSettings ? JSON.parse(savedAiSettings) : { recommendationsEnabled: true };
+            return JSON.stringify(prev) !== JSON.stringify(newSettings) ? newSettings : prev;
+        });
 
-      // Load viewing history
-      const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
-      if (historyJson) {
-        setViewingHistory(JSON.parse(historyJson));
+      } catch (error) {
+        console.error("Failed to load data from localStorage, using defaults.", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Load AI settings
-      const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
-      if (savedAiSettings) {
-        setAiSettings(JSON.parse(savedAiSettings));
-      }
-    } catch (error) {
-      console.error("Failed to load data from localStorage, using defaults.", error);
-      // Fallback to defaults on any error
-      setHeroSlides(defaultSlides);
-      setProducts(initialProducts);
-      setCategories(initialCategories);
-      setSaleProducts(initialProducts.filter((p: Product) => p.tags.includes('sale')));
-      setViewingHistory([]);
-      setAiSettings({ recommendationsEnabled: true });
-    } finally {
-      setIsLoading(false);
     }
+    
+    setIsLoading(true);
+    loadData();
+    const interval = setInterval(loadData, 2000); // Poll every 2 seconds
+    return () => clearInterval(interval);
   }, []);
 
 
   const featuredProducts = products.slice(0, 8);
+  const saleProducts = products.filter((p: Product) => p.tags.includes('sale'));
 
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })

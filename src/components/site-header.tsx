@@ -35,76 +35,52 @@ export function SiteHeader() {
   const [isMounted, setIsMounted] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string; message: string; imageUrl?: string; timestamp: string; read: boolean }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
+  const [settings, setSettings] = useState({ storeName: 'BazaarGo', logoUrl: '' });
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const loadNotifications = () => {
-    const savedNotifications = localStorage.getItem('bazaargoNotifications');
-    if (savedNotifications) {
-        try {
-            const parsed = JSON.parse(savedNotifications);
-            if(Array.isArray(parsed)) {
-                setNotifications(parsed);
-                setUnreadCount(parsed.filter((n: any) => !n.read).length);
-            }
-        } catch(e) {
-            console.error("Failed to parse notifications", e);
-        }
-    }
-  };
-
   useEffect(() => {
-    // This effect runs once on the client after the component mounts.
-    const authStatus = localStorage.getItem('isAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
+    const loadData = () => {
+        // Auth status
+        const authStatus = localStorage.getItem('isAuthenticated');
+        setIsAuthenticated(authStatus === 'true');
 
-    try {
-        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-        if (savedSettingsJson) {
-            const savedSettings = JSON.parse(savedSettingsJson);
-            if (savedSettings && savedSettings.storeName) {
-                setSettings(savedSettings);
-            }
-        }
-        
-        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-        if (savedCategoriesJSON) {
-            setCategories(JSON.parse(savedCategoriesJSON));
-        } else {
-            setCategories(initialCategories);
+        // Notifications
+        const savedNotifications = localStorage.getItem('bazaargoNotifications');
+        if (savedNotifications) {
+            try {
+                const parsed = JSON.parse(savedNotifications);
+                if(Array.isArray(parsed)) {
+                    setNotifications(parsed);
+                    setUnreadCount(parsed.filter((n: any) => !n.read).length);
+                }
+            } catch(e) { console.error("Failed to parse notifications", e); }
         }
 
-    } catch (error) {
-        console.error("Failed to load settings for header", error);
-    }
-
-
-    loadNotifications();
-
-    // Poll for new notifications every 5 seconds
-    const interval = setInterval(() => {
-        loadNotifications();
+        // Website Settings (Name and Logo)
         try {
             const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
             if (savedSettingsJson) {
                 const savedSettings = JSON.parse(savedSettingsJson);
-                if (savedSettings && savedSettings.storeName) {
-                    setSettings(savedSettings);
-                }
+                setSettings(currentSettings => {
+                    const newSettings = { ...currentSettings, ...savedSettings };
+                    return JSON.stringify(currentSettings) !== JSON.stringify(newSettings) ? newSettings : currentSettings;
+                });
             }
+        } catch (error) { console.error("Failed to load settings for header", error); }
+
+        // Categories
+        try {
             const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-            if (savedCategoriesJSON) {
-                setCategories(JSON.parse(savedCategoriesJSON));
-            }
-
-        } catch (error) {
-            // fail silently
-        }
-    }, 5000);
-
+            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
+            setCategories(currentCategories => {
+                 return JSON.stringify(currentCategories) !== JSON.stringify(newCategories) ? newCategories : currentCategories;
+            });
+        } catch (error) { console.error("Failed to load categories for header", error); }
+    };
+    
     setIsMounted(true);
+    loadData(); // Initial load
+    const interval = setInterval(loadData, 2000); // Poll for changes
     
     return () => clearInterval(interval);
   }, []);
@@ -130,6 +106,19 @@ export function SiteHeader() {
         console.error("Failed to mark notifications as read", e);
       }
   }
+
+  const logoContent = (isMobile: boolean = false) => (
+    <>
+      {settings.logoUrl ? (
+         <div className="relative" style={{width: 'auto', height: isMobile ? '24px' : '32px'}}>
+            <Image src={settings.logoUrl} alt={settings.storeName} layout="fill" objectFit="contain" />
+         </div>
+      ) : (
+        <ShoppingBag className="h-6 w-6 text-primary" />
+      )}
+      <span className="font-bold font-headline">{settings.storeName}</span>
+    </>
+  );
 
   const notificationDropdownContent = (
     <DropdownMenuContent align="end" className="w-80">
@@ -190,14 +179,12 @@ export function SiteHeader() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
                   <SheetHeader className="p-4 border-b">
-                    <SheetTitle>
-                      <SheetClose asChild>
-                        <Link href="/" className="inline-flex items-center space-x-2">
-                            <ShoppingBag className="h-6 w-6 text-primary" />
-                            <span className="font-bold font-headline">{settings.storeName}</span>
-                        </Link>
-                      </SheetClose>
-                    </SheetTitle>
+                    <SheetTitle className="text-left sr-only">Main Menu</SheetTitle>
+                    <SheetClose asChild>
+                      <Link href="/" className="inline-flex items-center space-x-2">
+                        {logoContent(true)}
+                      </Link>
+                    </SheetClose>
                   </SheetHeader>
                   <nav className="flex flex-col space-y-1 p-4">
                       <SheetClose asChild>
@@ -233,8 +220,7 @@ export function SiteHeader() {
             </Sheet>
           </div>
           <Link href="/" className="hidden md:flex items-center space-x-2">
-            <ShoppingBag className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">{settings.storeName}</span>
+            {logoContent()}
           </Link>
         </div>
 

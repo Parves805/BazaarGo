@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -51,19 +52,26 @@ export function BottomNav() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    // This check ensures we don't try to access localStorage on the server.
-    if (typeof window !== 'undefined') {
+    const loadData = () => {
         const authStatus = localStorage.getItem('isAuthenticated');
         setIsAuthenticated(authStatus === 'true');
 
-        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-        if (savedCategoriesJSON) {
-            setCategories(JSON.parse(savedCategoriesJSON));
-        } else {
+        try {
+            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
+            setCategories(currentCategories => {
+                 return JSON.stringify(currentCategories) !== JSON.stringify(newCategories) ? newCategories : currentCategories;
+            });
+        } catch(e) {
             setCategories(initialCategories);
+            console.error(e);
         }
     }
-  }, [pathname]); // Re-check on route change if needed
+    
+    loadData();
+    const interval = setInterval(loadData, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');

@@ -34,6 +34,7 @@ interface Slide {
 
 interface WebsiteSettings {
   storeName: string;
+  logoUrl: string;
   contactEmail: string;
   contactPhone: string;
   address: string;
@@ -52,6 +53,7 @@ interface PaymentGatewaySettings {
 
 const defaultSettings: WebsiteSettings = {
   storeName: 'BazaarGo',
+  logoUrl: '',
   contactEmail: 'support@bazaargo.com',
   contactPhone: '+1 (234) 567-890',
   address: '123 Bazaar Street, Dhaka, Bangladesh',
@@ -196,6 +198,18 @@ export default function AdminSettingsPage() {
                             onChange={(e) => handleSettingChange('storeName', e.target.value)}
                             placeholder="Your Store Name"
                         />
+                    </div>
+                     <div className="grid gap-2">
+                        <Label htmlFor="logoUrl">Logo URL</Label>
+                        <Input
+                            id="logoUrl"
+                            value={settings.logoUrl}
+                            onChange={(e) => handleSettingChange('logoUrl', e.target.value)}
+                            placeholder="https://example.com/logo.png"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                            Enter a URL for your store logo. Leave blank to use the default icon.
+                        </p>
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="contactEmail">Contact Email</Label>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ShoppingBag } from 'lucide-react';
@@ -5,33 +6,41 @@ import Link from 'next/link';
 import { initialCategories } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import type { Category } from '@/lib/types';
+import Image from 'next/image';
 
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const CATEGORIES_KEY = 'appCategories';
 
 export function SiteFooter() {
-  const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
+  const [settings, setSettings] = useState({ storeName: 'BazaarGo', logoUrl: '' });
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    try {
-        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-        if (savedSettingsJson) {
-            const savedSettings = JSON.parse(savedSettingsJson);
-            if (savedSettings && savedSettings.storeName) {
-                setSettings(savedSettings);
+    const loadData = () => {
+        try {
+            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettingsJson) {
+                const savedSettings = JSON.parse(savedSettingsJson);
+                setSettings(currentSettings => {
+                    const newSettings = { ...currentSettings, ...savedSettings };
+                    return JSON.stringify(currentSettings) !== JSON.stringify(newSettings) ? newSettings : currentSettings;
+                });
             }
+            
+            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
+            setCategories(currentCategories => {
+                 return JSON.stringify(currentCategories) !== JSON.stringify(newCategories) ? newCategories : currentCategories;
+            });
+        } catch (error) {
+            console.error("Failed to load settings for footer", error);
         }
-        
-        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-        if (savedCategoriesJSON) {
-            setCategories(JSON.parse(savedCategoriesJSON));
-        } else {
-            setCategories(initialCategories);
-        }
-    } catch (error) {
-        console.error("Failed to load settings for footer", error);
-    }
+    };
+    
+    loadData();
+    const interval = setInterval(loadData, 2000);
+    return () => clearInterval(interval);
+
   }, []);
 
   return (
@@ -40,7 +49,13 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
           <div className="col-span-2 sm:col-span-3 md:col-span-1">
              <Link href="/" className="mb-4 flex items-center space-x-2">
-                <ShoppingBag className="h-6 w-6 text-primary" />
+                {settings.logoUrl ? (
+                    <div className="relative" style={{width: 'auto', height: '24px'}}>
+                       <Image src={settings.logoUrl} alt={settings.storeName} layout="fill" objectFit="contain" />
+                    </div>
+                ) : (
+                    <ShoppingBag className="h-6 w-6 text-primary" />
+                )}
                 <span className="font-bold font-headline">{settings.storeName}</span>
             </Link>
             <p className="text-muted-foreground text-sm">Your one-stop online marketplace.</p>

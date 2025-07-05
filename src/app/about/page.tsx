@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SiteHeader } from '@/components/site-header';
@@ -13,18 +14,29 @@ export default function AboutPage() {
   const [storeName, setStoreName] = useState('BazaarGo');
 
   useEffect(() => {
-    try {
-        const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-        if (savedSettingsJson) {
-            const settings = JSON.parse(savedSettingsJson);
-            if (settings && settings.storeName) {
-                setStoreName(settings.storeName);
-                document.title = `About Us | ${settings.storeName}`;
+    const loadSettings = () => {
+        try {
+            const savedSettingsJson = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+            if (savedSettingsJson) {
+                const settings = JSON.parse(savedSettingsJson);
+                if (settings && settings.storeName) {
+                    setStoreName(currentName => {
+                        if (currentName !== settings.storeName) {
+                            document.title = `About Us | ${settings.storeName}`;
+                            return settings.storeName;
+                        }
+                        return currentName;
+                    });
+                }
             }
+        } catch (error) {
+            console.error("Failed to load store name for About page", error);
         }
-    } catch (error) {
-        console.error("Failed to load store name for About page", error);
-    }
+    };
+
+    loadSettings();
+    const interval = setInterval(loadSettings, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
