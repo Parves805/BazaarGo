@@ -11,11 +11,29 @@ import {
   SidebarFooter,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { ShoppingBag, LayoutDashboard, Package, Users, ShoppingCart, LogOut, Home, Settings, BarChart, MessageSquare, Bell, Globe, Mail } from 'lucide-react';
+import {
+  ShoppingBag,
+  LayoutDashboard,
+  Package,
+  Users,
+  ShoppingCart,
+  LogOut,
+  Home,
+  Settings,
+  MessageSquare,
+  Bell,
+  ChevronDown,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -31,6 +49,15 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [newMessagesCount, setNewMessagesCount] = useState(0);
+
+  const areSettingsActive = [
+    '/admin/settings',
+    '/admin/analytics',
+    '/admin/email-marketing',
+    '/admin/seo',
+  ].some(p => pathname === p);
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(areSettingsActive);
 
   useEffect(() => {
     // This effect runs once on the client after the component mounts.
@@ -91,6 +118,11 @@ export default function AdminLayout({
         }, 1000);
     }
   }, [pathname, newMessagesCount]);
+
+  // Keep settings sub-menu open if on a settings-related page
+  useEffect(() => {
+    setIsSettingsOpen(areSettingsActive);
+  }, [areSettingsActive]);
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
@@ -182,32 +214,6 @@ export default function AdminLayout({
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Growth & Marketing */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                  <Link href="/admin/analytics">
-                    <BarChart />
-                    Analytics
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                  <Link href="/admin/seo">
-                    <Globe />
-                    SEO Management
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                  <Link href="/admin/email-marketing">
-                    <Mail />
-                    Email Marketing
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
               {/* Platform */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
@@ -217,14 +223,47 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
-                  <Link href="/admin/settings">
-                    <Settings />
-                    Settings
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              
+               <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <SidebarMenuItem className="flex flex-col">
+                  <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        className="justify-between w-full"
+                        isActive={areSettingsActive}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Settings />
+                          <span>Settings & Growth</span>
+                        </div>
+                        <ChevronDown className={cn("h-4 w-4 transition-transform", isSettingsOpen && "rotate-180")} />
+                      </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="w-full">
+                    <SidebarMenu className="pl-6 pt-1">
+                       <SidebarMenuItem>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                            <Link href="/admin/settings">General Settings</Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                            <Link href="/admin/analytics">Analytics</Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                            <Link href="/admin/seo">SEO Management</Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                            <Link href="/admin/email-marketing">Email Marketing</Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
