@@ -1,8 +1,8 @@
 export interface Product {
   id: string;
   name: string;
-  shortDescription: string;
-  longDescription: string;
+  shortDescription?: string;
+  longDescription?: string;
   price: number;
   rating: number;
   reviewCount: number;
@@ -11,8 +11,8 @@ export interface Product {
   images: string[];
   stock: number;
   tags: string[];
-  sizes: string[];
-  colors: { name: string; hex: string }[];
+  sizes?: string[];
+  colors?: { name: string; hex: string }[];
 }
 
 export interface Category {
@@ -44,4 +44,13 @@ export interface Order {
     zip: string;
     paymentMethod: string;
   };
+}
+
+export interface Review {
+  id: string;
+  productId: string;
+  reviewerName: string;
+  rating: number;
+  comment: string;
+  timestamp: string;
 }
