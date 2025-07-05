@@ -28,6 +28,7 @@ import {
   BarChart,
   Target,
   Mail,
+  Menu,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -40,7 +41,7 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetHeader } from '@/components/ui/sheet';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -286,7 +287,6 @@ export default function AdminLayout({
         </Sidebar>
           <div className="flex flex-col flex-1 w-full">
              <header className="flex h-14 items-center gap-4 border-b bg-background px-4 md:hidden">
-                <SidebarTrigger />
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -296,12 +296,11 @@ export default function AdminLayout({
                     </SheetTrigger>
                     <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
                         <SheetHeader className="p-4 border-b">
-                            <SheetTitle className="text-left">
+                            <SheetTitle className="text-left sr-only">Admin Menu</SheetTitle>
                                 <Link href="/" className="inline-flex items-center space-x-2">
                                     <ShoppingBag className="h-6 w-6 text-primary" />
                                     <span className="font-bold font-headline">Admin Panel</span>
                                 </Link>
-                            </SheetTitle>
                         </SheetHeader>
                         {/* Re-render sidebar content inside the sheet for mobile */}
                         <SidebarContent>
@@ -444,5 +443,3 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
-
-    
