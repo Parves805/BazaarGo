@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { FormItem } from '@/components/ui/form';
 import { useChat } from '@/context/chat-context';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const MAX_HISTORY_LENGTH = 10;
@@ -114,148 +115,173 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-      {/* Image Gallery */}
-      <div className="grid gap-4">
-        <div className="relative aspect-square rounded-lg overflow-hidden border">
-          <Image
-            src={activeImage}
-            alt={product.name}
-            fill
-            className="object-cover"
-            priority
-            data-ai-hint={`${product.category} product`}
-          />
+    <>
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        {/* Image Gallery */}
+        <div className="grid gap-4">
+          <div className="relative aspect-square rounded-lg overflow-hidden border">
+            <Image
+              src={activeImage}
+              alt={product.name}
+              fill
+              className="object-cover"
+              priority
+              data-ai-hint={`${product.category} product`}
+            />
+          </div>
+          <div className="grid grid-cols-5 gap-4">
+            {product.images.map((img, index) => (
+              <button
+                key={index}
+                className={cn(
+                  'relative aspect-square rounded-md overflow-hidden border-2 transition',
+                  activeImage === img ? 'border-primary' : 'border-transparent'
+                )}
+                onClick={() => setActiveImage(img)}
+              >
+                <Image
+                  src={img}
+                  alt={`${product.name} thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={`${product.category} product`}
+                />
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-5 gap-4">
-          {product.images.map((img, index) => (
-            <button
-              key={index}
-              className={cn(
-                'relative aspect-square rounded-md overflow-hidden border-2 transition',
-                activeImage === img ? 'border-primary' : 'border-transparent'
+
+        {/* Product Info */}
+        <div className="flex flex-col gap-4">
+          <div>
+              <p className="text-sm font-medium text-primary uppercase">{product.brand}</p>
+              <h1 className="text-3xl md:text-4xl font-bold font-headline mt-1">{product.name}</h1>
+          </div>
+          <Rating rating={product.rating} reviewCount={product.reviewCount} />
+          <p className="text-3xl font-bold text-primary">
+              ৳{product.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+          
+          <p className="text-muted-foreground leading-relaxed">{product.shortDescription}</p>
+          
+          <div className="space-y-4">
+              {/* Size Selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                  <div className="space-y-2">
+                      <Label className="text-base font-semibold">Size</Label>
+                      <RadioGroup
+                          value={selectedSize}
+                          onValueChange={setSelectedSize}
+                          className="flex flex-wrap gap-2"
+                      >
+                          {product.sizes.map((size) => (
+                          <FormItem key={size} className="flex items-center space-x-0 space-y-0">
+                              <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
+                              <Label
+                              htmlFor={`size-${size}`}
+                              className={cn(
+                                  "flex h-10 w-12 cursor-pointer items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                                  selectedSize === size && "border-primary ring-2 ring-primary"
+                              )}
+                              >
+                              {size}
+                              </Label>
+                          </FormItem>
+                          ))}
+                      </RadioGroup>
+                  </div>
               )}
-              onClick={() => setActiveImage(img)}
-            >
-              <Image
-                src={img}
-                alt={`${product.name} thumbnail ${index + 1}`}
-                fill
-                className="object-cover"
-                data-ai-hint={`${product.category} product`}
-              />
-            </button>
-          ))}
+
+              {/* Color Selector */}
+              {product.colors && product.colors.length > 0 && (
+                  <div className="space-y-2">
+                      <Label className="text-base font-semibold">Color: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></Label>
+                      <div className="flex flex-wrap gap-3">
+                          {product.colors.map((color) => (
+                          <button
+                              key={color.name}
+                              type="button"
+                              className={cn(
+                              "h-8 w-8 rounded-full border-2 transition",
+                              selectedColor?.name === color.name ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50"
+                              )}
+                              style={{ backgroundColor: color.hex }}
+                              onClick={() => setSelectedColor(color)}
+                              aria-label={`Select color ${color.name}`}
+                          />
+                          ))}
+                      </div>
+                  </div>
+              )}
+          </div>
+
+          <div className="flex items-center gap-2">
+              <span className="font-semibold">Availability:</span>
+              {product.stock > 0 ? (
+                  <span className="text-green-600 flex items-center gap-1"><Check className="h-4 w-4" /> In Stock</span>
+              ) : (
+                  <span className="text-red-600">Out of Stock</span>
+              )}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                  {/* Quantity Selector */}
+                  <div className="flex items-center border rounded-md">
+                      <Button variant="ghost" size="icon" className="h-12" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
+                          <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-12 text-center font-bold flex items-center justify-center">{quantity}</span>
+                      <Button variant="ghost" size="icon" className="h-12" onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}>
+                          <Plus className="h-4 w-4" />
+                      </Button>
+                  </div>
+                  <div className="flex-grow" />
+                  {/* Wishlist and Message */}
+                  <Button size="icon" variant="outline" className="h-12 w-12" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
+                      <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
+                  </Button>
+                  <Button size="icon" variant="outline" className="h-12 w-12" onClick={handleMessageSeller} aria-label="Message Seller">
+                      <MessageSquare className="h-5 w-5" />
+                  </Button>
+              </div>
+
+              {/* Add to Cart and Buy Now */}
+              <div className="flex items-stretch gap-2">
+                  <Button size="lg" variant="outline" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
+                      Add to Cart
+                  </Button>
+                  <Button size="lg" className="flex-1" onClick={handleBuyNow} disabled={product.stock === 0}>
+                      <ShoppingBag className="mr-2 h-5 w-5" />
+                      Buy Now
+                  </Button>
+              </div>
+          </div>
         </div>
       </div>
-
-      {/* Product Info */}
-      <div className="flex flex-col gap-4">
-        <div>
-            <p className="text-sm font-medium text-primary uppercase">{product.brand}</p>
-            <h1 className="text-3xl md:text-4xl font-bold font-headline mt-1">{product.name}</h1>
-        </div>
-        <Rating rating={product.rating} reviewCount={product.reviewCount} />
-        <p className="text-3xl font-bold text-primary">
-            ৳{product.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </p>
-        <Separator />
-        <p className="text-muted-foreground leading-relaxed">{product.description}</p>
-        
-        <div className="space-y-4">
-            {/* Size Selector */}
-            {product.sizes && product.sizes.length > 0 && (
-                <div className="space-y-2">
-                    <Label className="text-base font-semibold">Size</Label>
-                    <RadioGroup
-                        value={selectedSize}
-                        onValueChange={setSelectedSize}
-                        className="flex flex-wrap gap-2"
-                    >
-                        {product.sizes.map((size) => (
-                        <FormItem key={size} className="flex items-center space-x-0 space-y-0">
-                            <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
-                            <Label
-                            htmlFor={`size-${size}`}
-                            className={cn(
-                                "flex h-10 w-12 cursor-pointer items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                                selectedSize === size && "border-primary ring-2 ring-primary"
-                            )}
-                            >
-                            {size}
-                            </Label>
-                        </FormItem>
-                        ))}
-                    </RadioGroup>
-                </div>
-            )}
-
-            {/* Color Selector */}
-            {product.colors && product.colors.length > 0 && (
-                <div className="space-y-2">
-                    <Label className="text-base font-semibold">Color: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></Label>
-                    <div className="flex flex-wrap gap-3">
-                        {product.colors.map((color) => (
-                        <button
-                            key={color.name}
-                            type="button"
-                            className={cn(
-                            "h-8 w-8 rounded-full border-2 transition",
-                            selectedColor?.name === color.name ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50"
-                            )}
-                            style={{ backgroundColor: color.hex }}
-                            onClick={() => setSelectedColor(color)}
-                            aria-label={`Select color ${color.name}`}
-                        />
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-
-        <div className="flex items-center gap-2">
-            <span className="font-semibold">Availability:</span>
-            {product.stock > 0 ? (
-                <span className="text-green-600 flex items-center gap-1"><Check className="h-4 w-4" /> In Stock</span>
+      
+      <div className="mt-12">
+        <Tabs defaultValue="details">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews ({product.reviewCount})</TabsTrigger>
+          </TabsList>
+          <TabsContent value="details" className="mt-6">
+            {product.longDescription ? (
+               <div 
+                  className="html-content-viewer text-muted-foreground" 
+                  dangerouslySetInnerHTML={{ __html: product.longDescription }} 
+                />
             ) : (
-                <span className="text-red-600">Out of Stock</span>
+              <p className="text-muted-foreground">No additional details available for this product.</p>
             )}
-        </div>
-
-        <div className="mt-4 flex flex-col gap-4">
-            <div className="flex items-center gap-4">
-                {/* Quantity Selector */}
-                <div className="flex items-center border rounded-md">
-                    <Button variant="ghost" size="icon" className="h-12" onClick={() => setQuantity(q => Math.max(1, q - 1))}>
-                        <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="w-12 text-center font-bold flex items-center justify-center">{quantity}</span>
-                    <Button variant="ghost" size="icon" className="h-12" onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}>
-                        <Plus className="h-4 w-4" />
-                    </Button>
-                </div>
-                <div className="flex-grow" />
-                {/* Wishlist and Message */}
-                <Button size="icon" variant="outline" className="h-12 w-12" onClick={() => toggleWishlist(product)} aria-label="Toggle Wishlist">
-                    <Heart className={cn("h-5 w-5", isWishlisted && "fill-current text-accent")} />
-                </Button>
-                <Button size="icon" variant="outline" className="h-12 w-12" onClick={handleMessageSeller} aria-label="Message Seller">
-                    <MessageSquare className="h-5 w-5" />
-                </Button>
-            </div>
-
-            {/* Add to Cart and Buy Now */}
-            <div className="flex items-stretch gap-2">
-                <Button size="lg" variant="outline" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
-                    Add to Cart
-                </Button>
-                <Button size="lg" className="flex-1" onClick={handleBuyNow} disabled={product.stock === 0}>
-                    <ShoppingBag className="mr-2 h-5 w-5" />
-                    Buy Now
-                </Button>
-            </div>
-        </div>
+          </TabsContent>
+          <TabsContent value="reviews" className="mt-6">
+            <p className="text-muted-foreground">Reviews are coming soon!</p>
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+
+    </>
   );
 }

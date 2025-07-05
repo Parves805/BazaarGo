@@ -14,7 +14,7 @@ import {z} from 'genkit';
 const ProductInfoSchema = z.object({
   id: z.string(),
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
   category: z.string(),
 });
 
@@ -65,7 +65,7 @@ RULES:
 
 USER'S VIEWING HISTORY:
 {{#each viewedProducts}}
-- ID: {{id}}, Name: {{name}}, Category: {{category}}, Description: {{description}}
+- ID: {{id}}, Name: {{name}}, Category: {{category}}, Short Description: {{shortDescription}}
 {{/each}}
 
 FULL PRODUCT CATALOG (for you to choose from):

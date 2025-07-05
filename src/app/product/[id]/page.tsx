@@ -8,6 +8,7 @@ import { ProductDetailsClient } from './product-details-client';
 import type { Product } from '@/lib/types';
 import { products as initialProducts } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProductCard } from '@/components/product-card';
 
 const PRODUCTS_KEY = 'appProducts';
 
@@ -15,6 +16,7 @@ export default function ProductPage() {
   const params = useParams();
   const id = params.id as string;
   const [product, setProduct] = useState<Product | null>(null);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,14 +24,15 @@ export default function ProductPage() {
     setIsLoading(true);
     try {
       const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-      let allProducts: Product[] = initialProducts;
+      let products: Product[] = initialProducts;
       if (savedProductsJSON) {
           const parsed = JSON.parse(savedProductsJSON);
           if (Array.isArray(parsed)) {
-              allProducts = parsed;
+              products = parsed;
           }
       }
-      const foundProduct = allProducts.find((p: Product) => p.id === id);
+      setAllProducts(products);
+      const foundProduct = products.find((p: Product) => p.id === id);
       if (foundProduct) {
         setProduct(foundProduct);
       }
@@ -37,6 +40,7 @@ export default function ProductPage() {
       console.error("Failed to load product from localStorage, trying fallback", error);
       const foundProduct = initialProducts.find((p: Product) => p.id === id);
       if(foundProduct) setProduct(foundProduct);
+      setAllProducts(initialProducts);
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +51,12 @@ export default function ProductPage() {
         notFound();
     }
   }, [isLoading, product]);
+
+  const relatedProducts = product 
+    ? allProducts
+        .filter(p => p.category === product.category && p.id !== product.id)
+        .slice(0, 4)
+    : [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -80,6 +90,17 @@ export default function ProductPage() {
         ) : product ? (
              <ProductDetailsClient product={product} />
         ) : null}
+
+        {!isLoading && relatedProducts.length > 0 && (
+          <section className="mt-16 pt-12 border-t">
+            <h2 className="text-3xl font-bold font-headline mb-8 text-center">Related Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map(p => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <SiteFooter />
     </div>

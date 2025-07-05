@@ -16,7 +16,8 @@ export const products: Product[] = [
   {
     id: 'p1',
     name: 'Graphic Half-Sleeve Tee',
-    description: 'Express yourself with this cool graphic tee.',
+    shortDescription: 'Express yourself with this cool graphic tee.',
+    longDescription: '<p>This Graphic Half-Sleeve Tee is the perfect way to express your unique style. Made from 100% soft, breathable cotton, it ensures all-day comfort whether you\'re out with friends or relaxing at home.</p><img src="https://placehold.co/800x400.png" alt="Model wearing the tee" class="rounded-lg my-4" data-ai-hint="model wearing shirt" /><p>The high-quality graphic print is designed to last, resisting fading and cracking even after multiple washes. With a modern, slightly fitted cut, it offers a stylish silhouette that pairs perfectly with jeans, shorts, or joggers.</p><h3>Features:</h3><ul><li>100% Premium Combed Cotton</li><li>Durable, High-Fidelity Print</li><li>Pre-shrunk to minimize shrinkage</li><li>Tear-away label for maximum comfort</li></ul>',
     price: 24.99,
     rating: 4.6,
     reviewCount: 345,
@@ -35,7 +36,8 @@ export const products: Product[] = [
   {
     id: 'p8',
     name: 'Vintage Wash T-Shirt',
-    description: 'This half-sleeve tee has a soft, vintage feel from the first wear. A perfect addition to your casual rotation.',
+    shortDescription: 'This half-sleeve tee has a soft, vintage feel from the first wear. A perfect addition to your casual rotation.',
+    longDescription: '<p>Achieve an effortlessly cool look with our Vintage Wash T-Shirt. Each tee is specially treated to achieve a unique, washed-out look and an incredibly soft, broken-in feel. It\'s the perfect t-shirt for a laid-back, vintage-inspired wardrobe.</p><h3>Features:</h3><ul><li>Garment-dyed for a unique, faded color</li><li>100% Ring-spun cotton for superior softness</li><li>Relaxed fit for ultimate comfort</li></ul>',
     price: 29.99,
     rating: 4.7,
     reviewCount: 280,
@@ -53,7 +55,8 @@ export const products: Product[] = [
   {
     id: 'p11',
     name: 'Classic Crew Neck Tee',
-    description: 'A timeless classic, this half-sleeve crew neck is a wardrobe essential. Made from 100% premium cotton for ultimate comfort.',
+    shortDescription: 'A timeless classic, this half-sleeve crew neck is a wardrobe essential. Made from 100% premium cotton for ultimate comfort.',
+    longDescription: '<p>The foundation of any great wardrobe starts with a Classic Crew Neck Tee. Ours is crafted from premium, long-staple cotton for a feel that is both soft and durable. Its versatile design makes it an indispensable piece for any occasion.</p><h3>Features:</h3><ul><li>100% Long-staple premium cotton</li><li>Classic, comfortable fit</li><li>Ribbed collar for shape retention</li></ul>',
     price: 22.0,
     rating: 4.5,
     reviewCount: 250,
@@ -74,7 +77,8 @@ export const products: Product[] = [
   {
     id: 'p2',
     name: 'Long-Sleeve Henley',
-    description: 'Stay warm and stylish with our full-sleeve Henley shirt. Perfect for layering in cooler weather.',
+    shortDescription: 'Stay warm and stylish with our full-sleeve Henley shirt. Perfect for layering in cooler weather.',
+    longDescription: '<p>Our Long-Sleeve Henley is a rugged yet refined choice for the modern man. The three-button placket adds a touch of classic style, while the soft, textured fabric provides warmth and comfort. It\'s a perfect layering piece for transitional weather.</p><h3>Features:</h3><ul><li>Soft, textured waffle-knit fabric</li><li>Three-button Henley placket</li><li>Cuffed sleeves for a clean finish</li></ul>',
     price: 39.99,
     rating: 4.5,
     reviewCount: 210,
@@ -93,7 +97,8 @@ export const products: Product[] = [
   {
     id: 'p10',
     name: 'Thermal Full Sleeve',
-    description: 'A warm and cozy thermal full sleeve shirt.',
+    shortDescription: 'A warm and cozy thermal full sleeve shirt.',
+    longDescription: '<p>Brave the cold in our Thermal Full Sleeve shirt. The waffle-knit construction traps body heat, making it an excellent base layer for winter or a standalone piece for cool autumn days. It\'s as functional as it is comfortable.</p><h3>Features:</h3><ul><li>Waffle-knit thermal fabric for warmth</li><li>Crew neck design</li><li>Durable and shrink-resistant</li></ul>',
     price: 35.0,
     rating: 4.4,
     reviewCount: 95,
@@ -111,7 +116,8 @@ export const products: Product[] = [
   {
     id: 'p13',
     name: 'Stylish Full Sleeve',
-    description: 'A stylish full sleeve shirt for any occasion.',
+    shortDescription: 'A stylish full sleeve shirt for any occasion.',
+    longDescription: '<p>Elevate your look with this stylish full-sleeve shirt. It features unique design details that set it apart from the ordinary, making it a great choice for a night out or a special event.</p><h3>Features:</h3><ul><li>Unique design accents</li><li>Premium fabric blend</li><li>Tailored for a modern fit</li></ul>',
     price: 42.0,
     rating: 4.6,
     reviewCount: 115,
@@ -129,7 +135,8 @@ export const products: Product[] = [
   {
     id: 'p14',
     name: 'Casual Full Sleeve',
-    description: 'A comfortable full sleeve for casual wear.',
+    shortDescription: 'A comfortable full sleeve for casual wear.',
+    longDescription: '<p>Our Casual Full Sleeve is your new go-to for everyday comfort. Made from a soft cotton blend, it\'s perfect for relaxing on the weekend or running errands in style.</p><h3>Features:</h3><ul><li>Soft cotton-poly blend</li><li>Relaxed, comfortable fit</li><li>Easy to care for</li></ul>',
     price: 38.0,
     rating: 4.3,
     reviewCount: 85,
@@ -149,7 +156,8 @@ export const products: Product[] = [
   {
     id: 'p5',
     name: 'Signature Polo T-Shirt',
-    description: 'A smart-casual staple, our polo t-shirt is crafted from pique cotton for a textured feel and a comfortable fit.',
+    shortDescription: 'A smart-casual staple, our polo t-shirt is crafted from pique cotton for a textured feel and a comfortable fit.',
+    longDescription: '<p>The Signature Polo is the epitome of smart-casual style. It\'s crafted from breathable pique cotton with a distinctive textured weave. Perfect for the golf course, the office on a casual Friday, or a weekend brunch.</p><h3>Features:</h3><ul><li>100% Pique Cotton</li><li>Ribbed collar and cuffs</li><li>Two-button placket</li><li>Vented hem</li></ul>',
     price: 59.99,
     rating: 4.7,
     reviewCount: 320,
@@ -168,7 +176,8 @@ export const products: Product[] = [
   {
     id: 'p9',
     name: 'Premium Polo',
-    description: 'A premium polo shirt for a sharp look.',
+    shortDescription: 'A premium polo shirt for a sharp look.',
+    longDescription: '<p>Experience luxury with our Premium Polo. Made from the finest materials with meticulous attention to detail, this polo offers a superior fit and feel for those who demand the best.</p><h3>Features:</h3><ul><li>Luxury fabric blend</li><li>Mother-of-pearl buttons</li><li>Tailored athletic fit</li></ul>',
     price: 45.5,
     rating: 4.8,
     reviewCount: 120,
@@ -186,7 +195,8 @@ export const products: Product[] = [
   {
     id: 'p12',
     name: 'Essential Polo Shirt',
-    description: 'Your everyday essential polo shirt.',
+    shortDescription: 'Your everyday essential polo shirt.',
+    longDescription: '<p>The Essential Polo is the shirt you\'ll reach for time and time again. It combines classic polo styling with a comfortable fit and a wide range of colors to suit any mood or occasion.</p><h3>Features:</h3><ul><li>Soft and durable cotton blend</li><li>Classic fit</li><li>Available in a variety of colors</li></ul>',
     price: 49.99,
     rating: 4.6,
     reviewCount: 200,
@@ -204,7 +214,8 @@ export const products: Product[] = [
   {
     id: 'p15',
     name: 'Sport Polo Shirt',
-    description: 'A sporty polo for an active lifestyle.',
+    shortDescription: 'A sporty polo for an active lifestyle.',
+    longDescription: '<p>Designed for performance, our Sport Polo is made from a lightweight, moisture-wicking fabric that keeps you cool and dry. The athletic fit allows for a full range of motion, making it ideal for any activity.</p><h3>Features:</h3><ul><li>Moisture-wicking performance fabric</li><li>UPF 30+ sun protection</li><li>Athletic fit for freedom of movement</li></ul>',
     price: 54.99,
     rating: 4.7,
     reviewCount: 180,
@@ -224,7 +235,8 @@ export const products: Product[] = [
   {
     id: 'p3',
     name: 'Oversized Drop Shoulder Tee',
-    description: 'Get the relaxed, modern look with this drop shoulder t-shirt. Its oversized fit offers both comfort and style.',
+    shortDescription: 'Get the relaxed, modern look with this drop shoulder t-shirt. Its oversized fit offers both comfort and style.',
+    longDescription: '<p>Embrace contemporary streetwear style with our Oversized Drop Shoulder Tee. The dropped shoulder seams and roomy fit create a modern, relaxed silhouette. It\'s crafted from a heavyweight cotton jersey for a structured drape.</p><h3>Features:</h3><ul><li>Heavyweight 100% cotton jersey</li><li>Oversized, relaxed fit</li><li>Dropped shoulder seams</li></ul>',
     price: 34.99,
     rating: 4.8,
     reviewCount: 180,
@@ -242,7 +254,8 @@ export const products: Product[] = [
   {
     id: 'p4',
     name: 'Performance Sports T-Shirt',
-    description: 'Engineered for athletes, this sports t-shirt features moisture-wicking technology to keep you dry and comfortable during any activity.',
+    shortDescription: 'Engineered for athletes, this sports t-shirt features moisture-wicking technology to keep you dry and comfortable during any activity.',
+    longDescription: '<p>Push your limits with the Performance Sports T-Shirt. This tee is engineered with advanced moisture-wicking fabric that draws sweat away from your skin. The lightweight, breathable material and athletic cut allow for maximum mobility.</p><h3>Features:</h3><ul><li>Advanced moisture-wicking fabric</li><li>Lightweight and breathable</li><li>Reflective details for low-light visibility</li></ul>',
     price: 49.99,
     rating: 4.9,
     reviewCount: 450,
@@ -260,7 +273,8 @@ export const products: Product[] = [
   {
     id: 'p6',
     name: 'Crisp Oxford Shirt',
-    description: 'Look sharp in our classic Oxford shirt. A versatile piece that can be dressed up for work or down for the weekend.',
+    shortDescription: 'Look sharp in our classic Oxford shirt. A versatile piece that can be dressed up for work or down for the weekend.',
+    longDescription: '<p>The Crisp Oxford Shirt is a cornerstone of any well-dressed man\'s wardrobe. Made from durable Oxford cloth, it features a button-down collar and a classic fit that looks polished in any setting. It\'s a timeless investment in style.</p><h3>Features:</h3><ul><li>Durable Oxford cotton fabric</li><li>Button-down collar</li><li>Chest pocket</li></ul>',
     price: 79.99,
     rating: 4.6,
     reviewCount: 150,
@@ -278,7 +292,8 @@ export const products: Product[] = [
   {
     id: 'p7',
     name: 'Comfort-Flex Boxer Briefs (3-Pack)',
-    description: 'Experience all-day comfort with our boxer briefs, made from a soft and stretchy cotton blend. Features a supportive fit and a no-roll waistband.',
+    shortDescription: 'Experience all-day comfort with our boxer briefs, made from a soft and stretchy cotton blend. Features a supportive fit and a no-roll waistband.',
+    longDescription: '<p>Upgrade your essentials with our Comfort-Flex Boxer Briefs. This 3-pack is made from an ultra-soft, stretch-cotton blend that moves with you. The contoured pouch provides support, while the comfortable waistband stays put without digging in.</p><h3>Features:</h3><ul><li>Soft, stretch cotton-modal blend</li><li>Supportive contoured pouch</li><li>No-roll waistband</li><li>Convenient 3-pack</li></ul>',
     price: 29.99,
     rating: 4.8,
     reviewCount: 500,

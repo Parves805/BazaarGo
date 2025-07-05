@@ -23,18 +23,19 @@ const CATEGORIES_KEY = 'appCategories';
 
 const productSchema = z.object({
   name: z.string().min(3, { message: 'Product name must be at least 3 characters.' }),
-  description: z.string().min(10, { message: 'Description must be at least 10 characters.' }),
+  shortDescription: z.string().min(10, { message: 'Short description must be at least 10 characters.' }),
+  longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: 'Price must be a positive number.' }),
   stock: z.coerce.number().min(0, { message: 'Stock must be a positive number.' }),
   category: z.string().min(1, { message: 'Please select a category.' }),
   brand: z.string().min(2, { message: 'Brand is required.' }),
   images: z.array(z.object({ value: z.string().url({ message: "Please enter a valid URL." }) })).min(1, "At least one image is required."),
-  sizes: z.array(z.object({ value: z.string().min(1, "Size cannot be empty.") })),
-  tags: z.array(z.object({ value: z.string().min(1, "Tag cannot be empty.") })),
+  sizes: z.array(z.object({ value: z.string().min(1, "Size cannot be empty.") })).optional(),
+  tags: z.array(z.object({ value: z.string().min(1, "Tag cannot be empty.") })).optional(),
   colors: z.array(z.object({
     name: z.string().min(1, "Color name cannot be empty."),
     hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex code (e.g., #RRGGBB).")
-  })),
+  })).optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -56,7 +57,8 @@ export function ProductForm({ productId }: ProductFormProps) {
         resolver: zodResolver(productSchema),
         defaultValues: {
             name: '',
-            description: '',
+            shortDescription: '',
+            longDescription: '',
             price: 0,
             stock: 0,
             category: '',
@@ -94,15 +96,16 @@ export function ProductForm({ productId }: ProductFormProps) {
                 if (productToEdit) {
                     form.reset({
                         name: productToEdit.name,
-                        description: productToEdit.description,
+                        shortDescription: productToEdit.shortDescription,
+                        longDescription: productToEdit.longDescription,
                         price: productToEdit.price,
                         stock: productToEdit.stock,
                         category: productToEdit.category,
                         brand: productToEdit.brand,
                         images: productToEdit.images.map(val => ({ value: val })),
-                        sizes: productToEdit.sizes.map(val => ({ value: val })),
-                        tags: productToEdit.tags.map(val => ({ value: val })),
-                        colors: productToEdit.colors.map(val => ({ name: val.name, hex: val.hex })),
+                        sizes: productToEdit.sizes?.map(val => ({ value: val })),
+                        tags: productToEdit.tags?.map(val => ({ value: val })),
+                        colors: productToEdit.colors?.map(val => ({ name: val.name, hex: val.hex })),
                     });
                 } else {
                     toast({ variant: 'destructive', title: 'Product not found' });
@@ -116,7 +119,8 @@ export function ProductForm({ productId }: ProductFormProps) {
         } else {
             form.reset({
                 name: '',
-                description: '',
+                shortDescription: '',
+                longDescription: '',
                 price: 0,
                 stock: 0,
                 category: '',
@@ -135,7 +139,8 @@ export function ProductForm({ productId }: ProductFormProps) {
 
         const transformedData = {
             name: data.name,
-            description: data.description,
+            shortDescription: data.shortDescription,
+            longDescription: data.longDescription || '',
             price: data.price,
             stock: data.stock,
             category: data.category,
@@ -245,11 +250,22 @@ export function ProductForm({ productId }: ProductFormProps) {
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="description"
+                                    name="shortDescription"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
-                                            <FormLabel>Description</FormLabel>
-                                            <FormControl><Textarea {...field} rows={5} /></FormControl>
+                                            <FormLabel>Short Description</FormLabel>
+                                            <FormControl><Textarea {...field} rows={3} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name="longDescription"
+                                    render={({ field }) => (
+                                        <FormItem className="md:col-span-2">
+                                            <FormLabel>Long Description (HTML Supported)</FormLabel>
+                                            <FormControl><Textarea {...field} rows={8} /></FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

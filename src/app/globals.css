@@ -105,4 +105,14 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .html-content-viewer p { @apply mb-4; }
+  .html-content-viewer ul { @apply list-disc pl-5 mb-4 space-y-2; }
+  .html-content-viewer ol { @apply list-decimal pl-5 mb-4 space-y-2; }
+  .html-content-viewer li { @apply pl-2; }
+  .html-content-viewer h1, .html-content-viewer h2, .html-content-viewer h3, .html-content-viewer h4, .html-content-viewer h5 { @apply font-bold font-headline mb-3 mt-5 text-foreground; }
+  .html-content-viewer h1 { @apply text-2xl; }
+  .html-content-viewer h2 { @apply text-xl; }
+  .html-content-viewer h3 { @apply text-lg; }
+  .html-content-viewer img { @apply rounded-lg my-4 w-full h-auto; }
+  .html-content-viewer a { @apply text-primary hover:underline; }
 }
