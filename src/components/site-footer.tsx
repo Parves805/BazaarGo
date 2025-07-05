@@ -2,13 +2,16 @@
 
 import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
-import { categories } from '@/lib/data';
+import { initialCategories } from '@/lib/data';
 import { useState, useEffect } from 'react';
+import type { Category } from '@/lib/types';
 
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+const CATEGORIES_KEY = 'appCategories';
 
 export function SiteFooter() {
   const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     try {
@@ -18,6 +21,13 @@ export function SiteFooter() {
             if (savedSettings && savedSettings.storeName) {
                 setSettings(savedSettings);
             }
+        }
+        
+        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+        if (savedCategoriesJSON) {
+            setCategories(JSON.parse(savedCategoriesJSON));
+        } else {
+            setCategories(initialCategories);
         }
     } catch (error) {
         console.error("Failed to load settings for footer", error);

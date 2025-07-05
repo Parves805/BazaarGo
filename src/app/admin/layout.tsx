@@ -9,7 +9,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarInset,
 } from '@/components/ui/sidebar';
 import {
   ShoppingBag,
@@ -21,8 +20,8 @@ import {
   Home,
   Settings,
   MessageSquare,
-  Bell,
   ChevronDown,
+  LayoutGrid,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -192,6 +191,14 @@ export default function AdminLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
+                  <Link href="/admin/categories">
+                    <LayoutGrid />
+                    Categories
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               
               {/* User Management */}
               <SidebarMenuItem>
@@ -218,8 +225,7 @@ export default function AdminLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
                   <Link href="/admin/notifications">
-                    <Bell />
-                    Notifications
+                    <span>Notifications</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -285,11 +291,9 @@ export default function AdminLayout({
              </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>
           <main className="flex-1 p-6">           
             {children}
           </main>
-        </SidebarInset>
       </div>
     </SidebarProvider>
   );

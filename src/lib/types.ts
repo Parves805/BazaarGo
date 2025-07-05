@@ -17,7 +17,6 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
   image: string;
   bannerImage: string;
 }

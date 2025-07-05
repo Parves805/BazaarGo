@@ -1,15 +1,14 @@
 import type { Product, Category } from '@/lib/types';
-import { Shirt, User } from 'lucide-react';
 
-export const categories: Category[] = [
-  { id: 'mens', name: 'Mens', icon: User, image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'half-sleeve', name: 'Half Sleeve T-shirt', icon: Shirt, image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_1-dRP5Srup6Ukf2hf_HXKws9B2_u_x9_hY0vi2qF9kEp9sOd5ZPuHT9fVv5Prcg8tafAzF-E2fw6CfGP1gLoxiIqsrPVZxAJ1wZssw-uAvineJbwUuJ0yK91h02Gnn-ZFEVSfqn_eGTWYl5rmCm1pQvqchiauK0kD3blLbNNZErMc6aALqvHzjkwzrg/s320/643106a391a9e-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'full-sleeve', name: 'Full Sleeve T-shirt', icon: Shirt, image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgDCUB_-5LzYY1l4yZKR1xJ450aF6Q2HwkVi3ope0LhMEpfL-Rn3cOjvqXegtdFSShhUXAy1Vk8a7ee20ubnuUXcuXC4rafTNvouxmIan07_MdA6jvp_RcsQeYaT3hT_T8yDMPRLgTLrI-ODEQrMEREqvD4-lDgk4OqMroibW9rJxoz0vbyJCC75BkPOyM/s320/61c4131d3073e-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'drop-shoulder', name: 'Drop Shoulder T-shirt', icon: Shirt, image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'sports-tshirt', name: 'Sports T-shirt', icon: Shirt, image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'polo-tshirt', name: 'Polo T-shirt', icon: Shirt, image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgO-yMlAsx8RlDNnXCCpKoo1gT25kg43_toC9ccRBYldcV6bAQADPsL8dS-OUtfy8kqy3eFm0MvXRDOuGs3TmU4OWULHIKjto_Dz47ew5Eirqt61cNdNNJ7aOIP4vSkD8R8ZmtR7ommjbKMTcIJi1pqr2-L3x4ycnquhh5RUzwYfeBLMxVdyaj10b8Ex90/s320/621784538389b-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'shirt', name: 'Shirt', icon: Shirt, image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
-  { id: 'underwear', name: 'Underwear', icon: Shirt, image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
+export const initialCategories: Category[] = [
+  { id: 'mens', name: 'Mens', image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'half-sleeve', name: 'Half Sleeve T-shirt', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_1-dRP5Srup6Ukf2hf_HXKws9B2_u_x9_hY0vi2qF9kEp9sOd5ZPuHT9fVv5Prcg8tafAzF-E2fw6CfGP1gLoxiIqsrPVZxAJ1wZssw-uAvineJbwUuJ0yK91h02Gnn-ZFEVSfqn_eGTWYl5rmCm1pQvqchiauK0kD3blLbNNZErMc6aALqvHzjkwzrg/s320/643106a391a9e-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'full-sleeve', name: 'Full Sleeve T-shirt', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgDCUB_-5LzYY1l4yZKR1xJ450aF6Q2HwkVi3ope0LhMEpfL-Rn3cOjvqXegtdFSShhUXAy1Vk8a7ee20ubnuUXcuXC4rafTNvouxmIan07_MdA6jvp_RcsQeYaT3hT_T8yDMPRLgTLrI-ODEQrMEREqvD4-lDgk4OqMroibW9rJxoz0vbyJCC75BkPOyM/s320/61c4131d3073e-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'drop-shoulder', name: 'Drop Shoulder T-shirt', image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'sports-tshirt', name: 'Sports T-shirt', image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'polo-tshirt', name: 'Polo T-shirt', image: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgO-yMlAsx8RlDNnXCCpKoo1gT25kg43_toC9ccRBYldcV6bAQADPsL8dS-OUtfy8kqy3eFm0MvXRDOuGs3TmU4OWULHIKjto_Dz47ew5Eirqt61cNdNNJ7aOIP4vSkD8R8ZmtR7ommjbKMTcIJi1pqr2-L3x4ycnquhh5RUzwYfeBLMxVdyaj10b8Ex90/s320/621784538389b-square.jpg', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'shirt', name: 'Shirt', image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
+  { id: 'underwear', name: 'Underwear', image: 'https://placehold.co/400x300.png', bannerImage: 'https://placehold.co/1200x400.png' },
 ];
 
 export const products: Product[] = [

@@ -13,12 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { categories } from '@/lib/data';
-import type { Product } from '@/lib/types';
+import { initialCategories } from '@/lib/data';
+import type { Product, Category } from '@/lib/types';
 import { Loader2, Trash2, PlusCircle } from 'lucide-react';
 import { products as initialProducts } from '@/lib/data';
 
 const PRODUCTS_KEY = 'appProducts';
+const CATEGORIES_KEY = 'appCategories';
 
 const productSchema = z.object({
   name: z.string().min(3, { message: 'Product name must be at least 3 characters.' }),
@@ -38,7 +39,6 @@ const productSchema = z.object({
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
-// EditProductPage now passes productId for edit mode. NewProductPage does not.
 interface ProductFormProps {
     productId?: string;
 }
@@ -48,6 +48,7 @@ export function ProductForm({ productId }: ProductFormProps) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const isEditMode = !!productId;
 
@@ -73,6 +74,17 @@ export function ProductForm({ productId }: ProductFormProps) {
     const { fields: colorFields, append: appendColor, remove: removeColor } = useFieldArray({ control: form.control, name: "colors" });
 
     useEffect(() => {
+      try {
+        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+        if (savedCategoriesJSON) {
+            setCategories(JSON.parse(savedCategoriesJSON));
+        } else {
+            setCategories(initialCategories);
+        }
+      } catch (e) {
+        setCategories(initialCategories);
+      }
+
         if (isEditMode) {
             try {
                 const savedProducts = localStorage.getItem(PRODUCTS_KEY);

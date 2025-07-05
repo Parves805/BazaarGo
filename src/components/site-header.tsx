@@ -18,11 +18,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { categories } from '@/lib/data';
+import { initialCategories } from '@/lib/data';
+import type { Category } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+const CATEGORIES_KEY = 'appCategories';
 
 export function SiteHeader() {
   const { toast } = useToast();
@@ -34,6 +36,7 @@ export function SiteHeader() {
   const [notifications, setNotifications] = useState<{ id: string; message: string; imageUrl?: string; timestamp: string; read: boolean }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [settings, setSettings] = useState({ storeName: 'BazaarGo' });
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const loadNotifications = () => {
     const savedNotifications = localStorage.getItem('bazaargoNotifications');
@@ -65,6 +68,14 @@ export function SiteHeader() {
                 setSettings(savedSettings);
             }
         }
+        
+        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+        if (savedCategoriesJSON) {
+            setCategories(JSON.parse(savedCategoriesJSON));
+        } else {
+            setCategories(initialCategories);
+        }
+
     } catch (error) {
         console.error("Failed to load settings for header", error);
     }
@@ -83,6 +94,11 @@ export function SiteHeader() {
                     setSettings(savedSettings);
                 }
             }
+            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+            if (savedCategoriesJSON) {
+                setCategories(JSON.parse(savedCategoriesJSON));
+            }
+
         } catch (error) {
             // fail silently
         }
@@ -371,7 +387,3 @@ export function SiteHeader() {
     </header>
   );
 }
-
-    
-
-    

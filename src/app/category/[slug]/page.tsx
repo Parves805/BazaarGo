@@ -3,21 +3,23 @@
 import { useState, useEffect } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { categories, products as initialProducts } from '@/lib/data';
+import { initialCategories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import type { Product } from '@/lib/types';
+import type { Product, Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const PRODUCTS_KEY = 'appProducts';
+const CATEGORIES_KEY = 'appCategories';
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
   const slug = params.slug;
   
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const category = categories.find((c) => c.id === slug);
@@ -26,6 +28,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     setIsLoading(true);
     try {
+      // Load products
       const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
       if (savedProductsJSON) {
         const parsed = JSON.parse(savedProductsJSON);
@@ -37,16 +40,56 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       } else {
         setProducts(initialProducts);
       }
+
+      // Load categories
+      const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+      if (savedCategoriesJSON) {
+        const parsed = JSON.parse(savedCategoriesJSON);
+        if (Array.isArray(parsed)) {
+          setCategories(parsed);
+        } else {
+          setCategories(initialCategories);
+        }
+      } else {
+        setCategories(initialCategories);
+      }
+
     } catch (error) {
-      console.error("Failed to load products from localStorage, using defaults.", error);
+      console.error("Failed to load data from localStorage, using defaults.", error);
       setProducts(initialProducts);
+      setCategories(initialCategories);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  if (!category) {
+  if (!isLoading && !category) {
     notFound();
+  }
+
+  if (isLoading || !category) {
+    return (
+        <div className="flex flex-col min-h-screen">
+            <SiteHeader />
+            <main className="flex-grow pb-16 md:pb-0">
+                <Skeleton className="h-56 w-full" />
+                <div className="container py-8 md:py-12">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="flex flex-col space-y-3">
+                        <Skeleton className="h-[320px] w-full rounded-xl" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+            </main>
+            <SiteFooter />
+        </div>
+    );
   }
 
   return (
@@ -77,19 +120,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               <span>{category.name}</span>
             </div>
 
-            {isLoading ? (
-               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="flex flex-col space-y-3">
-                    <Skeleton className="h-[320px] w-full rounded-xl" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-[200px]" />
-                        <Skeleton className="h-4 w-[150px]" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredProducts.length > 0 ? (
+            {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />

@@ -13,11 +13,12 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-import { categories } from '@/lib/data';
+import { initialCategories } from '@/lib/data';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from './ui/separator';
+import type { Category } from '@/lib/types';
 
 const NavLink = ({ href, pathname, children }: { href: string, pathname: string, children: React.ReactNode }) => (
   <Link href={href} className={cn(
@@ -38,6 +39,7 @@ const MenuLink = ({ href, children, onSelect }: { href: string, children: React.
     </Link>
 );
 
+const CATEGORIES_KEY = 'appCategories';
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -46,12 +48,20 @@ export function BottomNav() {
   const { toast } = useToast();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAccountSheetOpen, setIsAccountSheetOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     // This check ensures we don't try to access localStorage on the server.
     if (typeof window !== 'undefined') {
         const authStatus = localStorage.getItem('isAuthenticated');
         setIsAuthenticated(authStatus === 'true');
+
+        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+        if (savedCategoriesJSON) {
+            setCategories(JSON.parse(savedCategoriesJSON));
+        } else {
+            setCategories(initialCategories);
+        }
     }
   }, [pathname]); // Re-check on route change if needed
 

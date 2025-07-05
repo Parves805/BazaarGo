@@ -8,8 +8,8 @@ import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { categories, products as initialProducts } from '@/lib/data';
-import type { Product } from '@/lib/types';
+import { initialCategories, products as initialProducts } from '@/lib/data';
+import type { Product, Category } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,6 +17,7 @@ import { ProductRecommendations } from '@/components/product-recommendations';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
+const CATEGORIES_KEY = 'appCategories';
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const AI_SETTINGS_KEY = 'aiSettings';
 
@@ -36,16 +37,16 @@ interface Slide {
 
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
-  const [isLoadingSlides, setIsLoadingSlides] = React.useState(true);
+  const [categories, setCategories] = React.useState<Category[]>([]);
   const [products, setProducts] = React.useState<Product[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = React.useState(true);
   const [saleProducts, setSaleProducts] = React.useState<Product[]>([]);
   const [viewingHistory, setViewingHistory] = React.useState<string[]>([]);
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
   React.useEffect(() => {
-    setIsLoadingSlides(true);
-    setIsLoadingProducts(true);
+    setIsLoading(true);
 
     try {
       // Load hero slides
@@ -73,6 +74,17 @@ export default function Home() {
       setProducts(allProducts);
       const onSale = allProducts.filter((p: Product) => p.tags.includes('sale'));
       setSaleProducts(onSale);
+      
+      // Load categories
+      const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+      if (savedCategoriesJSON) {
+        const parsed = JSON.parse(savedCategoriesJSON);
+        if (Array.isArray(parsed)) {
+          setCategories(parsed);
+        }
+      } else {
+        setCategories(initialCategories);
+      }
 
       // Load viewing history
       const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
@@ -90,12 +102,12 @@ export default function Home() {
       // Fallback to defaults on any error
       setHeroSlides(defaultSlides);
       setProducts(initialProducts);
+      setCategories(initialCategories);
       setSaleProducts(initialProducts.filter((p: Product) => p.tags.includes('sale')));
       setViewingHistory([]);
       setAiSettings({ recommendationsEnabled: true });
     } finally {
-      setIsLoadingSlides(false);
-      setIsLoadingProducts(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -112,7 +124,7 @@ export default function Home() {
       <main className="flex-grow pb-16 md:pb-0">
         {/* Hero Section */}
         <section>
-          {isLoadingSlides ? (
+          {isLoading ? (
             <Skeleton className="w-full h-[135.25px] md:h-[70vh] rounded-lg" />
           ) : (
             <div className="overflow-hidden rounded-lg">
@@ -158,7 +170,14 @@ export default function Home() {
               className="w-full"
             >
               <CarouselContent>
-                {categories.map((category) => (
+                {isLoading ? [...Array(8)].map((_, i) => (
+                  <CarouselItem key={i} className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8">
+                    <div className="p-1 space-y-2">
+                       <Skeleton className="aspect-square rounded-lg" />
+                       <Skeleton className="h-4 w-10/12 mx-auto" />
+                    </div>
+                  </CarouselItem>
+                )) : categories.map((category) => (
                   <CarouselItem key={category.id} className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8">
                     <div className="p-1">
                       <Link href={`/category/${category.id}`} className="group text-center block">
@@ -193,7 +212,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
             <Carousel opts={{ align: "start", loop: true }} className="w-full">
               <CarouselContent>
-                {isLoadingProducts ? [...Array(6)].map((_, i) => (
+                {isLoading ? [...Array(6)].map((_, i) => (
                   <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                     <div className="p-1"><Skeleton className="h-[400px]" /></div>
                   </CarouselItem>
@@ -218,7 +237,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-center font-headline mb-8">On Sale Now</h2>
               <Carousel opts={{ align: "start", loop: saleProducts.length > 4 }} className="w-full">
                 <CarouselContent>
-                  {isLoadingProducts ? [...Array(4)].map((_, i) => (
+                  {isLoading ? [...Array(4)].map((_, i) => (
                     <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                       <div className="p-1"><Skeleton className="h-[400px]" /></div>
                     </CarouselItem>
