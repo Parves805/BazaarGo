@@ -35,7 +35,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { SheetClose } from '@/components/ui/sheet';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -157,6 +156,11 @@ export default function AdminLayout({
       );
   }
 
+  const mainContentClass = "flex-1 p-6 overflow-y-auto";
+  const centeredContentClass = "max-w-5xl mx-auto w-full";
+  const isFullWidthPage = ['/admin', '/admin/orders', '/admin/products', '/admin/categories', '/admin/customers'].includes(pathname);
+
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-secondary/30">
@@ -171,80 +175,66 @@ export default function AdminLayout({
             <SidebarMenu>
               {/* Core Operations */}
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin')}>
-                    <Link href="/admin">
-                      <LayoutDashboard />
-                      Dashboard
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin')}>
+                  <Link href="/admin">
+                    <LayoutDashboard />
+                    Dashboard
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
-                    <Link href="/admin/orders">
-                      <ShoppingCart />
-                      Orders
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
+                  <Link href="/admin/orders">
+                    <ShoppingCart />
+                    Orders
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
-                    <Link href="/admin/products">
-                      <Package />
-                      Products
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
+                  <Link href="/admin/products">
+                    <Package />
+                    Products
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
                <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
-                    <Link href="/admin/categories">
-                      <LayoutGrid />
-                      Categories
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
+                  <Link href="/admin/categories">
+                    <LayoutGrid />
+                    Categories
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               
               {/* User Management */}
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
-                    <Link href="/admin/customers">
-                      <Users />
-                      Customers
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
+                  <Link href="/admin/customers">
+                    <Users />
+                    Customers
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
-                    <Link href="/admin/communications">
-                      <MessageSquare />
-                      <span>Communications</span>
-                      {newMessagesCount > 0 && (
-                        <Badge className="ml-auto">{newMessagesCount}</Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
+                  <Link href="/admin/communications">
+                    <MessageSquare />
+                    <span>Communications</span>
+                    {newMessagesCount > 0 && (
+                      <Badge className="ml-auto">{newMessagesCount}</Badge>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Platform */}
               <SidebarMenuItem>
-                <SheetClose asChild>
-                  <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
-                    <Link href="/admin/notifications">
-                      <span>Notifications</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SheetClose>
+                <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
+                  <Link href="/admin/notifications">
+                    <span>Notifications</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               
                <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
@@ -253,6 +243,7 @@ export default function AdminLayout({
                       <SidebarMenuButton
                         className="justify-between w-full"
                         isActive={areSettingsActive}
+                        closeSheetOnClick={false}
                       >
                         <div className="flex items-center gap-2">
                           <Settings />
@@ -264,32 +255,24 @@ export default function AdminLayout({
                   <CollapsibleContent className="w-full">
                     <SidebarMenu className="pl-6 pt-1">
                        <SidebarMenuItem>
-                          <SheetClose asChild>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
-                              <Link href="/admin/settings">General Settings</Link>
-                            </SidebarMenuButton>
-                          </SheetClose>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                            <Link href="/admin/settings">General Settings</Link>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SheetClose asChild>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                              <Link href="/admin/analytics">Analytics</Link>
-                            </SidebarMenuButton>
-                          </SheetClose>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                            <Link href="/admin/analytics">Analytics</Link>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SheetClose asChild>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                              <Link href="/admin/seo">SEO Management</Link>
-                            </SidebarMenuButton>
-                          </SheetClose>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                            <Link href="/admin/seo">SEO Management</Link>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SheetClose asChild>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                              <Link href="/admin/email-marketing">Email Marketing</Link>
-                            </SidebarMenuButton>
-                          </SheetClose>
+                          <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                            <Link href="/admin/email-marketing">Email Marketing</Link>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
                   </CollapsibleContent>
@@ -300,22 +283,18 @@ export default function AdminLayout({
           <SidebarFooter>
              <SidebarMenu>
                 <SidebarMenuItem>
-                    <SheetClose asChild>
-                      <SidebarMenuButton asChild>
-                          <Link href="/">
-                              <Home />
-                              Back to Store
-                          </Link>
-                      </SidebarMenuButton>
-                    </SheetClose>
+                  <SidebarMenuButton asChild>
+                      <Link href="/">
+                          <Home />
+                          Back to Store
+                      </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    <SheetClose asChild>
-                      <SidebarMenuButton onClick={handleLogout}>
-                          <LogOut />
-                          Logout
-                      </SidebarMenuButton>
-                    </SheetClose>
+                  <SidebarMenuButton onClick={handleLogout}>
+                      <LogOut />
+                      Logout
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
              </SidebarMenu>
           </SidebarFooter>
@@ -325,9 +304,9 @@ export default function AdminLayout({
                 <SidebarTrigger />
                 <h1 className="text-lg font-semibold">Admin Menu</h1>
               </header>
-            <main className="flex-1 p-6 overflow-y-auto">           
-              {children}
-            </main>
+              <main className={cn(mainContentClass, !isFullWidthPage && centeredContentClass)}>
+                {children}
+              </main>
           </div>
       </div>
     </SidebarProvider>

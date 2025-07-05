@@ -542,6 +542,7 @@ const SidebarMenuButton = React.forwardRef<
     asChild?: boolean
     isActive?: boolean
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    closeSheetOnClick?: boolean
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -552,12 +553,14 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      onClick,
+      closeSheetOnClick = true,
       ...props
     },
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
-    const { isMobile, state } = useSidebar()
+    const { isMobile, state, setOpenMobile } = useSidebar()
 
     const button = (
       <Comp
@@ -566,6 +569,12 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+          if (closeSheetOnClick && isMobile) {
+            setOpenMobile(false)
+          }
+          onClick?.(event)
+        }}
         {...props}
       />
     )
