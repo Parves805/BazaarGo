@@ -24,6 +24,7 @@ import {
   MessageSquare,
   ChevronDown,
   LayoutGrid,
+  Bell,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -36,6 +37,7 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -221,6 +223,7 @@ export default function AdminLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
                   <Link href="/admin/notifications">
+                    <Bell />
                     <span>Notifications</span>
                   </Link>
                 </SidebarMenuButton>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -35,14 +35,14 @@ export default function AdminCategoriesPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const { toast } = useToast();
+    const isInitialLoad = useRef(true);
 
     const form = useForm<CategoryFormValues>({
         resolver: zodResolver(categorySchema),
         defaultValues: { name: '', image: '', bannerImage: '' },
     });
-
-    useEffect(() => {
-        setIsLoading(true);
+    
+    const loadCategories = () => {
         try {
             const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
             if (savedCategoriesJSON) {
@@ -61,8 +61,17 @@ export default function AdminCategoriesPage() {
             console.error("Failed to load categories, re-initializing.", error);
             setCategories(initialCategories);
         } finally {
-            setIsLoading(false);
+            if (isInitialLoad.current) {
+                setIsLoading(false);
+                isInitialLoad.current = false;
+            }
         }
+    };
+
+    useEffect(() => {
+        loadCategories();
+        const interval = setInterval(loadCategories, 3000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleAddCategory = (data: CategoryFormValues) => {
@@ -110,11 +119,11 @@ export default function AdminCategoriesPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Categories</CardTitle>
+                        <CardTitle className="text-2xl md:text-3xl">Categories</CardTitle>
                         <CardDescription>Manage your store categories here.</CardDescription>
                     </div>
                      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -197,56 +206,58 @@ export default function AdminCategoriesPage() {
                             ))}
                         </div>
                     ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Image</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {categories.map((category) => (
-                                <TableRow key={category.id}>
-                                    <TableCell>
-                                        <Image
-                                            alt={category.name}
-                                            className="aspect-square rounded-md object-cover"
-                                            height="64"
-                                            src={category.image || 'https://placehold.co/64x64.png'}
-                                            width="64"
-                                            data-ai-hint="product category"
-                                        />
-                                    </TableCell>
-                                    <TableCell className="font-medium">{category.name}</TableCell>
-                                    <TableCell className="text-right">
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="icon">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Delete</span>
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This action cannot be undone. This will permanently delete the category.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDeleteCategory(category.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                        Delete
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </TableCell>
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Image</TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {categories.map((category) => (
+                                    <TableRow key={category.id}>
+                                        <TableCell>
+                                            <Image
+                                                alt={category.name}
+                                                className="aspect-square rounded-md object-cover"
+                                                height="64"
+                                                src={category.image || 'https://placehold.co/64x64.png'}
+                                                width="64"
+                                                data-ai-hint="product category"
+                                            />
+                                        </TableCell>
+                                        <TableCell className="font-medium">{category.name}</TableCell>
+                                        <TableCell className="text-right">
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon">
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Delete</span>
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete the category.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDeleteCategory(category.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                     )}
                 </CardContent>
             </Card>

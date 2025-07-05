@@ -1,6 +1,6 @@
 'use client'; 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -30,6 +30,7 @@ import { Separator } from '@/components/ui/separator';
 import type { Order } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusColors: { [key: string]: string } = {
   Delivered: 'bg-green-500',
@@ -45,9 +46,9 @@ export default function AdminOrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const { toast } = useToast();
+    const isInitialLoad = useRef(true);
 
-    const fetchOrders = () => {
-        setIsLoading(true);
+    const loadOrders = () => {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
@@ -57,22 +58,27 @@ export default function AdminOrdersPage() {
                     parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                     setOrders(parsedOrders);
                  } else {
-                    setOrders([]); // Handle case where localStorage item is not an array
+                    setOrders([]);
                  }
             } else {
-                setOrders([]); // Handle case where there is no item in localStorage
+                setOrders([]);
             }
         } catch (error) {
             console.error("Failed to load orders from localStorage", error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to load orders.' });
-            setOrders([]); // Reset on error
+            setOrders([]);
         } finally {
-            setIsLoading(false);
+            if (isInitialLoad.current) {
+                setIsLoading(false);
+                isInitialLoad.current = false;
+            }
         }
     }
 
     useEffect(() => {
-        fetchOrders();
+        loadOrders();
+        const interval = setInterval(loadOrders, 3000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
@@ -87,9 +93,8 @@ export default function AdminOrdersPage() {
                     if (orderIndex > -1) {
                         currentOrders[orderIndex].status = newStatus;
                         localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
-                        fetchOrders(); // Re-fetch and re-sort
+                        loadOrders(); // Re-fetch and re-sort
                         
-                        // Also update selectedOrder if it's the one being changed
                         if (selectedOrder && selectedOrder.id === orderId) {
                             setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
                         }
@@ -103,10 +108,6 @@ export default function AdminOrdersPage() {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to update status.' });
         }
     };
-
-    if (isLoading) {
-        return <p>Loading orders...</p>;
-    }
     
     const subtotal = selectedOrder?.items.reduce((acc, item) => acc + item.price * item.quantity, 0) ?? 0;
     const shipping = selectedOrder ? selectedOrder.total - subtotal : 0;
@@ -114,72 +115,80 @@ export default function AdminOrdersPage() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Orders</CardTitle>
+                <CardTitle className="text-2xl md:text-3xl">Orders</CardTitle>
                 <CardDescription>Manage customer orders here.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Order ID</TableHead>
-                            <TableHead>Customer</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {orders.length > 0 ? orders.map((order) => (
-                            <TableRow key={order.id}>
-                                <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
-                                <TableCell>{order.shippingInfo.name}</TableCell>
-                                <TableCell>{format(new Date(order.date), "PPP")}</TableCell>
-                                <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className="flex items-center gap-2 w-fit">
-                                        <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
-                                        {order.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                                            <MoreHorizontal className="h-4 w-4" />
-                                            <span className="sr-only">Toggle menu</span>
-                                        </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onSelect={() => setSelectedOrder(order)}>View Details</DropdownMenuItem>
-                                            <DropdownMenuSub>
-                                                <DropdownMenuSubTrigger>Update Status</DropdownMenuSubTrigger>
-                                                <DropdownMenuPortal>
-                                                    <DropdownMenuSubContent>
-                                                        {ORDER_STATUSES.map(status => (
-                                                            <DropdownMenuItem 
-                                                                key={status} 
-                                                                onClick={() => handleStatusChange(order.id, status)}
-                                                                disabled={order.status === status}
-                                                            >
-                                                                {status}
-                                                            </DropdownMenuItem>
-                                                        ))}
-                                                    </DropdownMenuSubContent>
-                                                </DropdownMenuPortal>
-                                            </DropdownMenuSub>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        )) : (
+                {isLoading ? (
+                    <div className="space-y-2">
+                        {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                    </div>
+                ) : (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center">No orders found.</TableCell>
+                                <TableHead>Order ID</TableHead>
+                                <TableHead>Customer</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Total</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Actions</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {orders.length > 0 ? orders.map((order) => (
+                                <TableRow key={order.id}>
+                                    <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
+                                    <TableCell>{order.shippingInfo.name}</TableCell>
+                                    <TableCell>{format(new Date(order.date), "PPP")}</TableCell>
+                                    <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="flex items-center gap-2 w-fit">
+                                            <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
+                                            {order.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                            <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                                <span className="sr-only">Toggle menu</span>
+                                            </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onSelect={() => setSelectedOrder(order)}>View Details</DropdownMenuItem>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>Update Status</DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            {ORDER_STATUSES.map(status => (
+                                                                <DropdownMenuItem 
+                                                                    key={status} 
+                                                                    onClick={() => handleStatusChange(order.id, status)}
+                                                                    disabled={order.status === status}
+                                                                >
+                                                                    {status}
+                                                                </DropdownMenuItem>
+                                                            ))}
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="text-center">No orders found.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                )}
 
                 {selectedOrder && (
                     <Dialog open={!!selectedOrder} onOpenChange={(isOpen) => !isOpen && setSelectedOrder(null)}>

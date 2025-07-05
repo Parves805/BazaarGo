@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DollarSign, Package, ShoppingCart, Users, ArrowUp, ArrowDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -31,70 +31,82 @@ export default function AdminDashboardPage() {
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const isInitialLoad = useRef(true);
 
     useEffect(() => {
-        try {
-            const savedOrders = localStorage.getItem('bazaargoUserOrders');
-            let orders: Order[] = [];
-            if (savedOrders) {
-                const parsed = JSON.parse(savedOrders);
-                if (Array.isArray(parsed)) {
-                    orders = parsed;
+        const loadDashboardData = () => {
+            try {
+                const savedOrders = localStorage.getItem('bazaargoUserOrders');
+                let orders: Order[] = [];
+                if (savedOrders) {
+                    const parsed = JSON.parse(savedOrders);
+                    if (Array.isArray(parsed)) {
+                        orders = parsed;
+                    }
+                }
+                
+                const savedProducts = localStorage.getItem(PRODUCTS_KEY);
+                const products: Product[] = savedProducts ? JSON.parse(savedProducts) : initialProducts;
+                setTotalProducts(products.length);
+
+                // --- Calculate Stats ---
+                const now = new Date();
+                const lastMonthStart = startOfMonth(subMonths(now, 1));
+                const thisMonthStart = startOfMonth(now);
+
+                let totalRevenue = 0;
+                let lastMonthRevenue = 0;
+                let thisMonthRevenue = 0;
+                let lastMonthSales = 0;
+                let thisMonthSales = 0;
+
+                const customerEmails = new Set<string>();
+
+                orders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (order.status !== 'Cancelled') {
+                        totalRevenue += order.total;
+                        if (orderDate >= lastMonthStart && orderDate < thisMonthStart) {
+                            lastMonthRevenue += order.total;
+                            lastMonthSales++;
+                        }
+                        if (orderDate >= thisMonthStart) {
+                            thisMonthRevenue += order.total;
+                            thisMonthSales++;
+                        }
+                    }
+                    customerEmails.add(order.shippingInfo.email);
+                });
+
+                const revenueChange = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : thisMonthRevenue > 0 ? 100 : 0;
+                const salesChange = lastMonthSales > 0 ? ((thisMonthSales - lastMonthSales) / lastMonthSales) * 100 : thisMonthSales > 0 ? 100 : 0;
+
+                setStats({
+                    totalRevenue,
+                    totalSales: orders.filter(o => o.status !== 'Cancelled').length,
+                    totalCustomers: customerEmails.size,
+                    revenueChange,
+                    salesChange
+                });
+
+                // --- Set Recent Orders ---
+                const sortedOrders = [...orders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                setRecentOrders(sortedOrders.slice(0, 5));
+
+            } catch (error) {
+                console.error("Failed to load dashboard data from localStorage", error);
+            } finally {
+                if (isInitialLoad.current) {
+                    setIsLoading(false);
+                    isInitialLoad.current = false;
                 }
             }
-            
-            const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-            const products: Product[] = savedProducts ? JSON.parse(savedProducts) : initialProducts;
-            setTotalProducts(products.length);
+        };
 
-            // --- Calculate Stats ---
-            const now = new Date();
-            const lastMonthStart = startOfMonth(subMonths(now, 1));
-            const thisMonthStart = startOfMonth(now);
+        loadDashboardData();
+        const interval = setInterval(loadDashboardData, 3000); // Poll for fresh data
 
-            let totalRevenue = 0;
-            let lastMonthRevenue = 0;
-            let thisMonthRevenue = 0;
-            let lastMonthSales = 0;
-            let thisMonthSales = 0;
-
-            const customerEmails = new Set<string>();
-
-            orders.forEach(order => {
-                const orderDate = new Date(order.date);
-                if (order.status !== 'Cancelled') {
-                    totalRevenue += order.total;
-                    if (orderDate >= lastMonthStart && orderDate < thisMonthStart) {
-                        lastMonthRevenue += order.total;
-                        lastMonthSales++;
-                    }
-                    if (orderDate >= thisMonthStart) {
-                        thisMonthRevenue += order.total;
-                        thisMonthSales++;
-                    }
-                }
-                customerEmails.add(order.shippingInfo.email);
-            });
-
-            const revenueChange = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : thisMonthRevenue > 0 ? 100 : 0;
-            const salesChange = lastMonthSales > 0 ? ((thisMonthSales - lastMonthSales) / lastMonthSales) * 100 : thisMonthSales > 0 ? 100 : 0;
-
-            setStats({
-                totalRevenue,
-                totalSales: orders.filter(o => o.status !== 'Cancelled').length,
-                totalCustomers: customerEmails.size,
-                revenueChange,
-                salesChange
-            });
-
-            // --- Set Recent Orders ---
-            setRecentOrders(orders.slice(0, 5));
-
-        } catch (error) {
-            console.error("Failed to load dashboard data from localStorage", error);
-        } finally {
-            setIsLoading(false);
-        }
+        return () => clearInterval(interval);
     }, []);
 
     const renderStatCard = (title: string, value: string, change: number, icon: React.ReactNode, changeText: string) => (
@@ -119,11 +131,11 @@ export default function AdminDashboardPage() {
     );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <h1 className="text-2xl md:text-3xl font-bold font-headline">Dashboard</h1>
       
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {renderStatCard("Total Revenue", `৳${stats.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, stats.revenueChange, <DollarSign className="h-4 w-4 text-muted-foreground" />, "from last month")}
         {renderStatCard("Total Sales", `+${stats.totalSales}`, stats.salesChange, <ShoppingCart className="h-4 w-4 text-muted-foreground" />, "from last month")}
         <Card>
@@ -156,35 +168,37 @@ export default function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? <Skeleton className="h-[200px] w-full" /> : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentOrders.length > 0 ? recentOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
-                  <TableCell>{order.shippingInfo.name}</TableCell>
-                  <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                  <TableCell>
-                     <Badge variant="outline" className="flex items-center gap-2 w-fit">
-                        <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
-                        {order.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              )) : (
+          <div className="overflow-x-auto">
+            <Table>
+                <TableHeader>
                 <TableRow>
-                    <TableCell colSpan={4} className="text-center">No recent orders.</TableCell>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody>
+                {recentOrders.length > 0 ? recentOrders.map((order) => (
+                    <TableRow key={order.id}>
+                    <TableCell className="font-medium">#{order.id.slice(-6)}</TableCell>
+                    <TableCell>{order.shippingInfo.name}</TableCell>
+                    <TableCell>৳{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                    <TableCell>
+                        <Badge variant="outline" className="flex items-center gap-2 w-fit">
+                            <span className={`h-2 w-2 rounded-full ${statusColors[order.status]}`}></span>
+                            {order.status}
+                        </Badge>
+                    </TableCell>
+                    </TableRow>
+                )) : (
+                    <TableRow>
+                        <TableCell colSpan={4} className="text-center">No recent orders.</TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
+          </div>
           )}
         </CardContent>
       </Card>

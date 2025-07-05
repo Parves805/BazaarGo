@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -48,8 +48,9 @@ export default function AdminCustomersPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+    const isInitialLoad = useRef(true);
 
-    useEffect(() => {
+    const loadCustomerData = () => {
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
@@ -92,8 +93,17 @@ export default function AdminCustomersPage() {
         } catch (error) {
             console.error("Failed to process customer data from localStorage", error);
         } finally {
-            setIsLoading(false);
+            if (isInitialLoad.current) {
+                setIsLoading(false);
+                isInitialLoad.current = false;
+            }
         }
+    };
+
+    useEffect(() => {
+        loadCustomerData();
+        const interval = setInterval(loadCustomerData, 3000);
+        return () => clearInterval(interval);
     }, []);
 
     const CustomerRowSkeleton = () => (
@@ -113,71 +123,73 @@ export default function AdminCustomersPage() {
     );
 
     return (
-        <div>
+        <div className="space-y-4 md:space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Customers</CardTitle>
+                    <CardTitle className="text-2xl md:text-3xl">Customers</CardTitle>
                     <CardDescription>A list of your customers and their purchase history.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Phone</TableHead>
-                                <TableHead className="text-center">Orders</TableHead>
-                                <TableHead className="text-right">Total Spent</TableHead>
-                                <TableHead>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {isLoading ? (
-                                <>
-                                    <CustomerRowSkeleton />
-                                    <CustomerRowSkeleton />
-                                    <CustomerRowSkeleton />
-                                    <CustomerRowSkeleton />
-                                    <CustomerRowSkeleton />
-                                </>
-                            ) : customers.length > 0 ? (
-                                customers.map((customer) => (
-                                    <TableRow key={customer.email}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-9 w-9">
-                                                    <AvatarFallback>{customer.name ? customer.name.charAt(0).toUpperCase() : '?'}</AvatarFallback>
-                                                </Avatar>
-                                                <span className="font-medium">{customer.name}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{customer.email}</TableCell>
-                                        <TableCell>{customer.phone}</TableCell>
-                                        <TableCell className="text-center">{customer.orderCount}</TableCell>
-                                        <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button aria-haspopup="true" size="icon" variant="ghost">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                        <span className="sr-only">Toggle menu</span>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem onSelect={() => setSelectedCustomer(customer)}>View Details</DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center">No customers found.</TableCell>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Phone</TableHead>
+                                    <TableHead className="text-center">Orders</TableHead>
+                                    <TableHead className="text-right">Total Spent</TableHead>
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {isLoading ? (
+                                    <>
+                                        <CustomerRowSkeleton />
+                                        <CustomerRowSkeleton />
+                                        <CustomerRowSkeleton />
+                                        <CustomerRowSkeleton />
+                                        <CustomerRowSkeleton />
+                                    </>
+                                ) : customers.length > 0 ? (
+                                    customers.map((customer) => (
+                                        <TableRow key={customer.email}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-9 w-9">
+                                                        <AvatarFallback>{customer.name ? customer.name.charAt(0).toUpperCase() : '?'}</AvatarFallback>
+                                                    </Avatar>
+                                                    <span className="font-medium">{customer.name}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{customer.email}</TableCell>
+                                            <TableCell>{customer.phone}</TableCell>
+                                            <TableCell className="text-center">{customer.orderCount}</TableCell>
+                                            <TableCell className="text-right">৳{customer.totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">Toggle menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem onSelect={() => setSelectedCustomer(customer)}>View Details</DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center">No customers found.</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
 
                     {selectedCustomer && (
                         <Dialog open={!!selectedCustomer} onOpenChange={(isOpen) => !isOpen && setSelectedCustomer(null)}>
