@@ -35,6 +35,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { SheetClose } from '@/components/ui/sheet';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -170,66 +171,80 @@ export default function AdminLayout({
             <SidebarMenu>
               {/* Core Operations */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin')}>
-                  <Link href="/admin">
-                    <LayoutDashboard />
-                    Dashboard
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin')}>
+                    <Link href="/admin">
+                      <LayoutDashboard />
+                      Dashboard
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
-                  <Link href="/admin/orders">
-                    <ShoppingCart />
-                    Orders
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
+                    <Link href="/admin/orders">
+                      <ShoppingCart />
+                      Orders
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
-                  <Link href="/admin/products">
-                    <Package />
-                    Products
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
+                    <Link href="/admin/products">
+                      <Package />
+                      Products
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
                <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
-                  <Link href="/admin/categories">
-                    <LayoutGrid />
-                    Categories
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
+                    <Link href="/admin/categories">
+                      <LayoutGrid />
+                      Categories
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
               
               {/* User Management */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
-                  <Link href="/admin/customers">
-                    <Users />
-                    Customers
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
+                    <Link href="/admin/customers">
+                      <Users />
+                      Customers
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
-                  <Link href="/admin/communications">
-                    <MessageSquare />
-                    <span>Communications</span>
-                    {newMessagesCount > 0 && (
-                      <Badge className="ml-auto">{newMessagesCount}</Badge>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
+                    <Link href="/admin/communications">
+                      <MessageSquare />
+                      <span>Communications</span>
+                      {newMessagesCount > 0 && (
+                        <Badge className="ml-auto">{newMessagesCount}</Badge>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
 
               {/* Platform */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
-                  <Link href="/admin/notifications">
-                    <span>Notifications</span>
-                  </Link>
-                </SidebarMenuButton>
+                <SheetClose asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
+                    <Link href="/admin/notifications">
+                      <span>Notifications</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SheetClose>
               </SidebarMenuItem>
               
                <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
@@ -249,24 +264,32 @@ export default function AdminLayout({
                   <CollapsibleContent className="w-full">
                     <SidebarMenu className="pl-6 pt-1">
                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
-                            <Link href="/admin/settings">General Settings</Link>
-                          </SidebarMenuButton>
+                          <SheetClose asChild>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                              <Link href="/admin/settings">General Settings</Link>
+                            </SidebarMenuButton>
+                          </SheetClose>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                            <Link href="/admin/analytics">Analytics</Link>
-                          </SidebarMenuButton>
+                          <SheetClose asChild>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                              <Link href="/admin/analytics">Analytics</Link>
+                            </SidebarMenuButton>
+                          </SheetClose>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                            <Link href="/admin/seo">SEO Management</Link>
-                          </SidebarMenuButton>
+                          <SheetClose asChild>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                              <Link href="/admin/seo">SEO Management</Link>
+                            </SidebarMenuButton>
+                          </SheetClose>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                            <Link href="/admin/email-marketing">Email Marketing</Link>
-                          </SidebarMenuButton>
+                          <SheetClose asChild>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                              <Link href="/admin/email-marketing">Email Marketing</Link>
+                            </SidebarMenuButton>
+                          </SheetClose>
                         </SidebarMenuItem>
                     </SidebarMenu>
                   </CollapsibleContent>
@@ -277,23 +300,27 @@ export default function AdminLayout({
           <SidebarFooter>
              <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                        <Link href="/">
-                            <Home />
-                            Back to Store
-                        </Link>
-                    </SidebarMenuButton>
+                    <SheetClose asChild>
+                      <SidebarMenuButton asChild>
+                          <Link href="/">
+                              <Home />
+                              Back to Store
+                          </Link>
+                      </SidebarMenuButton>
+                    </SheetClose>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    <SidebarMenuButton onClick={handleLogout}>
-                        <LogOut />
-                        Logout
-                    </SidebarMenuButton>
+                    <SheetClose asChild>
+                      <SidebarMenuButton onClick={handleLogout}>
+                          <LogOut />
+                          Logout
+                      </SidebarMenuButton>
+                    </SheetClose>
                 </SidebarMenuItem>
              </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-          <div className="flex flex-col flex-1 w-full overflow-x-hidden">
+          <div className="flex flex-col flex-1 w-full">
              <header className="flex h-14 items-center gap-4 border-b bg-background px-4 md:hidden">
                 <SidebarTrigger />
                 <h1 className="text-lg font-semibold">Admin Menu</h1>
