@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
@@ -15,8 +15,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 const PRODUCTS_KEY = 'appProducts';
 const CATEGORIES_KEY = 'appCategories';
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug;
+export default function CategoryPage() {
+  const params = useParams();
+  const slug = params.slug as string;
   
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -63,9 +64,12 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
     }
   }, []);
 
-  if (!isLoading && !category) {
-    notFound();
-  }
+  useEffect(() => {
+    if (!isLoading && !category) {
+      notFound();
+    }
+  }, [isLoading, category]);
+
 
   if (isLoading || !category) {
     return (
