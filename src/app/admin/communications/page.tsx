@@ -149,9 +149,9 @@ export default function CommunicationsPage() {
     }
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
-            <h1 className="text-3xl font-bold font-headline flex-shrink-0">Communications</h1>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 flex-grow min-h-0">
+        <div className="space-y-4 md:space-y-6 h-full flex flex-col">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline flex-shrink-0">Communications</h1>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 flex-grow min-h-0">
                 
                 {/* Thread List */}
                 <Card className={cn("md:col-span-1 lg:col-span-1 flex flex-col", selectedThread && "hidden md:flex")}>

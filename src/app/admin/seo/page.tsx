@@ -74,8 +74,8 @@ export default function SeoManagementPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold font-headline flex items-center gap-2"><Globe /> SEO Management</h1>
+        <div className="space-y-4 md:space-y-6">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline flex items-center gap-2"><Globe /> SEO Management</h1>
             <Card>
                 <CardHeader>
                     <CardTitle>Search Engine Optimization</CardTitle>

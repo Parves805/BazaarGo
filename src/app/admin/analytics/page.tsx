@@ -92,8 +92,8 @@ export default function AnalyticsPage() {
     }, []);
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold font-headline">Analytics</h1>
+        <div className="space-y-4 md:space-y-6">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline">Analytics</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>

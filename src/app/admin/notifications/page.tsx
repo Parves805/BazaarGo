@@ -76,8 +76,8 @@ export default function AdminNotificationsPage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold font-headline">Send Notification</h1>
+        <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline">Send Notification</h1>
             <Card>
                 <CardHeader>
                     <CardTitle>Compose Notification</CardTitle>

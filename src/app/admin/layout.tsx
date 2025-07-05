@@ -35,6 +35,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const ALL_CHATS_KEY = 'bazaargoAllChatThreads';
 const ADMIN_LAST_SEEN_KEY = 'bazaargoAdminLastSeenCounts';
@@ -61,7 +62,6 @@ export default function AdminLayout({
   const [isSettingsOpen, setIsSettingsOpen] = useState(areSettingsActive);
 
   useEffect(() => {
-    // This effect runs once on the client after the component mounts.
     const authStatus = localStorage.getItem('isAdminAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
@@ -98,19 +98,15 @@ export default function AdminLayout({
         }
     };
     
-    checkForNewMessages(); // Check immediately on mount
-    const interval = setInterval(checkForNewMessages, 3000); // Poll every 3 seconds
+    checkForNewMessages();
+    const interval = setInterval(checkForNewMessages, 3000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
 
   }, [pathname, router]);
 
-  // When user navigates to the communications page, reset the counter visually
-  // The actual "seen" count is updated on the communications page itself
   useEffect(() => {
     if (pathname === '/admin/communications') {
-        // The logic on the communications page itself will handle seen counts.
-        // We can optimistically set this to 0 for a faster UI update.
         const currentCount = newMessagesCount;
         setTimeout(() => {
             if (newMessagesCount === currentCount) {
@@ -120,7 +116,6 @@ export default function AdminLayout({
     }
   }, [pathname, newMessagesCount]);
 
-  // Keep settings sub-menu open if on a settings-related page
   useEffect(() => {
     setIsSettingsOpen(areSettingsActive);
   }, [areSettingsActive]);
@@ -133,8 +128,6 @@ export default function AdminLayout({
 
   const isActive = (path: string) => pathname === path;
 
-  // Don't render layout on login page.
-  // Also show a loading state until auth check is complete.
   if (!isMounted) {
       return (
           <div className="flex min-h-screen items-center justify-center">
@@ -148,7 +141,6 @@ export default function AdminLayout({
   }
   
   if (!isAuthenticated) {
-      // This will be shown briefly while redirecting
       return (
           <div className="flex min-h-screen items-center justify-center">
               <p>Redirecting to login...</p>
@@ -156,10 +148,7 @@ export default function AdminLayout({
       );
   }
 
-  const mainContentClass = "flex-1 p-6 overflow-y-auto";
-  const centeredContentClass = "max-w-5xl mx-auto w-full";
-  const isFullWidthPage = ['/admin', '/admin/orders', '/admin/products', '/admin/categories', '/admin/customers'].includes(pathname);
-
+  const mainContentClass = "flex-1 p-4 md:p-6 overflow-y-auto";
 
   return (
     <SidebarProvider>
@@ -304,7 +293,7 @@ export default function AdminLayout({
                 <SidebarTrigger />
                 <h1 className="text-lg font-semibold">Admin Menu</h1>
               </header>
-              <main className={cn(mainContentClass, !isFullWidthPage && centeredContentClass)}>
+              <main className={cn(mainContentClass)}>
                 {children}
               </main>
           </div>

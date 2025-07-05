@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
           <div className="mx-auto mb-4">
             <ShoppingBag className="h-10 w-10 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold font-headline">Admin Login</CardTitle>
+          <CardTitle className="text-2xl md:text-3xl font-bold font-headline">Admin Login</CardTitle>
           <CardDescription>Enter your credentials to access the admin panel.</CardDescription>
         </CardHeader>
         <CardContent>

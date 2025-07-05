@@ -104,7 +104,7 @@ export default function AdminDashboardPage() {
                 {icon}
             </CardHeader>
             <CardContent>
-                {isLoading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-2xl font-bold">{value}</div>}
+                {isLoading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-xl md:text-2xl font-bold">{value}</div>}
                 {isLoading ? <Skeleton className="h-4 w-1/2 mt-1" /> : (
                     <p className="text-xs text-muted-foreground flex items-center">
                         {change >= 0 ? 
@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
+      <h1 className="text-2xl md:text-3xl font-bold font-headline">Dashboard</h1>
       
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold">{totalProducts}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-xl md:text-2xl font-bold">{totalProducts}</div>}
             <p className="text-xs text-muted-foreground">in stock</p>
           </CardContent>
         </Card>
@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-2xl font-bold">{stats.totalCustomers}</div>}
+            {isLoading ? <Skeleton className="h-8 w-1/4" /> : <div className="text-xl md:text-2xl font-bold">{stats.totalCustomers}</div>}
             <p className="text-xs text-muted-foreground">unique customers</p>
           </CardContent>
         </Card>
