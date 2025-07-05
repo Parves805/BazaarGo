@@ -1,6 +1,7 @@
+
 'use client'; 
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -46,36 +47,31 @@ export default function AdminOrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const { toast } = useToast();
-    const isInitialLoad = useRef(true);
-
-    const loadOrders = () => {
-        try {
-            const savedOrders = localStorage.getItem('bazaargoUserOrders');
-            if (savedOrders) {
-                const parsed = JSON.parse(savedOrders);
-                 if (Array.isArray(parsed)) {
-                    const parsedOrders: Order[] = parsed;
-                    parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                    setOrders(parsedOrders);
-                 } else {
-                    setOrders([]);
-                 }
-            } else {
-                setOrders([]);
-            }
-        } catch (error) {
-            console.error("Failed to load orders from localStorage", error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to load orders.' });
-            setOrders([]);
-        } finally {
-            if (isInitialLoad.current) {
-                setIsLoading(false);
-                isInitialLoad.current = false;
-            }
-        }
-    }
 
     useEffect(() => {
+        const loadOrders = () => {
+            try {
+                const savedOrders = localStorage.getItem('bazaargoUserOrders');
+                if (savedOrders) {
+                    const parsed = JSON.parse(savedOrders);
+                     if (Array.isArray(parsed)) {
+                        const parsedOrders: Order[] = parsed;
+                        parsedOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                        setOrders(parsedOrders);
+                     } else {
+                        setOrders([]);
+                     }
+                } else {
+                    setOrders([]);
+                }
+            } catch (error) {
+                console.error("Failed to load orders from localStorage", error);
+                setOrders([]);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
         loadOrders();
         const interval = setInterval(loadOrders, 3000);
         return () => clearInterval(interval);
@@ -93,7 +89,6 @@ export default function AdminOrdersPage() {
                     if (orderIndex > -1) {
                         currentOrders[orderIndex].status = newStatus;
                         localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
-                        loadOrders(); // Re-fetch and re-sort
                         
                         if (selectedOrder && selectedOrder.id === orderId) {
                             setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
@@ -271,3 +266,5 @@ export default function AdminOrdersPage() {
         </Card>
     )
 }
+
+    

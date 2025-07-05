@@ -34,40 +34,43 @@ export default function AdminProductsPage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        setIsLoading(true);
-        try {
-            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-            if (savedProductsJSON) {
-                const parsed = JSON.parse(savedProductsJSON);
-                if (Array.isArray(parsed)) {
-                    // It's a valid array (even if empty), use it.
-                    setProducts(parsed);
+        const loadProducts = () => {
+            try {
+                const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
+                if (savedProductsJSON) {
+                    const parsed = JSON.parse(savedProductsJSON);
+                    if (Array.isArray(parsed)) {
+                        setProducts(parsed);
+                    } else {
+                        setProducts(initialProducts);
+                        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
+                    }
                 } else {
-                    // It's something else, re-initialize.
                     setProducts(initialProducts);
                     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
                 }
-            } else {
-                // It doesn't exist, initialize.
+            } catch (error) {
+                console.error("Failed to load products, re-initializing.", error);
                 setProducts(initialProducts);
-                localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("Failed to load products, re-initializing.", error);
-            setProducts(initialProducts);
-            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
-        } finally {
-            setIsLoading(false);
-        }
+        };
+        
+        loadProducts();
+        const interval = setInterval(loadProducts, 3000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleDeleteProduct = (productId: string) => {
-        const updatedProducts = products.filter(p => p.id !== productId);
-        setProducts(updatedProducts);
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(updatedProducts));
-        toast({
-            title: "Product Deleted",
-            description: "The product has been successfully deleted.",
+        setProducts(currentProducts => {
+            const updatedProducts = currentProducts.filter(p => p.id !== productId);
+            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(updatedProducts));
+            toast({
+                title: "Product Deleted",
+                description: "The product has been successfully deleted.",
+            });
+            return updatedProducts;
         });
     };
 
@@ -179,3 +182,5 @@ export default function AdminProductsPage() {
         </div>
     )
 }
+
+    

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -48,59 +48,55 @@ export default function AdminCustomersPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-    const isInitialLoad = useRef(true);
-
-    const loadCustomerData = () => {
-        try {
-            const savedOrders = localStorage.getItem('bazaargoUserOrders');
-            if (savedOrders) {
-                const parsedOrders = JSON.parse(savedOrders);
-                if (Array.isArray(parsedOrders)) {
-                    const orders: Order[] = parsedOrders;
-                    
-                    const customerData = orders.reduce((acc, order) => {
-                        if (!order || !order.shippingInfo || !order.shippingInfo.email) {
-                            return acc;
-                        }
-
-                        const email = order.shippingInfo.email;
-                        const existingCustomer = acc.get(email);
-
-                        if (existingCustomer) {
-                            acc.set(email, {
-                                ...existingCustomer,
-                                orderCount: existingCustomer.orderCount + 1,
-                                totalSpent: existingCustomer.totalSpent + order.total,
-                                orders: [...existingCustomer.orders, order],
-                            });
-                        } else {
-                            acc.set(email, {
-                                email: email,
-                                name: order.shippingInfo.name || 'N/A',
-                                phone: order.shippingInfo.phone || 'N/A',
-                                orderCount: 1,
-                                totalSpent: order.total,
-                                orders: [order],
-                            });
-                        }
-                        return acc;
-                    }, new Map<string, Customer>());
-
-                    const sortedCustomers = Array.from(customerData.values()).sort((a, b) => b.totalSpent - a.totalSpent);
-                    setCustomers(sortedCustomers);
-                }
-            }
-        } catch (error) {
-            console.error("Failed to process customer data from localStorage", error);
-        } finally {
-            if (isInitialLoad.current) {
-                setIsLoading(false);
-                isInitialLoad.current = false;
-            }
-        }
-    };
 
     useEffect(() => {
+        const loadCustomerData = () => {
+            try {
+                const savedOrders = localStorage.getItem('bazaargoUserOrders');
+                if (savedOrders) {
+                    const parsedOrders = JSON.parse(savedOrders);
+                    if (Array.isArray(parsedOrders)) {
+                        const orders: Order[] = parsedOrders;
+                        
+                        const customerData = orders.reduce((acc, order) => {
+                            if (!order || !order.shippingInfo || !order.shippingInfo.email) {
+                                return acc;
+                            }
+
+                            const email = order.shippingInfo.email;
+                            const existingCustomer = acc.get(email);
+
+                            if (existingCustomer) {
+                                acc.set(email, {
+                                    ...existingCustomer,
+                                    orderCount: existingCustomer.orderCount + 1,
+                                    totalSpent: existingCustomer.totalSpent + order.total,
+                                    orders: [...existingCustomer.orders, order],
+                                });
+                            } else {
+                                acc.set(email, {
+                                    email: email,
+                                    name: order.shippingInfo.name || 'N/A',
+                                    phone: order.shippingInfo.phone || 'N/A',
+                                    orderCount: 1,
+                                    totalSpent: order.total,
+                                    orders: [order],
+                                });
+                            }
+                            return acc;
+                        }, new Map<string, Customer>());
+
+                        const sortedCustomers = Array.from(customerData.values()).sort((a, b) => b.totalSpent - a.totalSpent);
+                        setCustomers(sortedCustomers);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to process customer data from localStorage", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         loadCustomerData();
         const interval = setInterval(loadCustomerData, 3000);
         return () => clearInterval(interval);
@@ -263,3 +259,5 @@ export default function AdminCustomersPage() {
         </div>
     );
 }
+
+    

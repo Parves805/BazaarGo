@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send, MessageSquare, User, ArrowLeft } from 'lucide-react';
+import { Loader2, Send, MessageSquare, ArrowLeft } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -53,46 +53,47 @@ export default function CommunicationsPage() {
     const [isReplying, setIsReplying] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-    const loadThreads = () => {
-        try {
-            const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
-            const allThreads = allThreadsJson ? JSON.parse(allThreadsJson) : {};
-
-            const lastSeenCountsJson = localStorage.getItem(ADMIN_LAST_SEEN_KEY);
-            const lastSeenCounts = lastSeenCountsJson ? JSON.parse(lastSeenCountsJson) : {};
-            
-            const loadedThreads: UserThread[] = Object.values(allThreads).map((thread: any) => {
-                const totalMessages = thread.messages?.length || 0;
-                if (totalMessages === 0) return null; // Don't show empty threads
-                const seenCount = lastSeenCounts[thread.threadId] || 0;
-                return {
-                    ...thread,
-                    lastMessageTimestamp: thread.messages[totalMessages - 1]?.timestamp || new Date(0).toISOString(),
-                    unreadCount: totalMessages - seenCount,
-                };
-            }).filter((t): t is UserThread => t !== null);
-
-            loadedThreads.sort((a, b) => {
-                try {
-                    return parseISO(b.lastMessageTimestamp).getTime() - parseISO(a.lastMessageTimestamp).getTime()
-                } catch {
-                    return 0;
-                }
-            });
-            
-            setThreads(loadedThreads);
-
-            if (selectedThread) {
-                const updatedSelectedThread = loadedThreads.find(t => t.threadId === selectedThread.threadId);
-                setSelectedThread(updatedSelectedThread || null);
-            }
-
-        } catch (error) {
-            console.error("Failed to load threads", error);
-        }
-    }
-
     useEffect(() => {
+        const loadThreads = () => {
+            try {
+                const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
+                const allThreads = allThreadsJson ? JSON.parse(allThreadsJson) : {};
+
+                const lastSeenCountsJson = localStorage.getItem(ADMIN_LAST_SEEN_KEY);
+                const lastSeenCounts = lastSeenCountsJson ? JSON.parse(lastSeenCountsJson) : {};
+                
+                const loadedThreads: UserThread[] = Object.values(allThreads).map((thread: any) => {
+                    const totalMessages = thread.messages?.length || 0;
+                    if (totalMessages === 0) return null; // Don't show empty threads
+                    const seenCount = lastSeenCounts[thread.threadId] || 0;
+                    return {
+                        ...thread,
+                        lastMessageTimestamp: thread.messages[totalMessages - 1]?.timestamp || new Date(0).toISOString(),
+                        unreadCount: totalMessages - seenCount,
+                    };
+                }).filter((t): t is UserThread => t !== null);
+
+                loadedThreads.sort((a, b) => {
+                    try {
+                        return parseISO(b.lastMessageTimestamp).getTime() - parseISO(a.lastMessageTimestamp).getTime()
+                    } catch {
+                        return 0;
+                    }
+                });
+                
+                setThreads(loadedThreads);
+
+                setSelectedThread(currentThread => {
+                    if (!currentThread) return null;
+                    const updatedSelectedThread = loadedThreads.find(t => t.threadId === currentThread.threadId);
+                    return updatedSelectedThread || null;
+                });
+
+            } catch (error) {
+                console.error("Failed to load threads", error);
+            }
+        }
+        
         loadThreads();
         const interval = setInterval(loadThreads, 3000);
         return () => clearInterval(interval);
@@ -103,7 +104,7 @@ export default function CommunicationsPage() {
         if (viewport) {
             setTimeout(() => viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' }), 100);
         }
-    }, [selectedThread?.messages.length]);
+    }, [selectedThread, selectedThread?.messages.length]);
 
     const handleSelectThread = (thread: UserThread) => {
         setSelectedThread(thread);
@@ -136,8 +137,6 @@ export default function CommunicationsPage() {
                 threadToUpdate.lastMessageTimestamp = newReply.timestamp;
                 localStorage.setItem(ALL_CHATS_KEY, JSON.stringify(allThreads));
                 
-                // Reload all threads to get the latest state and order
-                loadThreads(); 
                 setReplyMessage('');
             }
         } catch(e) {
@@ -250,3 +249,5 @@ export default function CommunicationsPage() {
         </div>
     );
 }
+
+    

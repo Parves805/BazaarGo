@@ -25,6 +25,9 @@ import {
   ChevronDown,
   LayoutGrid,
   Bell,
+  BarChart,
+  Target,
+  Mail,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -73,7 +76,9 @@ export default function AdminLayout({
         }
     }
     setIsMounted(true);
-    
+  }, [pathname, router]);
+
+  useEffect(() => {
     const checkForNewMessages = () => {
         try {
             const allThreadsJson = localStorage.getItem(ALL_CHATS_KEY);
@@ -89,10 +94,10 @@ export default function AdminLayout({
                 const seenCount = lastSeenCounts[threadId] || 0;
                 const newCountInThread = totalMessages - seenCount;
                 if (newCountInThread > 0) {
-                    totalNewCount += newCountInThread;
+                    totalNewCount += 1; // Count threads with unread, not total messages
                 }
             }
-            setNewMessagesCount(totalNewCount);
+            setNewMessagesCount(Object.values(allThreads).filter((thread: any) => (thread.messages?.length || 0) > (lastSeenCounts[thread.threadId] || 0)).length);
 
         } catch(e) {
             console.error("Failed to check for new messages", e);
@@ -104,19 +109,7 @@ export default function AdminLayout({
     const interval = setInterval(checkForNewMessages, 3000);
 
     return () => clearInterval(interval);
-
-  }, [pathname, router]);
-
-  useEffect(() => {
-    if (pathname === '/admin/communications') {
-        const currentCount = newMessagesCount;
-        setTimeout(() => {
-            if (newMessagesCount === currentCount) {
-                setNewMessagesCount(0);
-            }
-        }, 1000);
-    }
-  }, [pathname, newMessagesCount]);
+  }, []);
 
   useEffect(() => {
     setIsSettingsOpen(areSettingsActive);
@@ -294,7 +287,154 @@ export default function AdminLayout({
           <div className="flex flex-col flex-1 w-full">
              <header className="flex h-14 items-center gap-4 border-b bg-background px-4 md:hidden">
                 <SidebarTrigger />
-                <h1 className="text-lg font-semibold">Admin Menu</h1>
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <Menu />
+                            <span className="sr-only">Toggle Menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
+                        <SheetHeader className="p-4 border-b">
+                            <SheetTitle className="text-left">
+                                <Link href="/" className="inline-flex items-center space-x-2">
+                                    <ShoppingBag className="h-6 w-6 text-primary" />
+                                    <span className="font-bold font-headline">Admin Panel</span>
+                                </Link>
+                            </SheetTitle>
+                        </SheetHeader>
+                        {/* Re-render sidebar content inside the sheet for mobile */}
+                        <SidebarContent>
+                         <SidebarMenu>
+                          {/* Core Operations */}
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin')}>
+                              <Link href="/admin">
+                                <LayoutDashboard />
+                                Dashboard
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
+                              <Link href="/admin/orders">
+                                <ShoppingCart />
+                                Orders
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
+                              <Link href="/admin/products">
+                                <Package />
+                                Products
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
+                              <Link href="/admin/categories">
+                                <LayoutGrid />
+                                Categories
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          
+                          {/* User Management */}
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
+                              <Link href="/admin/customers">
+                                <Users />
+                                Customers
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
+                              <Link href="/admin/communications">
+                                <MessageSquare />
+                                <span>Communications</span>
+                                {newMessagesCount > 0 && (
+                                  <Badge className="ml-auto">{newMessagesCount}</Badge>
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+
+                          {/* Platform */}
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
+                              <Link href="/admin/notifications">
+                                <Bell />
+                                <span>Notifications</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          
+                           <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                            <SidebarMenuItem className="flex flex-col">
+                              <CollapsibleTrigger asChild>
+                                  <SidebarMenuButton
+                                    className="justify-between w-full"
+                                    isActive={areSettingsActive}
+                                    closeSheetOnClick={false}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <Settings />
+                                      <span>Settings & Growth</span>
+                                    </div>
+                                    <ChevronDown className={cn("h-4 w-4 transition-transform", isSettingsOpen && "rotate-180")} />
+                                  </SidebarMenuButton>
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="w-full">
+                                <SidebarMenu className="pl-6 pt-1">
+                                   <SidebarMenuItem>
+                                      <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                                        <Link href="/admin/settings">General Settings</Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                      <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                                        <Link href="/admin/analytics">Analytics</Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                      <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                                        <Link href="/admin/seo">SEO Management</Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                      <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
+                                        <Link href="/admin/email-marketing">Email Marketing</Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
+                              </CollapsibleContent>
+                            </SidebarMenuItem>
+                          </Collapsible>
+                        </SidebarMenu>
+                        </SidebarContent>
+                         <SidebarFooter>
+                             <SidebarMenu>
+                                <SidebarMenuItem>
+                                  <SidebarMenuButton asChild>
+                                      <Link href="/">
+                                          <Home />
+                                          Back to Store
+                                      </Link>
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                 <SidebarMenuItem>
+                                  <SidebarMenuButton onClick={handleLogout}>
+                                      <LogOut />
+                                      Logout
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                             </SidebarMenu>
+                          </SidebarFooter>
+                    </SheetContent>
+                </Sheet>
+                <h1 className="text-lg font-semibold flex-1 text-center">Admin Menu</h1>
               </header>
               <main className={cn(mainContentClass)}>
                 {children}
@@ -304,3 +444,5 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
+
+    

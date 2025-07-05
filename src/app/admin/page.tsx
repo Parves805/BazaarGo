@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DollarSign, Package, ShoppingCart, Users, ArrowUp, ArrowDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -31,7 +31,6 @@ export default function AdminDashboardPage() {
     const [recentOrders, setRecentOrders] = useState<Order[]>([]);
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const isInitialLoad = useRef(true);
 
     useEffect(() => {
         const loadDashboardData = () => {
@@ -75,7 +74,9 @@ export default function AdminDashboardPage() {
                             thisMonthSales++;
                         }
                     }
-                    customerEmails.add(order.shippingInfo.email);
+                    if (order.shippingInfo && order.shippingInfo.email) {
+                      customerEmails.add(order.shippingInfo.email);
+                    }
                 });
 
                 const revenueChange = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : thisMonthRevenue > 0 ? 100 : 0;
@@ -96,15 +97,12 @@ export default function AdminDashboardPage() {
             } catch (error) {
                 console.error("Failed to load dashboard data from localStorage", error);
             } finally {
-                if (isInitialLoad.current) {
-                    setIsLoading(false);
-                    isInitialLoad.current = false;
-                }
+                setIsLoading(false);
             }
         };
 
         loadDashboardData();
-        const interval = setInterval(loadDashboardData, 3000); // Poll for fresh data
+        const interval = setInterval(loadDashboardData, 3000);
 
         return () => clearInterval(interval);
     }, []);
@@ -205,3 +203,5 @@ export default function AdminDashboardPage() {
     </div>
   )
 }
+
+    

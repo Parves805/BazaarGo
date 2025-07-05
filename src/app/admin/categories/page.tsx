@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from '@/hooks/use-toast';
 import { initialCategories } from '@/lib/data';
 import type { Category } from '@/lib/types';
-import { Loader2, Trash2, PlusCircle, MoreHorizontal } from 'lucide-react';
+import { Loader2, Trash2, PlusCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const CATEGORIES_KEY = 'appCategories';
@@ -35,40 +36,36 @@ export default function AdminCategoriesPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const { toast } = useToast();
-    const isInitialLoad = useRef(true);
 
     const form = useForm<CategoryFormValues>({
         resolver: zodResolver(categorySchema),
         defaultValues: { name: '', image: '', bannerImage: '' },
     });
-    
-    const loadCategories = () => {
-        try {
-            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-            if (savedCategoriesJSON) {
-                const parsed = JSON.parse(savedCategoriesJSON);
-                if (Array.isArray(parsed)) {
-                    setCategories(parsed);
+
+    useEffect(() => {
+        const loadCategories = () => {
+            try {
+                const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
+                if (savedCategoriesJSON) {
+                    const parsed = JSON.parse(savedCategoriesJSON);
+                    if (Array.isArray(parsed)) {
+                        setCategories(parsed);
+                    } else {
+                        setCategories(initialCategories);
+                        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(initialCategories));
+                    }
                 } else {
                     setCategories(initialCategories);
                     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(initialCategories));
                 }
-            } else {
+            } catch (error) {
+                console.error("Failed to load categories, re-initializing.", error);
                 setCategories(initialCategories);
-                localStorage.setItem(CATEGORIES_KEY, JSON.stringify(initialCategories));
-            }
-        } catch (error) {
-            console.error("Failed to load categories, re-initializing.", error);
-            setCategories(initialCategories);
-        } finally {
-            if (isInitialLoad.current) {
+            } finally {
                 setIsLoading(false);
-                isInitialLoad.current = false;
             }
-        }
-    };
+        };
 
-    useEffect(() => {
         loadCategories();
         const interval = setInterval(loadCategories, 3000);
         return () => clearInterval(interval);
@@ -78,43 +75,47 @@ export default function AdminCategoriesPage() {
         setIsSubmitting(true);
         const newId = slugify(data.name);
 
-        if (categories.some(c => c.id === newId)) {
-            toast({
-                variant: 'destructive',
-                title: "Error",
-                description: "A category with this name already exists. Please choose a different name.",
-            });
-            setIsSubmitting(false);
-            return;
-        }
+        setCategories(currentCategories => {
+            if (currentCategories.some(c => c.id === newId)) {
+                toast({
+                    variant: 'destructive',
+                    title: "Error",
+                    description: "A category with this name already exists. Please choose a different name.",
+                });
+                setIsSubmitting(false);
+                return currentCategories;
+            }
 
-        const newCategory: Category = {
-            id: newId,
-            name: data.name,
-            image: data.image,
-            bannerImage: data.bannerImage
-        };
-        const updatedCategories = [...categories, newCategory];
-        setCategories(updatedCategories);
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
-        
-        toast({
-            title: "Category Added",
-            description: `The category "${data.name}" has been successfully added.`,
+            const newCategory: Category = {
+                id: newId,
+                name: data.name,
+                image: data.image,
+                bannerImage: data.bannerImage
+            };
+            const updatedCategories = [...currentCategories, newCategory];
+            localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
+            
+            toast({
+                title: "Category Added",
+                description: `The category "${data.name}" has been successfully added.`,
+            });
+            
+            setIsSubmitting(false);
+            setIsAddDialogOpen(false);
+            form.reset();
+            return updatedCategories;
         });
-        
-        setIsSubmitting(false);
-        setIsAddDialogOpen(false);
-        form.reset();
     };
 
     const handleDeleteCategory = (categoryId: string) => {
-        const updatedCategories = categories.filter(c => c.id !== categoryId);
-        setCategories(updatedCategories);
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
-        toast({
-            title: "Category Deleted",
-            description: "The category has been successfully deleted.",
+        setCategories(currentCategories => {
+            const updatedCategories = currentCategories.filter(c => c.id !== categoryId);
+            localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
+            toast({
+                title: "Category Deleted",
+                description: "The category has been successfully deleted.",
+            });
+            return updatedCategories;
         });
     };
 
@@ -264,3 +265,5 @@ export default function AdminCategoriesPage() {
         </div>
     );
 }
+
+    
