@@ -23,7 +23,7 @@ const CATEGORIES_KEY = 'appCategories';
 
 const productSchema = z.object({
   name: z.string().min(3, { message: 'Product name must be at least 3 characters.' }),
-  shortDescription: z.string().min(10, { message: 'Short description must be at least 10 characters.' }),
+  shortDescription: z.string().optional(),
   longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: 'Price must be a positive number.' }),
   stock: z.coerce.number().min(0, { message: 'Stock must be a positive number.' }),
@@ -139,7 +139,7 @@ export function ProductForm({ productId }: ProductFormProps) {
 
         const transformedData = {
             name: data.name,
-            shortDescription: data.shortDescription,
+            shortDescription: data.shortDescription || '',
             longDescription: data.longDescription || '',
             price: data.price,
             stock: data.stock,
@@ -253,7 +253,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                                     name="shortDescription"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
-                                            <FormLabel>Short Description</FormLabel>
+                                            <FormLabel>Short Description (Optional)</FormLabel>
                                             <FormControl><Textarea {...field} rows={3} /></FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -264,7 +264,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                                     name="longDescription"
                                     render={({ field }) => (
                                         <FormItem className="md:col-span-2">
-                                            <FormLabel>Long Description (HTML Supported)</FormLabel>
+                                            <FormLabel>Long Description (Optional, HTML Supported)</FormLabel>
                                             <FormControl><Textarea {...field} rows={8} /></FormControl>
                                             <FormMessage />
                                         </FormItem>

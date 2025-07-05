@@ -162,7 +162,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
               ৳{product.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           
-          <p className="text-muted-foreground leading-relaxed">{product.shortDescription}</p>
+          {product.shortDescription && <p className="text-muted-foreground leading-relaxed">{product.shortDescription}</p>}
           
           <div className="space-y-4">
               {/* Size Selector */}

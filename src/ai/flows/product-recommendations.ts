@@ -14,7 +14,7 @@ import {z} from 'genkit';
 const ProductInfoSchema = z.object({
   id: z.string(),
   name: z.string(),
-  shortDescription: z.string(),
+  shortDescription: z.string().optional(),
   category: z.string(),
 });
 

@@ -79,7 +79,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
       const simplifiedProducts = allProducts.map(p => ({
           id: p.id,
           name: p.name,
-          description: p.description,
+          shortDescription: p.shortDescription,
           category: p.category,
       }));
 
@@ -89,7 +89,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
           viewedProducts: viewedProductObjects.map(p => ({
               id: p.id,
               name: p.name,
-              description: p.description,
+              shortDescription: p.shortDescription,
               category: p.category,
           })),
           allProducts: simplifiedProducts,
