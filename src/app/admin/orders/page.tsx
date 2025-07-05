@@ -243,11 +243,15 @@ export default function AdminOrdersPage() {
                                     <h3 className="font-semibold mb-4">Items Ordered</h3>
                                     <div className="space-y-4">
                                         {selectedOrder.items.map(item => (
-                                            <div key={`${item.id}-${item.selectedSize}-${item.selectedColor.name}`} className="flex items-center gap-4">
+                                            <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor?.name || ''}`} className="flex items-center gap-4">
                                                 <Image src={item.images[0]} alt={item.name} width={64} height={64} className="rounded-md border aspect-square object-cover" />
                                                 <div className="flex-grow">
                                                     <p className="font-medium">{item.name}</p>
-                                                    <p className="text-sm text-muted-foreground">{item.selectedSize} / {item.selectedColor.name}</p>
+                                                    {(item.selectedSize || item.selectedColor) && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {[item.selectedSize, item.selectedColor?.name].filter(Boolean).join(' / ')}
+                                                        </p>
+                                                    )}
                                                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                                 </div>
                                                 <p className="ml-auto font-medium">৳{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -266,5 +270,3 @@ export default function AdminOrdersPage() {
         </Card>
     )
 }
-
-    

@@ -23,8 +23,8 @@ export interface Category {
 
 export interface CartItem extends Product {
   quantity: number;
-  selectedSize: string;
-  selectedColor: { name: string; hex: string };
+  selectedSize?: string;
+  selectedColor?: { name: string; hex: string };
 }
 
 export interface Order {

@@ -100,16 +100,17 @@ export default function OrdersPage() {
                                     <h4 className="font-semibold mb-2">Items</h4>
                                     <div className="space-y-4 mb-4">
                                         {order.items.map((item) => (
-                                            <div key={`${item.id}-${item.selectedSize}-${item.selectedColor?.name}`} className="flex items-center gap-4">
+                                            <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor?.name || ''}`} className="flex items-center gap-4">
                                                 <div className="relative h-16 w-16 rounded-md overflow-hidden border">
                                                     <Image src={item.images[0]} alt={item.name} fill className="object-cover" />
                                                 </div>
                                                 <div className="flex-grow">
                                                     <p className="font-medium">{item.name}</p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {item.selectedSize}
-                                                        {item.selectedColor && ` / ${item.selectedColor.name}`}
-                                                    </p>
+                                                    {(item.selectedSize || item.selectedColor) && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {[item.selectedSize, item.selectedColor?.name].filter(Boolean).join(' / ')}
+                                                        </p>
+                                                    )}
                                                     <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                                                 </div>
                                                 <p className="font-medium">

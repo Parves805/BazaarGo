@@ -6,9 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 
 interface CartContextType {
   cartItems: CartItem[];
-  addItem: (product: Product, quantity: number, selectedSize: string, selectedColor: { name: string; hex: string }) => void;
-  removeItem: (productId: string, selectedSize: string, selectedColorName: string) => void;
-  updateQuantity: (productId: string, selectedSize: string, selectedColorName: string, quantity: number) => void;
+  addItem: (product: Product, quantity: number, selectedSize?: string, selectedColor?: { name: string; hex: string }) => void;
+  removeItem: (productId: string, selectedSize?: string, selectedColorName?: string) => void;
+  updateQuantity: (productId: string, selectedSize?: string, selectedColorName?: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -43,18 +43,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems]);
 
-  const addItem = (product: Product, quantity: number = 1, selectedSize: string, selectedColor: { name: string; hex: string }) => {
+  const addItem = (product: Product, quantity: number = 1, selectedSize?: string, selectedColor?: { name: string; hex: string }) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => 
         item.id === product.id && 
         item.selectedSize === selectedSize && 
-        item.selectedColor.name === selectedColor.name
+        item.selectedColor?.name === selectedColor?.name
       );
 
       if (existingItem) {
         // Update quantity if item with same variant already exists
         return prevItems.map(item =>
-          item.id === product.id && item.selectedSize === selectedSize && item.selectedColor.name === selectedColor.name
+          item.id === product.id && item.selectedSize === selectedSize && item.selectedColor?.name === selectedColor?.name
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -71,13 +71,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
     toast({
         title: "Item added to cart",
-        description: `${product.name} (${selectedColor.name}, ${selectedSize}) has been added to your cart.`,
+        description: `${product.name}${selectedSize || selectedColor ? ` (${[selectedColor?.name, selectedSize].filter(Boolean).join(' / ')})` : ''} has been added to your cart.`,
     });
   };
 
-  const removeItem = (productId: string, selectedSize: string, selectedColorName: string) => {
+  const removeItem = (productId: string, selectedSize?: string, selectedColorName?: string) => {
     setCartItems(prevItems => prevItems.filter(item => 
-        !(item.id === productId && item.selectedSize === selectedSize && item.selectedColor.name === selectedColorName)
+        !(item.id === productId && item.selectedSize === selectedSize && item.selectedColor?.name === selectedColorName)
     ));
     toast({
         title: "Item removed",
@@ -85,14 +85,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const updateQuantity = (productId: string, selectedSize: string, selectedColorName: string, quantity: number) => {
+  const updateQuantity = (productId: string, selectedSize?: string, selectedColorName?: string, quantity: number) => {
      if (quantity < 1) {
       removeItem(productId, selectedSize, selectedColorName);
       return;
     }
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.id === productId && item.selectedSize === selectedSize && item.selectedColor.name === selectedColorName 
+        item.id === productId && item.selectedSize === selectedSize && item.selectedColor?.name === selectedColorName 
         ? { ...item, quantity } 
         : item
       )

@@ -29,12 +29,12 @@ const productSchema = z.object({
   category: z.string().min(1, { message: 'Please select a category.' }),
   brand: z.string().min(2, { message: 'Brand is required.' }),
   images: z.array(z.object({ value: z.string().url({ message: "Please enter a valid URL." }) })).min(1, "At least one image is required."),
-  sizes: z.array(z.object({ value: z.string().min(1, "Size cannot be empty.") })).min(1, "At least one size is required."),
+  sizes: z.array(z.object({ value: z.string().min(1, "Size cannot be empty.") })),
   tags: z.array(z.object({ value: z.string().min(1, "Tag cannot be empty.") })),
   colors: z.array(z.object({
     name: z.string().min(1, "Color name cannot be empty."),
     hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex code (e.g., #RRGGBB).")
-  })).min(1, "At least one color is required."),
+  })),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -122,9 +122,9 @@ export function ProductForm({ productId }: ProductFormProps) {
                 category: '',
                 brand: '',
                 images: [{value: ''}],
-                sizes: [{value: 'M'}],
+                sizes: [],
                 tags: [],
-                colors: [{name: 'Black', hex: '#000000'}],
+                colors: [],
             });
             setIsFetching(false);
         }
@@ -141,9 +141,9 @@ export function ProductForm({ productId }: ProductFormProps) {
             category: data.category,
             brand: data.brand,
             images: data.images.map(i => i.value),
-            sizes: data.sizes.map(s => s.value),
-            tags: data.tags.map(t => t.value),
-            colors: data.colors,
+            sizes: data.sizes ? data.sizes.map(s => s.value) : [],
+            tags: data.tags ? data.tags.map(t => t.value) : [],
+            colors: data.colors || [],
         };
         
         try {
@@ -344,7 +344,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                                             </Button>
                                         </div>
                                     ))}
-                                    <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '' })}>
+                                    <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '#000000' })}>
                                         <PlusCircle className="mr-2 h-4 w-4" /> Add Color
                                     </Button>
                                 </div>

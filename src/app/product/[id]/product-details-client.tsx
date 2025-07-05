@@ -73,14 +73,14 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   }, [product.id]);
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: 'Please select a size',
         variant: 'destructive',
       });
       return;
     }
-    if (!selectedColor) {
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
       toast({
         title: 'Please select a color',
         variant: 'destructive',
@@ -91,14 +91,14 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   };
   
   const handleBuyNow = () => {
-    if (!selectedSize) {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: 'Please select a size',
         variant: 'destructive',
       });
       return;
     }
-    if (!selectedColor) {
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
       toast({
         title: 'Please select a color',
         variant: 'destructive',
@@ -164,49 +164,53 @@ export function ProductDetailsClient({ product }: { product: Product }) {
         
         <div className="space-y-4">
             {/* Size Selector */}
-            <div className="space-y-2">
-                <Label className="text-base font-semibold">Size</Label>
-                <RadioGroup
-                    value={selectedSize}
-                    onValueChange={setSelectedSize}
-                    className="flex flex-wrap gap-2"
-                >
-                    {product.sizes.map((size) => (
-                    <FormItem key={size} className="flex items-center space-x-0 space-y-0">
-                        <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
-                        <Label
-                        htmlFor={`size-${size}`}
-                        className={cn(
-                            "flex h-10 w-12 cursor-pointer items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                            selectedSize === size && "border-primary ring-2 ring-primary"
-                        )}
-                        >
-                        {size}
-                        </Label>
-                    </FormItem>
-                    ))}
-                </RadioGroup>
-            </div>
+            {product.sizes && product.sizes.length > 0 && (
+                <div className="space-y-2">
+                    <Label className="text-base font-semibold">Size</Label>
+                    <RadioGroup
+                        value={selectedSize}
+                        onValueChange={setSelectedSize}
+                        className="flex flex-wrap gap-2"
+                    >
+                        {product.sizes.map((size) => (
+                        <FormItem key={size} className="flex items-center space-x-0 space-y-0">
+                            <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
+                            <Label
+                            htmlFor={`size-${size}`}
+                            className={cn(
+                                "flex h-10 w-12 cursor-pointer items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                                selectedSize === size && "border-primary ring-2 ring-primary"
+                            )}
+                            >
+                            {size}
+                            </Label>
+                        </FormItem>
+                        ))}
+                    </RadioGroup>
+                </div>
+            )}
 
             {/* Color Selector */}
-            <div className="space-y-2">
-                <Label className="text-base font-semibold">Color: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></Label>
-                <div className="flex flex-wrap gap-3">
-                    {product.colors.map((color) => (
-                    <button
-                        key={color.name}
-                        type="button"
-                        className={cn(
-                        "h-8 w-8 rounded-full border-2 transition",
-                        selectedColor?.name === color.name ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50"
-                        )}
-                        style={{ backgroundColor: color.hex }}
-                        onClick={() => setSelectedColor(color)}
-                        aria-label={`Select color ${color.name}`}
-                    />
-                    ))}
+            {product.colors && product.colors.length > 0 && (
+                <div className="space-y-2">
+                    <Label className="text-base font-semibold">Color: <span className="font-normal text-muted-foreground">{selectedColor?.name}</span></Label>
+                    <div className="flex flex-wrap gap-3">
+                        {product.colors.map((color) => (
+                        <button
+                            key={color.name}
+                            type="button"
+                            className={cn(
+                            "h-8 w-8 rounded-full border-2 transition",
+                            selectedColor?.name === color.name ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50"
+                            )}
+                            style={{ backgroundColor: color.hex }}
+                            onClick={() => setSelectedColor(color)}
+                            aria-label={`Select color ${color.name}`}
+                        />
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
 
         <div className="flex items-center gap-2">
