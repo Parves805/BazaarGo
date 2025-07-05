@@ -110,8 +110,8 @@ export function SiteHeader() {
   const logoContent = (isMobile: boolean = false) => (
     <>
       {settings.logoUrl ? (
-         <div className="relative" style={{width: 'auto', height: isMobile ? '24px' : '32px'}}>
-            <Image src={settings.logoUrl} alt={settings.storeName} layout="fill" objectFit="contain" />
+         <div className="relative" style={{width: '120px', height: isMobile ? '24px' : '32px'}}>
+            <Image src={settings.logoUrl} alt={settings.storeName} fill style={{objectFit: 'contain'}} />
          </div>
       ) : (
         <ShoppingBag className="h-6 w-6 text-primary" />

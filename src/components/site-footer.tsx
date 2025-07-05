@@ -50,8 +50,8 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-3 md:col-span-1">
              <Link href="/" className="mb-4 flex items-center space-x-2">
                 {settings.logoUrl ? (
-                    <div className="relative" style={{width: 'auto', height: '24px'}}>
-                       <Image src={settings.logoUrl} alt={settings.storeName} layout="fill" objectFit="contain" />
+                    <div className="relative" style={{width: '100px', height: '24px'}}>
+                       <Image src={settings.logoUrl} alt={settings.storeName} fill style={{objectFit: 'contain'}} />
                     </div>
                 ) : (
                     <ShoppingBag className="h-6 w-6 text-primary" />
