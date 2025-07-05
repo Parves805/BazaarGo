@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -75,47 +74,44 @@ export default function AdminCategoriesPage() {
         setIsSubmitting(true);
         const newId = slugify(data.name);
 
-        setCategories(currentCategories => {
-            if (currentCategories.some(c => c.id === newId)) {
-                toast({
-                    variant: 'destructive',
-                    title: "Error",
-                    description: "A category with this name already exists. Please choose a different name.",
-                });
-                setIsSubmitting(false);
-                return currentCategories;
-            }
-
-            const newCategory: Category = {
-                id: newId,
-                name: data.name,
-                image: data.image,
-                bannerImage: data.bannerImage
-            };
-            const updatedCategories = [...currentCategories, newCategory];
-            localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
-            
+        if (categories.some(c => c.id === newId)) {
             toast({
-                title: "Category Added",
-                description: `The category "${data.name}" has been successfully added.`,
+                variant: 'destructive',
+                title: "Error",
+                description: "A category with this name already exists. Please choose a different name.",
             });
-            
             setIsSubmitting(false);
-            setIsAddDialogOpen(false);
-            form.reset();
-            return updatedCategories;
+            return;
+        }
+
+        const newCategory: Category = {
+            id: newId,
+            name: data.name,
+            image: data.image,
+            bannerImage: data.bannerImage
+        };
+        const updatedCategories = [...categories, newCategory];
+        
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
+        setCategories(updatedCategories);
+
+        toast({
+            title: "Category Added",
+            description: `The category "${data.name}" has been successfully added.`,
         });
+        
+        setIsSubmitting(false);
+        setIsAddDialogOpen(false);
+        form.reset();
     };
 
     const handleDeleteCategory = (categoryId: string) => {
-        setCategories(currentCategories => {
-            const updatedCategories = currentCategories.filter(c => c.id !== categoryId);
-            localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
-            toast({
-                title: "Category Deleted",
-                description: "The category has been successfully deleted.",
-            });
-            return updatedCategories;
+        const updatedCategories = categories.filter(c => c.id !== categoryId);
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updatedCategories));
+        setCategories(updatedCategories);
+        toast({
+            title: "Category Deleted",
+            description: "The category has been successfully deleted.",
         });
     };
 
@@ -265,5 +261,3 @@ export default function AdminCategoriesPage() {
         </div>
     );
 }
-
-    

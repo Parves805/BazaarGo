@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -63,14 +62,12 @@ export default function AdminProductsPage() {
     }, []);
 
     const handleDeleteProduct = (productId: string) => {
-        setProducts(currentProducts => {
-            const updatedProducts = currentProducts.filter(p => p.id !== productId);
-            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(updatedProducts));
-            toast({
-                title: "Product Deleted",
-                description: "The product has been successfully deleted.",
-            });
-            return updatedProducts;
+        const updatedProducts = products.filter(p => p.id !== productId);
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(updatedProducts));
+        setProducts(updatedProducts);
+        toast({
+            title: "Product Deleted",
+            description: "The product has been successfully deleted.",
         });
     };
 
@@ -182,5 +179,3 @@ export default function AdminProductsPage() {
         </div>
     )
 }
-
-    
