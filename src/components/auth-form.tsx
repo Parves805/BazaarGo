@@ -118,12 +118,26 @@ export function AuthForm({ type }: AuthFormProps) {
 
     } catch (error: any) {
         console.error('Google Sign-in error:', error);
+        let description = 'An unexpected error occurred during Google Sign-in.';
+        if (error.code) {
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    description = 'The sign-in process was cancelled.';
+                    break;
+                case 'auth/api-key-not-valid':
+                    description = 'The Firebase API Key is not valid. Please check your Firebase project settings and the .env file.';
+                    break;
+                case 'auth/auth-domain-config-error':
+                     description = 'The Firebase authentication domain is not configured correctly. Please check your Firebase project settings.';
+                     break;
+                default:
+                    description = `Error: ${error.message} (Code: ${error.code})`;
+            }
+        }
         toast({
             variant: 'destructive',
-            title: 'Sign-in Error',
-            description: error.code === 'auth/popup-closed-by-user' 
-                ? 'Sign-in process was cancelled.' 
-                : (error.message || 'An error occurred during Google Sign-in.'),
+            title: 'Sign-in Failed',
+            description: description,
         });
     } finally {
         setIsGoogleLoading(false);
