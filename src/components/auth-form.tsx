@@ -19,6 +19,10 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Define keys
+const ALL_USERS_KEY = 'bazaargoAllUsers';
+const USER_PROFILE_KEY = 'userProfile';
+
 const loginSchema = z.object({
   email: z.string().email({
     message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।',
@@ -38,6 +42,11 @@ const signupSchema = z.object({
 
 interface AuthFormProps {
   type: 'login' | 'signup';
+}
+
+interface User {
+    name: string;
+    email: string;
 }
 
 export function AuthForm({ type }: AuthFormProps) {
@@ -61,22 +70,61 @@ export function AuthForm({ type }: AuthFormProps) {
     // Mock API call to your backend
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Persist authentication state in localStorage
-    localStorage.setItem('isAuthenticated', 'true');
+    if (type === 'signup') {
+        try {
+            const allUsersJson = localStorage.getItem(ALL_USERS_KEY);
+            let allUsers: User[] = allUsersJson ? JSON.parse(allUsersJson) : [];
+            
+            const emailExists = allUsers.some(user => user.email === values.email);
+            if (emailExists) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Signup Failed',
+                    description: 'An account with this email already exists.',
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            const newUser: User = { name: values.name!, email: values.email };
+            allUsers.push(newUser);
+            localStorage.setItem(ALL_USERS_KEY, JSON.stringify(allUsers));
+            
+            // Also save to profile for auto-login
+            const profileToSave = {
+                savedUser: {
+                    name: newUser.name,
+                    email: newUser.email,
+                    phone: '',
+                    address: { street: '', city: '', state: '', zip: '' },
+                    avatar: '',
+                },
+                savedPic: null,
+            };
+            localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profileToSave));
+
+            localStorage.setItem('isAuthenticated', 'true');
+            toast({
+                title: 'Signup Successful',
+                description: 'Your account has been created.',
+            });
+
+        } catch (error) {
+            console.error('Signup error:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not create your account.' });
+            setIsLoading(false);
+            return;
+        }
+
+    } else { // Login
+        localStorage.setItem('isAuthenticated', 'true');
+        toast({
+            title: 'Login Successful',
+            description: `Welcome back!`,
+        });
+    }
 
     setIsLoading(false);
-    
-    if (type === 'login') {
-      toast({
-        title: 'Login Successful',
-        description: `Welcome back!`,
-      });
-    } else {
-        toast({
-            title: 'Signup Successful',
-            description: 'Your account has been created.',
-          });
-    }
     router.push('/');
   }
 
