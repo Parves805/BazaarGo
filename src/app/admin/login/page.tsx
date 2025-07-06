@@ -13,7 +13,7 @@ import { ShoppingBag, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const adminLoginSchema = z.object({
-  email: z.string().email({ message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।' }),
+  email: z.string().email({ message: 'আপনার ইমেল ঠিকানাটি সঠিক নয়। অনুগ্রহ করে একটি সঠিক ইমেল ব্যবহার করুন।' }),
   password: z.string().min(1, { message: 'পাসওয়ার্ড প্রয়োজন।' }),
 });
 

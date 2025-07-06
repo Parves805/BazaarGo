@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,7 +24,7 @@ const USER_PROFILE_KEY = 'userProfile';
 
 const loginSchema = z.object({
   email: z.string().email({
-    message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।',
+    message: 'আপনার ইমেল ঠিকানাটি সঠিক নয়। অনুগ্রহ করে একটি সঠিক ইমেল ব্যবহার করুন।',
   }),
   password: z.string().min(1, { message: 'পাসওয়ার্ড প্রয়োজন।' }),
 });
@@ -33,7 +32,7 @@ const loginSchema = z.object({
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'নাম কমপক্ষে ২টি অক্ষরের হতে হবে।' }),
   email: z.string().email({
-    message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।',
+    message: 'আপনার ইমেল ঠিকানাটি সঠিক নয়। অনুগ্রহ করে একটি সঠিক ইমেল ব্যবহার করুন।',
   }),
   password: z.string().min(8, {
     message: 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।',
