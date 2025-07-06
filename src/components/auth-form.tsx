@@ -21,18 +21,18 @@ import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({
-    message: 'Please enter a valid email address.',
+    message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।',
   }),
-  password: z.string().min(1, { message: 'Password is required.'}),
+  password: z.string().min(1, { message: 'পাসওয়ার্ড প্রয়োজন।' }),
 });
 
 const signupSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters long.' }),
+  name: z.string().min(2, { message: 'নাম কমপক্ষে ২টি অক্ষরের হতে হবে।' }),
   email: z.string().email({
-    message: 'Please enter a valid email address.',
+    message: 'অনুগ্রহ করে একটি সঠিক ইমেল ঠিকানা লিখুন।',
   }),
   password: z.string().min(8, {
-    message: 'Password must be at least 8 characters long.',
+    message: 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।',
   }),
 });
 
@@ -105,7 +105,7 @@ export function AuthForm({ type }: AuthFormProps) {
             <FormItem>
               <FormLabel>Email Address</FormLabel>
               <FormControl>
-                <Input placeholder="you@example.com" {...field} />
+                <Input type="email" placeholder="you@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
