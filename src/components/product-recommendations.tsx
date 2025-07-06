@@ -116,9 +116,15 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
         } else {
            setError('AI failed to generate valid recommendations.');
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setError('Failed to fetch recommendations. This might be due to API rate limits. Please try again later.');
+        let errorMessage = 'Failed to fetch recommendations. This might be due to an unknown API error.';
+        if (err.message && (err.message.includes('API key not valid') || err.message.includes('API_KEY_INVALID'))) {
+            errorMessage = 'The Google AI API key is missing or invalid. Please add a valid GOOGLE_API_KEY to your .env file to enable AI features.';
+        } else if (err.message && err.message.includes('No model found')) {
+            errorMessage = 'The AI model is not configured. This is likely because the GOOGLE_API_KEY is missing from your .env file.';
+        }
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -160,7 +166,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
      return (
         <AlertComponents.Alert variant="destructive">
             <Terminal className="h-4 w-4" />
-            <AlertComponents.AlertTitle>Recommendation Error</AlertComponents.AlertTitle>
+            <AlertComponents.AlertTitle>AI Recommendation Error</AlertComponents.AlertTitle>
             <AlertComponents.AlertDescription>
                 {error}
             </AlertComponents.AlertDescription>

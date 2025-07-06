@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,6 +22,7 @@ import { useChat } from '@/context/chat-context';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const MAX_HISTORY_LENGTH = 10;
