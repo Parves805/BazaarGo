@@ -15,21 +15,28 @@ const firebaseConfig = {
 
 let app: FirebaseApp;
 let auth: Auth;
+let isFirebaseConfigured = false;
 
 // This check prevents the app from crashing if Firebase config is missing.
 // It's crucial for the user to add their config to .env.local for auth to work.
-if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-} else {
-    if (typeof window !== 'undefined') {
-        console.error("Firebase configuration is missing or invalid. Please ensure all NEXT_PUBLIC_FIREBASE_* variables are set correctly in your .env.local file.");
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY' && firebaseConfig.apiKey.length > 0) {
+    try {
+        app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        auth = getAuth(app);
+        isFirebaseConfigured = true;
+    } catch (e) {
+        console.error("Firebase initialization failed:", e);
+        app = {} as FirebaseApp;
+        auth = {} as Auth;
+        isFirebaseConfigured = false;
     }
+} else {
     // Provide mock objects to prevent the app from crashing on import.
     // Authentication functionality will be disabled until the config is provided.
     app = {} as FirebaseApp;
     auth = {} as Auth;
+    isFirebaseConfigured = false;
 }
 
 
-export { app, auth };
+export { app, auth, isFirebaseConfigured };

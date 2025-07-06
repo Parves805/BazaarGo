@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 // Define keys
@@ -195,7 +196,13 @@ export function AuthForm({ type }: AuthFormProps) {
 
   return (
     <div className="space-y-4">
-      <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading || isLoading}>
+      <Button 
+        variant="outline" 
+        className="w-full" 
+        onClick={handleGoogleSignIn} 
+        disabled={isGoogleLoading || isLoading || !isFirebaseConfigured}
+        title={!isFirebaseConfigured ? 'Firebase is not configured. Add your API keys to the .env.local file.' : 'Sign in with Google'}
+      >
           {isGoogleLoading ? (
              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
