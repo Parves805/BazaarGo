@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductRecommendations } from '@/ai/flows/product-recommendations';
+import { getProductRecommendations, type GetProductRecommendationsResult } from '@/ai/flows/product-recommendations';
 import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './product-card';
@@ -84,50 +84,41 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
       }));
 
       // If no valid cache, fetch from API
-      try {
-        const result = await getProductRecommendations({
-          viewedProducts: viewedProductObjects.map(p => ({
-              id: p.id,
-              name: p.name,
-              shortDescription: p.shortDescription,
-              category: p.category,
-          })),
-          allProducts: simplifiedProducts,
-          numberOfRecommendations: 6,
-        });
+      const result: GetProductRecommendationsResult = await getProductRecommendations({
+        viewedProducts: viewedProductObjects.map(p => ({
+            id: p.id,
+            name: p.name,
+            shortDescription: p.shortDescription,
+            category: p.category,
+        })),
+        allProducts: simplifiedProducts,
+        numberOfRecommendations: 6,
+      });
 
-        if (result && result.recommendedProducts) {
-          const recommendedProds = result.recommendedProducts
-            .map(id => allProducts.find(p => p.id === id))
-            .filter((p): p is Product => p !== undefined);
-          
-          setRecommendations(recommendedProds);
-          
-          try {
-            const cacheEntry = {
-              timestamp: Date.now(),
-              data: recommendedProds,
-              history: viewingHistory,
-            };
-            localStorage.setItem(RECOMMENDATIONS_CACHE_KEY, JSON.stringify(cacheEntry));
-          } catch (e) {
-            console.error("Failed to save recommendations to cache", e);
-          }
-        } else {
-           setError('AI failed to generate valid recommendations.');
+      if (result.error) {
+        setError(result.error);
+      } else if (result.recommendedProducts) {
+        const recommendedProds = result.recommendedProducts
+          .map(id => allProducts.find(p => p.id === id))
+          .filter((p): p is Product => p !== undefined);
+        
+        setRecommendations(recommendedProds);
+        
+        try {
+          const cacheEntry = {
+            timestamp: Date.now(),
+            data: recommendedProds,
+            history: viewingHistory,
+          };
+          localStorage.setItem(RECOMMENDATIONS_CACHE_KEY, JSON.stringify(cacheEntry));
+        } catch (e) {
+          console.error("Failed to save recommendations to cache", e);
         }
-      } catch (err: any) {
-        console.error(err);
-        let errorMessage = 'Failed to fetch recommendations. This might be due to an unknown API error.';
-        if (err.message && (err.message.includes('API key not valid') || err.message.includes('API_KEY_INVALID'))) {
-            errorMessage = 'The Google AI API key is missing or invalid. Please add a valid GOOGLE_API_KEY to your .env file to enable AI features.';
-        } else if (err.message && err.message.includes('No model found')) {
-            errorMessage = 'The AI model is not configured. This is likely because the GOOGLE_API_KEY is missing from your .env file.';
-        }
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
+      } else {
+         setError('AI failed to generate valid recommendations.');
       }
+      
+      setLoading(false);
     }
 
     if (viewingHistory.length > 0) {

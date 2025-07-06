@@ -5,7 +5,7 @@
  *
  * - getProductRecommendations - A function that handles the product recommendation process.
  * - GetProductRecommendationsInput - The input type for the getProductRecommendations function.
- * - GetProductRecommendationsOutput - The return type for the getProductRecommendations function.
+ * - GetProductRecommendationsResult - The return type for the getProductRecommendations function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -43,10 +43,31 @@ export type GetProductRecommendationsOutput = z.infer<
   typeof GetProductRecommendationsOutputSchema
 >;
 
+// New type for the safe wrapper function
+export type GetProductRecommendationsResult = {
+  recommendedProducts: string[] | null;
+  error: string | null;
+};
+
+
 export async function getProductRecommendations(
   input: GetProductRecommendationsInput
-): Promise<GetProductRecommendationsOutput> {
-  return getProductRecommendationsFlow(input);
+): Promise<GetProductRecommendationsResult> {
+  try {
+    const result = await getProductRecommendationsFlow(input);
+    return { recommendedProducts: result.recommendedProducts, error: null };
+  } catch (e: any) {
+    console.error("[BazaarGo AI] Error in getProductRecommendationsFlow:", e.message);
+    let errorMessage = 'An unexpected error occurred while generating recommendations.';
+    if (e.message?.includes('API_KEY_INVALID') || e.message?.includes('Api key not valid')) {
+        errorMessage = 'The Google AI API key is missing or invalid. Please check your .env file to enable AI features.';
+    } else if (e.message?.includes('No model found')) {
+        errorMessage = 'The AI model is not configured. This is likely because the GOOGLE_API_KEY is missing from your .env file.';
+    } else if (e.message?.includes('429')) {
+        errorMessage = 'The AI service is currently busy. Please try again in a few moments.';
+    }
+    return { recommendedProducts: null, error: errorMessage };
+  }
 }
 
 const productRecommendationsPrompt = ai.definePrompt({
