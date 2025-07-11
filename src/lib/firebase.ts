@@ -41,6 +41,12 @@ if (
     app = {} as FirebaseApp;
     auth = {} as Auth;
     isFirebaseConfigured = false;
+
+    if (typeof window !== 'undefined') {
+        console.warn("\n[BazaarGo] WARNING: Firebase configuration is missing or incomplete.");
+        console.warn("[BazaarGo] Google Authentication will be disabled.");
+        console.warn("[BazaarGo] Please ensure all NEXT_PUBLIC_FIREBASE_* variables are set in your .env or .env.local file.\n");
+    }
 }
 
 export { app, auth, isFirebaseConfigured };
