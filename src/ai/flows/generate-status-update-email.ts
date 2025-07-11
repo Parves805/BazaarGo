@@ -106,6 +106,11 @@ Use the following information to tailor the email content:
 
 Generate ONLY the HTML code for the email. Do not add any extra text or explanations before or after the HTML block.
 `,
+  // Register helper functions directly in the prompt configuration
+  helpers: {
+    jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
+    lookup: (obj: any, key: string, prop: string) => obj[key]?.[prop] || '',
+  }
 });
 
 const generateStatusUpdateEmailFlow = ai.defineFlow(
@@ -120,7 +125,6 @@ const generateStatusUpdateEmailFlow = ai.defineFlow(
     const { text } = await prompt({
         ...input,
         statusUpdateMessages,
-        jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
     });
     return text;
   }

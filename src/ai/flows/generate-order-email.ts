@@ -79,6 +79,10 @@ Your task is to generate a professional, modern, and clean HTML order confirmati
 
 Generate ONLY the HTML code for the email. Do not add any extra text or explanations before or after the HTML block.
 `,
+  // Register the helper function directly in the prompt configuration
+  helpers: {
+    jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
+  }
 });
 
 const generateOrderEmailFlow = ai.defineFlow(
@@ -98,7 +102,6 @@ const generateOrderEmailFlow = ai.defineFlow(
 
     const { text } = await prompt({
         order: orderWithSubtotal,
-        jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
     });
     return text;
   }
