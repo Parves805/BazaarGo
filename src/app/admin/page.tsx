@@ -18,22 +18,6 @@ const statusColors: { [key: string]: string } = {
   Cancelled: 'bg-red-500',
 };
 
-const TakaSign = ({ className }: { className?: string }) => (
-    <svg
-        className={className}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M4 12.25h16M4 16h16M9 8h8M9 19.25h8M10 4.25v15M14 4.25v15" />
-    </svg>
-);
-
-
 const PRODUCTS_KEY = 'appProducts';
 
 export default function AdminDashboardPage() {
@@ -150,7 +134,7 @@ export default function AdminDashboardPage() {
       
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {renderStatCard("Total Revenue", `৳${stats.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, stats.revenueChange, <TakaSign className="h-4 w-4 text-muted-foreground" />, "from last month")}
+        {renderStatCard("Total Revenue", `৳${stats.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, stats.revenueChange, <span className="text-muted-foreground">৳</span>, "from last month")}
         {renderStatCard("Total Sales", `+${stats.totalSales}`, stats.salesChange, <ShoppingCart className="h-4 w-4 text-muted-foreground" />, "from last month")}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
