@@ -8,8 +8,6 @@ import type { Product } from '@/lib/types';
 import { ProductCard } from './product-card';
 import { Skeleton } from './ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import * as AlertComponents from "@/components/ui/alert";
-import { Terminal } from 'lucide-react';
 
 const PRODUCTS_KEY = 'appProducts';
 const RECOMMENDATIONS_CACHE_KEY = 'aiProductRecommendations';
@@ -128,45 +126,34 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     }
   }, [viewingHistory, allProducts]);
 
-  if (loading) {
-    return (
-      <Carousel
-        opts={{
-            align: 'start',
-        }}
-        className="w-full"
-      >
-        <CarouselContent>
-            {[...Array(6)].map((_, i) => (
-                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                    <div className="p-1 h-full space-y-3">
-                        <Skeleton className="h-[320px] w-full rounded-xl" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-[200px]" />
-                            <Skeleton className="h-4 w-[150px]" />
+  if (error || (loading && recommendations.length === 0) || (!loading && recommendations.length === 0)) {
+    // If there's an error, or if there are simply no recommendations, don't render the component.
+    // Skeletons will only show on the initial load if there's a possibility of showing data.
+    if (loading) {
+       return (
+          <Carousel
+            opts={{
+                align: 'start',
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+                {[...Array(6)].map((_, i) => (
+                    <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                        <div className="p-1 h-full space-y-3">
+                            <Skeleton className="h-[320px] w-full rounded-xl" />
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-[200px]" />
+                                <Skeleton className="h-4 w-[150px]" />
+                            </div>
                         </div>
-                    </div>
-                </CarouselItem>
-            ))}
-        </CarouselContent>
-      </Carousel>
-    );
-  }
-
-  if (error) {
-     return (
-        <AlertComponents.Alert variant="destructive">
-            <Terminal className="h-4 w-4" />
-            <AlertComponents.AlertTitle>AI Recommendation Error</AlertComponents.AlertTitle>
-            <AlertComponents.AlertDescription>
-                {error}
-            </AlertComponents.AlertDescription>
-        </AlertComponents.Alert>
-     );
-  }
-  
-  if (recommendations.length === 0) {
-    return null; // Don't show anything if there are no recommendations
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+          </Carousel>
+        );
+    }
+    return null;
   }
 
   return (
