@@ -54,7 +54,7 @@ export async function generateOrderConfirmationEmail(input: GenerateOrderEmailIn
 
 const prompt = ai.definePrompt({
   name: 'generateOrderEmailPrompt',
-  input: { schema: GenerateOrderEmailInputSchema },
+  input: { schema: z.object({ orderJson: z.string() }) },
   output: { format: 'text' },
   prompt: `
 You are an expert email designer for an e-commerce store called "BazaarGo".
@@ -74,15 +74,11 @@ Your task is to generate a professional, modern, and clean HTML order confirmati
 
 **Order Details (JSON):**
 \`\`\`json
-{{{jsonStringify order}}}
+{{{orderJson}}}
 \`\`\`
 
 Generate ONLY the HTML code for the email. Do not add any extra text or explanations before or after the HTML block.
 `,
-  // Register the helper function directly in the prompt configuration
-  helpers: {
-    jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
-  }
 });
 
 const generateOrderEmailFlow = ai.defineFlow(
@@ -94,14 +90,17 @@ const generateOrderEmailFlow = ai.defineFlow(
   async (input) => {
     // We need to pass the order object as a string to the prompt
     // because Handlebars can't handle complex nested objects and arrays directly.
+    const subtotal = input.order.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const orderWithSubtotal = {
         ...input.order,
-        subtotal: input.order.items.reduce((acc, item) => acc + item.price * item.quantity, 0),
-        shipping: input.order.total - input.order.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        subtotal: subtotal,
+        shipping: input.order.total - subtotal
     };
+    
+    const orderJson = JSON.stringify(orderWithSubtotal, null, 2);
 
     const { text } = await prompt({
-        order: orderWithSubtotal,
+        orderJson,
     });
     return text;
   }

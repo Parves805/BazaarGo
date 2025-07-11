@@ -78,7 +78,13 @@ const statusUpdateMessages = {
 
 const prompt = ai.definePrompt({
   name: 'generateStatusUpdateEmailPrompt',
-  input: { schema: GenerateStatusUpdateEmailInputSchema },
+  input: { schema: z.object({ 
+    newStatus: z.string(), 
+    orderJson: z.string(),
+    subject: z.string(),
+    title: z.string(),
+    message: z.string(),
+  }) },
   output: { format: 'text' },
   prompt: `
 You are an expert email designer for an e-commerce store called "BazaarGo".
@@ -87,9 +93,9 @@ Your task is to generate a professional, modern, and clean HTML order status upd
 The new status for the order is: **{{newStatus}}**.
 
 Use the following information to tailor the email content:
-- **Subject Line:** {{lookup statusUpdateMessages newStatus 'subject'}}
-- **Email Title:** {{lookup statusUpdateMessages newStatus 'title'}}
-- **Main Message:** {{lookup statusUpdateMessages newStatus 'message'}}
+- **Subject Line:** {{subject}}
+- **Email Title:** {{title}}
+- **Main Message:** {{message}}
 
 **Instructions:**
 1.  **Use Inline CSS:** All styles must be inline CSS for maximum compatibility.
@@ -101,16 +107,11 @@ Use the following information to tailor the email content:
 
 **Order Details (JSON):**
 \`\`\`json
-{{{jsonStringify order}}}
+{{{orderJson}}}
 \`\`\`
 
 Generate ONLY the HTML code for the email. Do not add any extra text or explanations before or after the HTML block.
 `,
-  // Register helper functions directly in the prompt configuration
-  helpers: {
-    jsonStringify: (obj: any) => JSON.stringify(obj, null, 2),
-    lookup: (obj: any, key: string, prop: string) => obj[key]?.[prop] || '',
-  }
 });
 
 const generateStatusUpdateEmailFlow = ai.defineFlow(
@@ -120,11 +121,19 @@ const generateStatusUpdateEmailFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (input) => {
-    // We pass the order object as a string to the prompt
-    // and provide a lookup helper for status-specific messages.
+    const orderJson = JSON.stringify(input.order, null, 2);
+    const statusInfo = statusUpdateMessages[input.newStatus as keyof typeof statusUpdateMessages] || {
+        subject: `Your Order Status is ${input.newStatus}`,
+        title: `Your Order Status Has Been Updated`,
+        message: `The status of your order has been updated to ${input.newStatus}.`
+    }
+
     const { text } = await prompt({
-        ...input,
-        statusUpdateMessages,
+        newStatus: input.newStatus,
+        orderJson: orderJson,
+        subject: statusInfo.subject,
+        title: statusInfo.title,
+        message: statusInfo.message,
     });
     return text;
   }
