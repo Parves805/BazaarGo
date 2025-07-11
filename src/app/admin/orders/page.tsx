@@ -32,6 +32,7 @@ import type { Order } from '@/lib/types';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { generateStatusUpdateEmail } from '@/ai/flows/generate-status-update-email';
 
 const statusColors: { [key: string]: string } = {
   Delivered: 'bg-green-500',
@@ -77,7 +78,8 @@ export default function AdminOrdersPage() {
         return () => clearInterval(interval);
     }, []);
 
-    const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
+    const handleStatusChange = async (orderId: string, newStatus: Order['status']) => {
+        let orderToUpdate: Order | undefined;
         try {
             const savedOrders = localStorage.getItem('bazaargoUserOrders');
             if (savedOrders) {
@@ -87,6 +89,7 @@ export default function AdminOrdersPage() {
                     const orderIndex = currentOrders.findIndex(o => o.id === orderId);
 
                     if (orderIndex > -1) {
+                        orderToUpdate = currentOrders[orderIndex];
                         currentOrders[orderIndex].status = newStatus;
                         localStorage.setItem('bazaargoUserOrders', JSON.stringify(currentOrders));
                         
@@ -101,6 +104,29 @@ export default function AdminOrdersPage() {
         } catch (error) {
             console.error("Failed to update order status", error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to update status.' });
+            return;
+        }
+
+        // Generate and log the status update email
+        if (orderToUpdate) {
+            try {
+                console.log(`Generating status update email for order #${orderId} to status: ${newStatus}...`);
+                const emailHtml = await generateStatusUpdateEmail({ order: orderToUpdate, newStatus });
+                console.log(`----- ORDER #${orderId} STATUS UPDATE EMAIL (HTML) -----`);
+                console.log(emailHtml);
+                console.log("-------------------------------------------------");
+                toast({
+                    title: "Update Email Generated",
+                    description: `Status update email for order #${orderId.slice(-6)} has been logged to the console.`,
+                });
+            } catch(emailError: any) {
+                console.error("Failed to generate order status update email:", emailError);
+                toast({
+                    variant: 'destructive',
+                    title: 'Email Generation Failed',
+                    description: emailError.message || 'Could not generate the status update email.',
+                });
+            }
         }
     };
     
