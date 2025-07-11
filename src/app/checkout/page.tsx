@@ -21,6 +21,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { CreditCard, Truck, Loader2 } from 'lucide-react';
 import type { Order } from '@/lib/types';
+import { generateOrderConfirmationEmail } from '@/ai/flows/generate-order-email';
 
 const PAYMENT_SETTINGS_KEY = 'paymentGatewaySettings';
 
@@ -136,6 +137,27 @@ export default function CheckoutPage() {
         }
         const newOrders = [order, ...existingOrders];
         localStorage.setItem('bazaargoUserOrders', JSON.stringify(newOrders));
+
+        // Generate and log the email content
+        try {
+            console.log("Generating order confirmation email...");
+            const emailHtml = await generateOrderConfirmationEmail({ order });
+            console.log("----- ORDER CONFIRMATION EMAIL (HTML) -----");
+            console.log(emailHtml);
+            console.log("-------------------------------------------");
+            toast({
+                title: "Email Generation Successful",
+                description: "Order confirmation email HTML has been logged to the console.",
+            });
+        } catch(emailError: any) {
+            console.error("Failed to generate order confirmation email:", emailError);
+            toast({
+                variant: 'destructive',
+                title: 'Email Generation Failed',
+                description: emailError.message || 'Could not generate the confirmation email.',
+            });
+        }
+
     } catch (error) {
         console.error("Failed to save order to localStorage", error);
     }
