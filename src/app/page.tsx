@@ -9,17 +9,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
-import type { Product, Category } from '@/lib/types';
+import type { Product, Category, PopupCampaign } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductRecommendations } from '@/components/product-recommendations';
+import { PopupModal } from '@/components/popup-modal';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
 const CATEGORIES_KEY = 'appCategories';
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const AI_SETTINGS_KEY = 'aiSettings';
+const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
+const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -41,6 +44,8 @@ export default function Home() {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [viewingHistory, setViewingHistory] = React.useState<string[]>([]);
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
+  const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
+  const [showPopup, setShowPopup] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -88,6 +93,18 @@ export default function Home() {
             return JSON.stringify(prev) !== JSON.stringify(newSettings) ? newSettings : prev;
         });
 
+        // Load Popup Campaign
+        const savedPopupCampaign = localStorage.getItem(POPUP_CAMPAIGN_KEY);
+        if (savedPopupCampaign) {
+          const campaign = JSON.parse(savedPopupCampaign);
+          setPopupCampaign(campaign);
+
+          const popupSeen = localStorage.getItem(POPUP_SEEN_KEY);
+          if (!popupSeen && campaign.enabled) {
+              setShowPopup(true);
+          }
+        }
+
       } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
       } finally {
@@ -101,6 +118,10 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const handlePopupClose = () => {
+      setShowPopup(false);
+      localStorage.setItem(POPUP_SEEN_KEY, 'true');
+  };
 
   const featuredProducts = products.slice(0, 8);
   const saleProducts = products.filter((p: Product) => p.tags.includes('sale'));
@@ -113,6 +134,12 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <main className="flex-grow pb-16 md:pb-0">
+         {popupCampaign && showPopup && (
+            <PopupModal
+                campaign={popupCampaign}
+                onClose={handlePopupClose}
+            />
+        )}
         {/* Hero Section */}
         <section>
           {isLoading ? (

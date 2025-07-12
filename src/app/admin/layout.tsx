@@ -29,6 +29,7 @@ import {
   Target,
   Mail,
   Menu,
+  Megaphone,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -61,11 +62,17 @@ export default function AdminLayout({
   const areSettingsActive = [
     '/admin/settings',
     '/admin/analytics',
-    '/admin/email-marketing',
     '/admin/seo',
   ].some(p => pathname === p);
 
+  const areMarketingActive = [
+    '/admin/marketing/email',
+    '/admin/marketing/popup',
+  ].some(p => pathname.startsWith(p));
+
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(areSettingsActive);
+  const [isMarketingOpen, setIsMarketingOpen] = useState(areMarketingActive);
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAdminAuthenticated');
@@ -116,6 +123,11 @@ export default function AdminLayout({
     setIsSettingsOpen(areSettingsActive);
   }, [areSettingsActive]);
 
+  useEffect(() => {
+    setIsMarketingOpen(areMarketingActive);
+  }, [areMarketingActive]);
+
+
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
     setIsAuthenticated(false);
@@ -146,6 +158,141 @@ export default function AdminLayout({
 
   const mainContentClass = "flex-1 p-4 md:p-6 overflow-y-auto";
 
+  const renderSidebarMenu = () => (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin')}>
+          <Link href="/admin">
+            <LayoutDashboard />
+            Dashboard
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
+          <Link href="/admin/orders">
+            <ShoppingCart />
+            Orders
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
+          <Link href="/admin/products">
+            <Package />
+            Products
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+        <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
+          <Link href="/admin/categories">
+            <LayoutGrid />
+            Categories
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
+          <Link href="/admin/customers">
+            <Users />
+            Customers
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
+          <Link href="/admin/communications">
+            <MessageSquare />
+            <span>Communications</span>
+            {newMessagesCount > 0 && (
+              <Badge className="ml-auto">{newMessagesCount}</Badge>
+            )}
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
+          <Link href="/admin/notifications">
+            <Bell />
+            <span>Notifications</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+
+      <Collapsible asChild open={isMarketingOpen} onOpenChange={setIsMarketingOpen}>
+        <SidebarMenuItem className="flex flex-col">
+          <CollapsibleTrigger asChild>
+              <SidebarMenuButton
+                className="justify-between w-full"
+                isActive={areMarketingActive}
+                closeSheetOnClick={false}
+              >
+                <div className="flex items-center gap-2">
+                  <Megaphone />
+                  <span>Marketing</span>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 transition-transform", isMarketingOpen && "rotate-180")} />
+              </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="w-full">
+            <SidebarMenu className="pl-6 pt-1">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/marketing/popup')}>
+                    <Link href="/admin/marketing/popup">Popup Campaign</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/marketing/email')}>
+                    <Link href="/admin/marketing/email">Email Marketing</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+          </CollapsibleContent>
+        </SidebarMenuItem>
+      </Collapsible>
+      
+        <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <SidebarMenuItem className="flex flex-col">
+          <CollapsibleTrigger asChild>
+              <SidebarMenuButton
+                className="justify-between w-full"
+                isActive={areSettingsActive}
+                closeSheetOnClick={false}
+              >
+                <div className="flex items-center gap-2">
+                  <Settings />
+                  <span>Settings & Growth</span>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 transition-transform", isSettingsOpen && "rotate-180")} />
+              </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="w-full">
+            <SidebarMenu className="pl-6 pt-1">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
+                    <Link href="/admin/settings">General Settings</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
+                    <Link href="/admin/analytics">Analytics</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
+                    <Link href="/admin/seo">SEO Management</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+          </CollapsibleContent>
+        </SidebarMenuItem>
+      </Collapsible>
+    </SidebarMenu>
+  );
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-secondary/30">
@@ -157,114 +304,7 @@ export default function AdminLayout({
             </div>
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenu>
-              {/* Core Operations */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin')}>
-                  <Link href="/admin">
-                    <LayoutDashboard />
-                    Dashboard
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
-                  <Link href="/admin/orders">
-                    <ShoppingCart />
-                    Orders
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
-                  <Link href="/admin/products">
-                    <Package />
-                    Products
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
-                  <Link href="/admin/categories">
-                    <LayoutGrid />
-                    Categories
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              
-              {/* User Management */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
-                  <Link href="/admin/customers">
-                    <Users />
-                    Customers
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
-                  <Link href="/admin/communications">
-                    <MessageSquare />
-                    <span>Communications</span>
-                    {newMessagesCount > 0 && (
-                      <Badge className="ml-auto">{newMessagesCount}</Badge>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Platform */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
-                  <Link href="/admin/notifications">
-                    <Bell />
-                    <span>Notifications</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              
-               <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <SidebarMenuItem className="flex flex-col">
-                  <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        className="justify-between w-full"
-                        isActive={areSettingsActive}
-                        closeSheetOnClick={false}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Settings />
-                          <span>Settings & Growth</span>
-                        </div>
-                        <ChevronDown className={cn("h-4 w-4 transition-transform", isSettingsOpen && "rotate-180")} />
-                      </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="w-full">
-                    <SidebarMenu className="pl-6 pt-1">
-                       <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
-                            <Link href="/admin/settings">General Settings</Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                            <Link href="/admin/analytics">Analytics</Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                            <Link href="/admin/seo">SEO Management</Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                            <Link href="/admin/email-marketing">Email Marketing</Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-            </SidebarMenu>
+            {renderSidebarMenu()}
           </SidebarContent>
           <SidebarFooter>
              <SidebarMenu>
@@ -304,114 +344,7 @@ export default function AdminLayout({
                         </SheetHeader>
                         {/* Re-render sidebar content inside the sheet for mobile */}
                         <SidebarContent>
-                         <SidebarMenu>
-                          {/* Core Operations */}
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin')}>
-                              <Link href="/admin">
-                                <LayoutDashboard />
-                                Dashboard
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/orders')}>
-                              <Link href="/admin/orders">
-                                <ShoppingCart />
-                                Orders
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/products')}>
-                              <Link href="/admin/products">
-                                <Package />
-                                Products
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/categories')}>
-                              <Link href="/admin/categories">
-                                <LayoutGrid />
-                                Categories
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          
-                          {/* User Management */}
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/customers')}>
-                              <Link href="/admin/customers">
-                                <Users />
-                                Customers
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/communications')}>
-                              <Link href="/admin/communications">
-                                <MessageSquare />
-                                <span>Communications</span>
-                                {newMessagesCount > 0 && (
-                                  <Badge className="ml-auto">{newMessagesCount}</Badge>
-                                )}
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-
-                          {/* Platform */}
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/admin/notifications')}>
-                              <Link href="/admin/notifications">
-                                <Bell />
-                                <span>Notifications</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          
-                           <Collapsible asChild open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                            <SidebarMenuItem className="flex flex-col">
-                              <CollapsibleTrigger asChild>
-                                  <SidebarMenuButton
-                                    className="justify-between w-full"
-                                    isActive={areSettingsActive}
-                                    closeSheetOnClick={false}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <Settings />
-                                      <span>Settings & Growth</span>
-                                    </div>
-                                    <ChevronDown className={cn("h-4 w-4 transition-transform", isSettingsOpen && "rotate-180")} />
-                                  </SidebarMenuButton>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent className="w-full">
-                                <SidebarMenu className="pl-6 pt-1">
-                                   <SidebarMenuItem>
-                                      <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
-                                        <Link href="/admin/settings">General Settings</Link>
-                                      </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                      <SidebarMenuButton asChild isActive={isActive('/admin/analytics')}>
-                                        <Link href="/admin/analytics">Analytics</Link>
-                                      </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                      <SidebarMenuButton asChild isActive={isActive('/admin/seo')}>
-                                        <Link href="/admin/seo">SEO Management</Link>
-                                      </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                      <SidebarMenuButton asChild isActive={isActive('/admin/email-marketing')}>
-                                        <Link href="/admin/email-marketing">Email Marketing</Link>
-                                      </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                              </CollapsibleContent>
-                            </SidebarMenuItem>
-                          </Collapsible>
-                        </SidebarMenu>
+                         {renderSidebarMenu()}
                         </SidebarContent>
                          <SidebarFooter>
                              <SidebarMenu>

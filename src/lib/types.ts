@@ -54,3 +54,13 @@ export interface Review {
   comment: string;
   timestamp: string;
 }
+
+export interface PopupCampaign {
+  enabled: boolean;
+  imageUrl: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  buttonUrl: string;
+  displayDuration: number; // in seconds
+}
