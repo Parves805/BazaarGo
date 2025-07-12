@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -63,4 +64,13 @@ export interface PopupCampaign {
   buttonText: string;
   buttonUrl: string;
   displayDuration: number; // in seconds
+}
+
+export interface WebsiteSettings {
+  storeName: string;
+  logoUrl: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  designerPoloImageUrl: string;
 }

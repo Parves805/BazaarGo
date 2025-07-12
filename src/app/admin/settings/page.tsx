@@ -38,6 +38,7 @@ interface WebsiteSettings {
   contactEmail: string;
   contactPhone: string;
   address: string;
+  designerPoloImageUrl: string;
 }
 
 interface AiSettings {
@@ -57,6 +58,7 @@ const defaultSettings: WebsiteSettings = {
   contactEmail: 'support@bazaargo.com',
   contactPhone: '+1 (234) 567-890',
   address: '123 Bazaar Street, Dhaka, Bangladesh',
+  designerPoloImageUrl: 'https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg',
 };
 
 const defaultAiSettings: AiSettings = {
@@ -239,6 +241,15 @@ export default function AdminSettingsPage() {
                             onChange={(e) => handleSettingChange('address', e.target.value)}
                             placeholder="123 Bazaar Street, Dhaka, Bangladesh"
                             rows={3}
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="designerPoloImageUrl">Designer Polo Section Image URL</Label>
+                        <Input
+                            id="designerPoloImageUrl"
+                            value={settings.designerPoloImageUrl}
+                            onChange={(e) => handleSettingChange('designerPoloImageUrl', e.target.value)}
+                            placeholder="https://example.com/polo-section.png"
                         />
                     </div>
                 </CardContent>

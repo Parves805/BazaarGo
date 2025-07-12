@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
-import type { Product, Category, PopupCampaign } from '@/lib/types';
+import type { Product, Category, PopupCampaign, WebsiteSettings } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,6 +23,7 @@ const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const AI_SETTINGS_KEY = 'aiSettings';
 const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
 const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
+const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -38,6 +39,15 @@ interface Slide {
     dataAiHint: string;
 }
 
+const defaultWebsiteSettings: WebsiteSettings = {
+  storeName: 'BazaarGo',
+  logoUrl: '',
+  contactEmail: '',
+  contactPhone: '',
+  address: '',
+  designerPoloImageUrl: 'https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg',
+};
+
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -46,6 +56,7 @@ export default function Home() {
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
   const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
   const [showPopup, setShowPopup] = React.useState(false);
+  const [websiteSettings, setWebsiteSettings] = React.useState<WebsiteSettings>(defaultWebsiteSettings);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -104,6 +115,13 @@ export default function Home() {
               setShowPopup(true);
           }
         }
+        
+        // Load Website Settings
+        const savedWebsiteSettings = localStorage.getItem(WEBSITE_SETTINGS_KEY);
+        setWebsiteSettings(prev => {
+            const newSettings = savedWebsiteSettings ? JSON.parse(savedWebsiteSettings) : defaultWebsiteSettings;
+            return JSON.stringify(prev) !== JSON.stringify(newSettings) ? { ...defaultWebsiteSettings, ...newSettings } : prev;
+        });
 
       } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
@@ -258,7 +276,7 @@ export default function Home() {
               <div className="col-span-2 md:col-span-3 lg:col-span-2 row-span-2 relative group overflow-hidden rounded-lg">
                 <Link href="/category/polo-tshirt">
                   <Image
-                    src="https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg"
+                    src={websiteSettings.designerPoloImageUrl}
                     alt="Designer Polo Collection"
                     width={500}
                     height={500}
