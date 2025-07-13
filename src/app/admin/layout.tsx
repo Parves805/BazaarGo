@@ -31,6 +31,7 @@ import {
   Menu,
   Megaphone,
   View,
+  SquareCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -70,6 +71,7 @@ export default function AdminLayout({
   const areMarketingActive = [
     '/admin/marketing/email',
     '/admin/marketing/popup',
+    '/admin/marketing/promo-cards',
   ].some(p => pathname.startsWith(p));
 
 
@@ -244,6 +246,11 @@ export default function AdminLayout({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isActive('/admin/marketing/popup')}>
                     <Link href="/admin/marketing/popup">Popup Campaign</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/marketing/promo-cards')}>
+                    <Link href="/admin/marketing/promo-cards">Promo Cards</Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>

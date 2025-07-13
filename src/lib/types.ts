@@ -80,3 +80,10 @@ export interface HomepageSection {
   mainImageUrl: string;
   categorySlug: string;
 }
+
+export interface PromoCard {
+  id: string;
+  title: string;
+  imageUrl: string;
+  link: string;
+}

@@ -9,13 +9,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
-import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType } from '@/lib/types';
+import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType, PromoCard as PromoCardType } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductRecommendations } from '@/components/product-recommendations';
 import { PopupModal } from '@/components/popup-modal';
 import { HomepageSection } from '@/components/homepage-section';
+import { PromoGrid } from '@/components/promo-grid';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
@@ -26,6 +27,7 @@ const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
 const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
+const PROMO_CARDS_KEY = 'promoCards';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -50,6 +52,12 @@ const defaultHomepageSections: HomepageSectionType[] = [
   }
 ];
 
+const defaultPromoCards: PromoCardType[] = [
+    { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
+    { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
+    { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
+];
+
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -59,6 +67,7 @@ export default function Home() {
   const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
   const [showPopup, setShowPopup] = React.useState(false);
   const [homepageSections, setHomepageSections] = React.useState<HomepageSectionType[]>([]);
+  const [promoCards, setPromoCards] = React.useState<PromoCardType[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -121,6 +130,10 @@ export default function Home() {
         // Load Homepage Sections
         const savedHomepageSections = localStorage.getItem(HOMEPAGE_SECTIONS_KEY);
         setHomepageSections(savedHomepageSections ? JSON.parse(savedHomepageSections) : defaultHomepageSections);
+
+        // Load Promo Cards
+        const savedPromoCards = localStorage.getItem(PROMO_CARDS_KEY);
+        setPromoCards(savedPromoCards ? JSON.parse(savedPromoCards) : defaultPromoCards);
 
       } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
@@ -240,6 +253,9 @@ export default function Home() {
             </Carousel>
           </div>
         </section>
+        
+        {/* Promo Grid Section */}
+        <PromoGrid promoCards={promoCards} isLoading={isLoading} />
 
         {/* Featured Products Section */}
         <section className="bg-secondary/50 py-12 md:py-20">
