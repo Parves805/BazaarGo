@@ -8,6 +8,8 @@ import type { Product } from '@/lib/types';
 import { ProductCard } from './product-card';
 import { Skeleton } from './ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Terminal } from 'lucide-react';
 
 const PRODUCTS_KEY = 'appProducts';
 const RECOMMENDATIONS_CACHE_KEY = 'aiProductRecommendations';
@@ -49,12 +51,10 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
       setLoading(true);
       setError(null);
       
-      // Try to load from cache first
       try {
         const cachedDataJSON = localStorage.getItem(RECOMMENDATIONS_CACHE_KEY);
         if (cachedDataJSON) {
           const { timestamp, data, history } = JSON.parse(cachedDataJSON);
-          // Check if cache is fresh and viewing history is the same
           if ((Date.now() - timestamp < CACHE_TTL) && JSON.stringify(history) === JSON.stringify(viewingHistory)) {
             setRecommendations(data);
             setLoading(false);
@@ -81,7 +81,6 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
           category: p.category,
       }));
 
-      // If no valid cache, fetch from API
       const result: GetProductRecommendationsResult = await getProductRecommendations({
         viewedProducts: viewedProductObjects.map(p => ({
             id: p.id,
@@ -95,6 +94,7 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
 
       if (result.error) {
         setError(result.error);
+        setRecommendations([]); // Clear any old recommendations
       } else if (result.recommendedProducts) {
         const recommendedProds = result.recommendedProducts
           .map(id => allProducts.find(p => p.id === id))
@@ -126,34 +126,34 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     }
   }, [viewingHistory, allProducts]);
 
-  if (error || (loading && recommendations.length === 0) || (!loading && recommendations.length === 0)) {
-    // If there's an error, or if there are simply no recommendations, don't render the component.
-    // Skeletons will only show on the initial load if there's a possibility of showing data.
-    if (loading) {
-       return (
-          <Carousel
-            opts={{
-                align: 'start',
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-                {[...Array(6)].map((_, i) => (
-                    <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                        <div className="p-1 h-full space-y-3">
-                            <Skeleton className="h-[320px] w-full rounded-xl" />
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 w-[200px]" />
-                                <Skeleton className="h-4 w-[150px]" />
-                            </div>
-                        </div>
-                    </CarouselItem>
-                ))}
-            </CarouselContent>
-          </Carousel>
-        );
-    }
-    return null;
+  if (loading) {
+     return (
+        <Carousel
+          opts={{
+              align: 'start',
+          }}
+          className="w-full"
+        >
+          <CarouselContent>
+              {[...Array(6)].map((_, i) => (
+                  <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <div className="p-1 h-full space-y-3">
+                          <Skeleton className="h-[320px] w-full rounded-xl" />
+                          <div className="space-y-2">
+                              <Skeleton className="h-4 w-[200px]" />
+                              <Skeleton className="h-4 w-[150px]" />
+                          </div>
+                      </div>
+                  </CarouselItem>
+              ))}
+          </CarouselContent>
+        </Carousel>
+      );
+  }
+
+  // Hide section entirely if there's an error or no recommendations
+  if (error || recommendations.length === 0) {
+      return null;
   }
 
   return (
