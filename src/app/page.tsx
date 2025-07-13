@@ -27,6 +27,8 @@ const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
 const PROMO_SECTIONS_KEY = 'promoCardSections';
+const POPUP_SEEN_SESSION_KEY = 'bazaargoPopupSeenSession';
+
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -124,8 +126,10 @@ export default function Home() {
         if (savedPopupCampaign) {
           const campaign = JSON.parse(savedPopupCampaign);
           setPopupCampaign(campaign);
-          if (campaign.enabled) {
+          const popupSeen = sessionStorage.getItem(POPUP_SEEN_SESSION_KEY);
+          if (campaign.enabled && !popupSeen) {
               setShowPopup(true);
+              sessionStorage.setItem(POPUP_SEEN_SESSION_KEY, 'true');
           }
         }
         
