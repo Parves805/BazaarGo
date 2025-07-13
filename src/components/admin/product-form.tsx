@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
@@ -168,7 +169,10 @@ export function ProductForm({ productId }: ProductFormProps) {
             if (isEditMode) {
                 const productIndex = products.findIndex(p => p.id === productId);
                 if (productIndex !== -1) {
-                    products[productIndex] = { ...products[productIndex], ...transformedData };
+                    products[productIndex] = { 
+                        ...products[productIndex], 
+                        ...transformedData 
+                    };
                 }
             } else {
                 const newProduct: Product = {
@@ -176,6 +180,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                     id: `p${new Date().getTime()}`,
                     rating: Math.round((Math.random() * 1.5 + 3.5) * 10) / 10,
                     reviewCount: Math.floor(Math.random() * 200) + 20,
+                    createdAt: new Date().toISOString(),
                 };
                 products.push(newProduct);
             }

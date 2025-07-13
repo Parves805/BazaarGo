@@ -154,6 +154,9 @@ export default function Home() {
   };
 
   const featuredProducts = products.slice(0, 8);
+  const recentProducts = [...products]
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+    .slice(0, 8);
   const saleProducts = products.filter((p: Product) => p.tags.includes('sale'));
 
   const plugin = React.useRef(
@@ -280,6 +283,32 @@ export default function Home() {
             </Carousel>
           </div>
         </section>
+
+        {/* Recent Products Section */}
+        {recentProducts.length > 0 && (
+          <section className="py-12 md:py-20">
+            <div className="container">
+              <h2 className="text-3xl font-bold text-center font-headline mb-8">Recent Products</h2>
+              <Carousel opts={{ align: "start", loop: recentProducts.length > 4 }} className="w-full">
+                <CarouselContent>
+                  {isLoading ? [...Array(4)].map((_, i) => (
+                    <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                      <div className="p-1"><Skeleton className="h-[400px]" /></div>
+                    </CarouselItem>
+                  )) : recentProducts.map((product) => (
+                    <CarouselItem key={product.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                      <div className="p-1">
+                        <ProductCard product={product} />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="ml-12" />
+                <CarouselNext className="mr-12" />
+              </Carousel>
+            </div>
+          </section>
+        )}
 
         {/* Dynamic Homepage Sections */}
         {homepageSections.map((section, index) => (

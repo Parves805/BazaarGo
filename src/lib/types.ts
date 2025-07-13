@@ -14,6 +14,7 @@ export interface Product {
   tags: string[];
   sizes?: string[];
   colors?: { name: string; hex: string }[];
+  createdAt?: string; // ISO date string
 }
 
 export interface Category {
