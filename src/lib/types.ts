@@ -88,3 +88,8 @@ export interface PromoCard {
   imageUrl: string;
   link: string;
 }
+
+export interface PromoSection {
+    id: string;
+    cards: PromoCard[];
+}

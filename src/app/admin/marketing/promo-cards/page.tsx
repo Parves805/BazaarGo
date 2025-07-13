@@ -11,10 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Trash2, PlusCircle, SquareCheck } from 'lucide-react';
-import type { PromoCard } from '@/lib/types';
-import { initialCategories } from '@/lib/data';
+import type { PromoSection } from '@/lib/types';
 
-const PROMO_CARDS_KEY = 'promoCards';
+const PROMO_SECTIONS_KEY = 'promoCardSections';
 
 const cardSchema = z.object({
   id: z.string(),
@@ -23,16 +22,26 @@ const cardSchema = z.object({
   link: z.string().min(1, { message: "Link is required (e.g., /category/your-slug)." }),
 });
 
+const sectionSchema = z.object({
+    id: z.string(),
+    cards: z.array(cardSchema)
+});
+
 const formSchema = z.object({
-  cards: z.array(cardSchema),
+  sections: z.array(sectionSchema),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const defaultCards: PromoCard[] = [
-    { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
-    { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
-    { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
+const defaultSections: PromoSection[] = [
+    { 
+        id: 'section_1',
+        cards: [
+            { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
+            { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
+            { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
+        ]
+    }
 ];
 
 export default function PromoCardsPage() {
@@ -42,21 +51,21 @@ export default function PromoCardsPage() {
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: { cards: [] },
+        defaultValues: { sections: [] },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields: sectionFields, append: appendSection, remove: removeSection } = useFieldArray({
         control: form.control,
-        name: 'cards',
+        name: 'sections',
     });
 
     useEffect(() => {
         try {
-            const savedCardsJSON = localStorage.getItem(PROMO_CARDS_KEY);
-            const savedCards = savedCardsJSON ? JSON.parse(savedCardsJSON) : defaultCards;
-            form.reset({ cards: savedCards });
+            const savedSectionsJSON = localStorage.getItem(PROMO_SECTIONS_KEY);
+            const savedSections = savedSectionsJSON ? JSON.parse(savedSectionsJSON) : defaultSections;
+            form.reset({ sections: savedSections });
         } catch (error) {
-            console.error("Failed to load promo cards from localStorage", error);
+            console.error("Failed to load promo sections from localStorage", error);
         } finally {
             setIsMounted(true);
         }
@@ -65,28 +74,28 @@ export default function PromoCardsPage() {
     const onSubmit = (data: FormValues) => {
         setIsLoading(true);
         try {
-            localStorage.setItem(PROMO_CARDS_KEY, JSON.stringify(data.cards));
+            localStorage.setItem(PROMO_SECTIONS_KEY, JSON.stringify(data.sections));
             toast({
-                title: "Promo Cards Saved",
-                description: "Your promotional cards have been updated.",
+                title: "Promo Sections Saved",
+                description: "Your promotional card sections have been updated.",
             });
         } catch (error) {
             toast({
                 variant: 'destructive',
                 title: "Save Failed",
-                description: "Could not save promo cards.",
+                description: "Could not save promo sections.",
             });
         } finally {
             setIsLoading(false);
         }
     };
 
-    const addNewCard = () => {
-        append({
-            id: `card_${Date.now()}`,
-            title: 'New Promo Card',
-            imageUrl: 'https://placehold.co/400x500.png',
-            link: '/shop',
+    const addNewSection = () => {
+        appendSection({
+            id: `section_${Date.now()}`,
+            cards: [
+                { id: `card_${Date.now()}_1`, title: 'New Promo Card', imageUrl: 'https://placehold.co/400x500.png', link: '/shop' },
+            ],
         });
     };
     
@@ -99,73 +108,98 @@ export default function PromoCardsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold font-headline flex items-center gap-2"><SquareCheck /> Promo Cards</h1>
-                    <p className="text-muted-foreground">Manage the large promotional cards on your homepage.</p>
+                    <p className="text-muted-foreground">Manage the promotional card sections on your homepage.</p>
                 </div>
-                <Button onClick={addNewCard}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Card
+                 <Button onClick={addNewSection}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Section
                 </Button>
             </div>
             
             <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                
-                <div className="space-y-6">
-                    {fields.map((field, index) => (
-                        <Card key={field.id}>
-                            <CardHeader className="flex flex-row items-center justify-between">
-                                <CardTitle>Card {index + 1}</CardTitle>
-                                <Button variant="destructive" size="icon" onClick={() => remove(index)}>
-                                    <Trash2 className="h-4 w-4"/>
-                                    <span className="sr-only">Remove Card</span>
-                                </Button>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    {sectionFields.map((sectionField, sectionIndex) => (
+                        <Card key={sectionField.id}>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle>Section {sectionIndex + 1}</CardTitle>
+                                    <Button variant="outline" size="sm" onClick={() => removeSection(sectionIndex)}>
+                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Section
+                                    </Button>
+                                </div>
                             </CardHeader>
-                            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name={`cards.${index}.title`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Title</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name={`cards.${index}.link`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Link URL</FormLabel>
-                                            <FormControl><Input {...field} placeholder="/category/slug" /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name={`cards.${index}.imageUrl`}
-                                    render={({ field }) => (
-                                        <FormItem className="md:col-span-2">
-                                            <FormLabel>Image URL</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <CardContent>
+                                <PromoSectionFields control={form.control} sectionIndex={sectionIndex} />
                             </CardContent>
                         </Card>
                     ))}
-                </div>
-
-                <div className="flex justify-end pt-4">
-                    <Button type="submit" disabled={isLoading} size="lg">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save All Cards
-                    </Button>
-                </div>
-            </form>
+                    
+                    <div className="flex justify-end pt-4">
+                        <Button type="submit" disabled={isLoading} size="lg">
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save All Sections
+                        </Button>
+                    </div>
+                </form>
             </Form>
         </div>
     );
+}
+
+
+interface PromoSectionFieldsProps {
+  control: any;
+  sectionIndex: number;
+}
+
+function PromoSectionFields({ control, sectionIndex }: PromoSectionFieldsProps) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `sections.${sectionIndex}.cards`,
+  });
+
+  const addNewCard = () => {
+    append({
+      id: `card_${Date.now()}`,
+      title: 'New Card',
+      imageUrl: 'https://placehold.co/400x500.png',
+      link: '/shop',
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      {fields.map((cardField, cardIndex) => (
+        <div key={cardField.id} className="p-4 border rounded-md space-y-4 relative">
+             <Button variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => remove(cardIndex)}>
+                <Trash2 className="h-4 w-4"/>
+                <span className="sr-only">Remove Card</span>
+            </Button>
+            <FormField
+                control={control}
+                name={`sections.${sectionIndex}.cards.${cardIndex}.title`}
+                render={({ field }) => (
+                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name={`sections.${sectionIndex}.cards.${cardIndex}.link`}
+                render={({ field }) => (
+                    <FormItem><FormLabel>Link URL</FormLabel><FormControl><Input {...field} placeholder="/category/slug" /></FormControl><FormMessage /></FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name={`sections.${sectionIndex}.cards.${cardIndex}.imageUrl`}
+                render={({ field }) => (
+                    <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}
+            />
+        </div>
+      ))}
+      <Button type="button" variant="outline" onClick={addNewCard}>
+        <PlusCircle className="mr-2 h-4 w-4" /> Add Card to Section
+      </Button>
+    </div>
+  );
 }

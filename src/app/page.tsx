@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
-import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType, PromoCard as PromoCardType } from '@/lib/types';
+import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType, PromoSection } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,7 +27,7 @@ const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
 const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
-const PROMO_CARDS_KEY = 'promoCards';
+const PROMO_SECTIONS_KEY = 'promoCardSections';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -52,10 +52,15 @@ const defaultHomepageSections: HomepageSectionType[] = [
   }
 ];
 
-const defaultPromoCards: PromoCardType[] = [
-    { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
-    { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
-    { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
+const defaultPromoSections: PromoSection[] = [
+    { 
+        id: 'section_1',
+        cards: [
+            { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
+            { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
+            { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
+        ]
+    }
 ];
 
 export default function Home() {
@@ -67,7 +72,7 @@ export default function Home() {
   const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
   const [showPopup, setShowPopup] = React.useState(false);
   const [homepageSections, setHomepageSections] = React.useState<HomepageSectionType[]>([]);
-  const [promoCards, setPromoCards] = React.useState<PromoCardType[]>([]);
+  const [promoSections, setPromoSections] = React.useState<PromoSection[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -131,9 +136,9 @@ export default function Home() {
         const savedHomepageSections = localStorage.getItem(HOMEPAGE_SECTIONS_KEY);
         setHomepageSections(savedHomepageSections ? JSON.parse(savedHomepageSections) : defaultHomepageSections);
 
-        // Load Promo Cards
-        const savedPromoCards = localStorage.getItem(PROMO_CARDS_KEY);
-        setPromoCards(savedPromoCards ? JSON.parse(savedPromoCards) : defaultPromoCards);
+        // Load Promo Card Sections
+        const savedPromoSections = localStorage.getItem(PROMO_SECTIONS_KEY);
+        setPromoSections(savedPromoSections ? JSON.parse(savedPromoSections) : defaultPromoSections);
 
       } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
@@ -354,8 +359,10 @@ export default function Home() {
           </section>
         )}
 
-        {/* Promo Grid Section */}
-        <PromoGrid promoCards={promoCards} isLoading={isLoading} />
+        {/* Promo Grid Sections */}
+        {promoSections.map((section) => (
+            <PromoGrid key={section.id} promoCards={section.cards} isLoading={isLoading} />
+        ))}
       </main>
       <SiteFooter />
     </div>
