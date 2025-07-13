@@ -257,36 +257,9 @@ export default function Home() {
           </div>
         </section>
         
-        {/* Promo Grid Section */}
-        <PromoGrid promoCards={promoCards} isLoading={isLoading} />
-
-        {/* Featured Products Section */}
-        <section className="bg-secondary/50 py-12 md:py-20">
-          <div className="container">
-            <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
-            <Carousel opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent>
-                {isLoading ? [...Array(6)].map((_, i) => (
-                  <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                    <div className="p-1"><Skeleton className="h-[400px]" /></div>
-                  </CarouselItem>
-                )) : featuredProducts.map((product) => (
-                  <CarouselItem key={product.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                    <div className="p-1">
-                      <ProductCard product={product} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="ml-12" />
-              <CarouselNext className="mr-12" />
-            </Carousel>
-          </div>
-        </section>
-
         {/* Recent Products Section */}
         {recentProducts.length > 0 && (
-          <section className="py-12 md:py-20">
+          <section className="bg-secondary/50 py-12 md:py-20">
             <div className="container">
               <h2 className="text-3xl font-bold text-center font-headline mb-8">Recent Products</h2>
               <Carousel opts={{ align: "start", loop: recentProducts.length > 4 }} className="w-full">
@@ -310,6 +283,30 @@ export default function Home() {
           </section>
         )}
 
+        {/* Featured Products Section */}
+        <section className="py-12 md:py-20">
+          <div className="container">
+            <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
+            <Carousel opts={{ align: "start", loop: true }} className="w-full">
+              <CarouselContent>
+                {isLoading ? [...Array(6)].map((_, i) => (
+                  <CarouselItem key={i} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <div className="p-1"><Skeleton className="h-[400px]" /></div>
+                  </CarouselItem>
+                )) : featuredProducts.map((product) => (
+                  <CarouselItem key={product.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <div className="p-1">
+                      <ProductCard product={product} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="ml-12" />
+              <CarouselNext className="mr-12" />
+            </Carousel>
+          </div>
+        </section>
+
         {/* Dynamic Homepage Sections */}
         {homepageSections.map((section, index) => (
           <HomepageSection 
@@ -323,7 +320,7 @@ export default function Home() {
 
         {/* On Sale Now Section */}
         {saleProducts.length > 0 && (
-          <section className="py-12 md:py-20">
+          <section className="bg-secondary/50 py-12 md:py-20">
             <div className="container">
               <h2 className="text-3xl font-bold text-center font-headline mb-8">On Sale Now</h2>
               <Carousel opts={{ align: "start", loop: saleProducts.length > 4 }} className="w-full">
@@ -356,6 +353,9 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        {/* Promo Grid Section */}
+        <PromoGrid promoCards={promoCards} isLoading={isLoading} />
       </main>
       <SiteFooter />
     </div>
