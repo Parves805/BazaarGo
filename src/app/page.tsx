@@ -9,12 +9,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { initialCategories, products as initialProducts } from '@/lib/data';
-import type { Product, Category, PopupCampaign, WebsiteSettings } from '@/lib/types';
+import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductRecommendations } from '@/components/product-recommendations';
 import { PopupModal } from '@/components/popup-modal';
+import { HomepageSection } from '@/components/homepage-section';
 
 const SLIDER_IMAGES_KEY = 'heroSliderImages';
 const PRODUCTS_KEY = 'appProducts';
@@ -24,6 +25,7 @@ const AI_SETTINGS_KEY = 'aiSettings';
 const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
 const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
+const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
 
 const defaultSlides = [
     { url: 'https://img.lazcdn.com/us/domino/df7d0dca-dc55-4a5c-8cb2-dcf2b2a2f1cc_BD-1976-688.jpg_2200x2200q80.jpg_.webp', dataAiHint: 'electronics sale' },
@@ -39,14 +41,14 @@ interface Slide {
     dataAiHint: string;
 }
 
-const defaultWebsiteSettings: WebsiteSettings = {
-  storeName: 'BazaarGo',
-  logoUrl: '',
-  contactEmail: '',
-  contactPhone: '',
-  address: '',
-  designerPoloImageUrl: 'https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg',
-};
+const defaultHomepageSections: HomepageSectionType[] = [
+  {
+    id: 'default-polo-section',
+    title: 'Designer Polo',
+    mainImageUrl: 'https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg',
+    categorySlug: 'polo-tshirt',
+  }
+];
 
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
@@ -56,7 +58,7 @@ export default function Home() {
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
   const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
   const [showPopup, setShowPopup] = React.useState(false);
-  const [websiteSettings, setWebsiteSettings] = React.useState<WebsiteSettings>(defaultWebsiteSettings);
+  const [homepageSections, setHomepageSections] = React.useState<HomepageSectionType[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -116,12 +118,9 @@ export default function Home() {
           }
         }
         
-        // Load Website Settings
-        const savedWebsiteSettings = localStorage.getItem(WEBSITE_SETTINGS_KEY);
-        setWebsiteSettings(prev => {
-            const newSettings = savedWebsiteSettings ? JSON.parse(savedWebsiteSettings) : defaultWebsiteSettings;
-            return JSON.stringify(prev) !== JSON.stringify(newSettings) ? { ...defaultWebsiteSettings, ...newSettings } : prev;
-        });
+        // Load Homepage Sections
+        const savedHomepageSections = localStorage.getItem(HOMEPAGE_SECTIONS_KEY);
+        setHomepageSections(savedHomepageSections ? JSON.parse(savedHomepageSections) : defaultHomepageSections);
 
       } catch (error) {
         console.error("Failed to load data from localStorage, using defaults.", error);
@@ -143,8 +142,6 @@ export default function Home() {
 
   const featuredProducts = products.slice(0, 8);
   const saleProducts = products.filter((p: Product) => p.tags.includes('sale'));
-  const poloProducts = products.filter(p => p.category === 'polo-tshirt').slice(0, 7);
-
 
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
@@ -268,69 +265,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Designer Polo Section */}
-        <section className="py-12 md:py-20">
-          <div className="container">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {/* Main Image */}
-              <div className="col-span-2 md:col-span-3 lg:col-span-2 row-span-2 relative group overflow-hidden rounded-lg">
-                <Link href="/category/polo-tshirt">
-                  <Image
-                    src={websiteSettings.designerPoloImageUrl}
-                    alt="Designer Polo Collection"
-                    width={500}
-                    height={500}
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    data-ai-hint="designer polo"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                  <div className="absolute bottom-6 left-6">
-                    <h3 className="text-2xl md:text-3xl font-bold text-white font-headline">Designer Polo</h3>
-                  </div>
-                </Link>
-              </div>
-
-              {/* Product Grid */}
-              {isLoading ? [...Array(8)].map((_, i) => (
-                <div key={i} className="space-y-2"><Skeleton className="aspect-square w-full" /><Skeleton className="h-4 w-2/3" /></div>
-              )) : poloProducts.map(product => (
-                <div key={product.id} className="group relative overflow-hidden rounded-lg">
-                  <Link href={`/product/${product.id}`}>
-                     <Image
-                        src={product.images[0]}
-                        alt={product.name}
-                        width={300}
-                        height={300}
-                        className="object-cover w-full h-full aspect-square transition-transform duration-300 group-hover:scale-105"
-                      />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2 text-white">
-                      <p className="text-sm font-semibold truncate">{product.name}</p>
-                       <p className="text-xs">৳{product.price.toLocaleString()}</p>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-              
-              {/* View More */}
-              <Link href="/category/polo-tshirt" className="group relative overflow-hidden rounded-lg">
-                 <div className="aspect-square w-full bg-secondary flex items-center justify-center">
-                   <Image
-                      src={poloProducts.length > 0 ? poloProducts[0].images[0] : 'https://placehold.co/300x300.png'}
-                      alt="View More Polos"
-                      width={300}
-                      height={300}
-                      className="object-cover w-full h-full aspect-square transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <h4 className="text-white text-xl font-bold font-headline">VIEW MORE</h4>
-                    </div>
-                 </div>
-              </Link>
-
-            </div>
-          </div>
-        </section>
-
+        {/* Dynamic Homepage Sections */}
+        {homepageSections.map((section, index) => (
+          <HomepageSection 
+            key={section.id} 
+            section={section} 
+            products={products}
+            isFirst={index === 0} 
+            isLoading={isLoading}
+          />
+        ))}
 
         {/* On Sale Now Section */}
         {saleProducts.length > 0 && (

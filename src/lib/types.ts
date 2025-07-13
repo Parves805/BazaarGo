@@ -72,5 +72,11 @@ export interface WebsiteSettings {
   contactEmail: string;
   contactPhone: string;
   address: string;
-  designerPoloImageUrl: string;
+}
+
+export interface HomepageSection {
+  id: string;
+  title: string;
+  mainImageUrl: string;
+  categorySlug: string;
 }

@@ -30,6 +30,7 @@ import {
   Mail,
   Menu,
   Megaphone,
+  View,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -63,6 +64,7 @@ export default function AdminLayout({
     '/admin/settings',
     '/admin/analytics',
     '/admin/seo',
+    '/admin/sections'
   ].some(p => pathname === p);
 
   const areMarketingActive = [
@@ -274,6 +276,11 @@ export default function AdminLayout({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isActive('/admin/settings')}>
                     <Link href="/admin/settings">General Settings</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/admin/sections')}>
+                    <Link href="/admin/sections">Homepage Sections</Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
