@@ -24,7 +24,6 @@ const CATEGORIES_KEY = 'appCategories';
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
 const AI_SETTINGS_KEY = 'aiSettings';
 const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
-const POPUP_SEEN_KEY = 'bazaargoPopupSeen';
 const WEBSITE_SETTINGS_KEY = 'websiteSettings';
 const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
 const PROMO_SECTIONS_KEY = 'promoCardSections';
@@ -125,9 +124,7 @@ export default function Home() {
         if (savedPopupCampaign) {
           const campaign = JSON.parse(savedPopupCampaign);
           setPopupCampaign(campaign);
-
-          const popupSeen = localStorage.getItem(POPUP_SEEN_KEY);
-          if (!popupSeen && campaign.enabled) {
+          if (campaign.enabled) {
               setShowPopup(true);
           }
         }
@@ -155,7 +152,6 @@ export default function Home() {
 
   const handlePopupClose = () => {
       setShowPopup(false);
-      localStorage.setItem(POPUP_SEEN_KEY, 'true');
   };
 
   const featuredProducts = products.slice(0, 8);
