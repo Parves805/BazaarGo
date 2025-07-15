@@ -35,7 +35,8 @@ const productSchema = z.object({
   tags: z.array(z.object({ value: z.string().min(1, "Tag cannot be empty.") })).optional(),
   colors: z.array(z.object({
     name: z.string().min(1, "Color name cannot be empty."),
-    hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex code (e.g., #RRGGBB).")
+    hex: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex code (e.g., #RRGGBB)."),
+    image: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   })).optional(),
 });
 
@@ -106,7 +107,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                         images: productToEdit.images.map(val => ({ value: val })),
                         sizes: productToEdit.sizes?.map(val => ({ value: val })),
                         tags: productToEdit.tags?.map(val => ({ value: val })),
-                        colors: productToEdit.colors?.map(val => ({ name: val.name, hex: val.hex })),
+                        colors: productToEdit.colors?.map(val => ({ name: val.name, hex: val.hex, image: val.image || '' })),
                     });
                 } else {
                     toast({ variant: 'destructive', title: 'Product not found' });
@@ -149,7 +150,7 @@ export function ProductForm({ productId }: ProductFormProps) {
             images: data.images.map(i => i.value),
             sizes: data.sizes ? data.sizes.map(s => s.value) : [],
             tags: data.tags ? data.tags.map(t => t.value) : [],
-            colors: data.colors || [],
+            colors: data.colors ? data.colors.map(c => ({...c, image: c.image || undefined })) : [],
         };
         
         try {
@@ -336,36 +337,51 @@ export function ProductForm({ productId }: ProductFormProps) {
                                 {renderArrayField("Sizes", sizeFields, removeSize, appendSize, "e.g., M", "sizes")}
                                 {renderArrayField("Tags", tagFields, removeTag, appendTag, "e.g., new", "tags")}
 
-                                <div className="space-y-2">
+                                <div className="space-y-4">
                                     <Label>Colors</Label>
                                     {colorFields.map((field, index) => (
-                                        <div key={field.id} className="flex items-start gap-2">
-                                            <FormField
+                                        <div key={field.id} className="p-4 border rounded-md space-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`colors.${index}.name`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex-grow">
+                                                            <FormLabel>Name</FormLabel>
+                                                            <FormControl><Input placeholder="Color Name" {...field} /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`colors.${index}.hex`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex-grow">
+                                                             <FormLabel>Hex</FormLabel>
+                                                            <FormControl><Input placeholder="#000000" {...field} /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <Button type="button" variant="destructive" size="icon" onClick={() => removeColor(index)} className="self-end">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                             <FormField
                                                 control={form.control}
-                                                name={`colors.${index}.name`}
+                                                name={`colors.${index}.image`}
                                                 render={({ field }) => (
-                                                    <FormItem className="flex-grow">
-                                                        <FormControl><Input placeholder="Color Name" {...field} /></FormControl>
+                                                    <FormItem>
+                                                         <FormLabel>Image URL (Optional)</FormLabel>
+                                                        <FormControl><Input placeholder="Image URL for this color" {...field} /></FormControl>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                            <FormField
-                                                control={form.control}
-                                                name={`colors.${index}.hex`}
-                                                render={({ field }) => (
-                                                    <FormItem className="flex-grow">
-                                                        <FormControl><Input placeholder="#000000" {...field} /></FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <Button type="button" variant="destructive" size="icon" onClick={() => removeColor(index)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
                                         </div>
                                     ))}
-                                    <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '#000000' })}>
+                                    <Button type="button" variant="outline" size="sm" onClick={() => appendColor({ name: '', hex: '#000000', image: '' })}>
                                         <PlusCircle className="mr-2 h-4 w-4" /> Add Color
                                     </Button>
                                 </div>

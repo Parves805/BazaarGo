@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -85,7 +86,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(product.images[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes?.length > 0 ? undefined : 'N/A');
-  const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string } | undefined>(product.colors?.length > 0 ? undefined : {name: 'N/A', hex: ''});
+  const [selectedColor, setSelectedColor] = useState<{ name: string; hex: string; image?: string; } | undefined>(product.colors?.length > 0 ? undefined : {name: 'N/A', hex: ''});
   
   const [reviews, setReviews] = useState<Review[]>([]);
   const [userCanReview, setUserCanReview] = useState(false);
@@ -97,6 +98,12 @@ export function ProductDetailsClient({ product }: { product: Product }) {
     defaultValues: { rating: 0, comment: '' },
   });
 
+  const handleSelectColor = (color: { name: string; hex: string; image?: string; }) => {
+    setSelectedColor(color);
+    if (color.image) {
+        setActiveImage(color.image);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -151,7 +158,8 @@ export function ProductDetailsClient({ product }: { product: Product }) {
       toast({ title: 'Please select a color', variant: 'destructive' });
       return;
     }
-    addItem(product, quantity, selectedSize === 'N/A' ? undefined : selectedSize, selectedColor?.name === 'N/A' ? undefined : selectedColor);
+    const { image, ...colorData } = selectedColor || {};
+    addItem(product, quantity, selectedSize === 'N/A' ? undefined : selectedSize, selectedColor?.name === 'N/A' ? undefined : colorData);
   };
   
   const handleBuyNow = () => {
@@ -163,7 +171,8 @@ export function ProductDetailsClient({ product }: { product: Product }) {
       toast({ title: 'Please select a color', variant: 'destructive' });
       return;
     }
-    addItem(product, quantity, selectedSize === 'N/A' ? undefined : selectedSize, selectedColor?.name === 'N/A' ? undefined : selectedColor);
+    const { image, ...colorData } = selectedColor || {};
+    addItem(product, quantity, selectedSize === 'N/A' ? undefined : selectedSize, selectedColor?.name === 'N/A' ? undefined : colorData);
     router.push('/checkout');
   };
 
@@ -302,7 +311,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                               selectedColor?.name === color.name ? "border-primary ring-2 ring-primary" : "border-muted-foreground/50"
                               )}
                               style={{ backgroundColor: color.hex }}
-                              onClick={() => setSelectedColor(color)}
+                              onClick={() => handleSelectColor(color)}
                               aria-label={`Select color ${color.name}`}
                           />
                           ))}

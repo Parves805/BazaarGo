@@ -13,7 +13,7 @@ export interface Product {
   stock: number;
   tags: string[];
   sizes?: string[];
-  colors?: { name: string; hex: string }[];
+  colors?: { name: string; hex: string; image?: string; }[];
   createdAt?: string; // ISO date string
 }
 
