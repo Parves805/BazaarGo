@@ -20,10 +20,7 @@ let isFirebaseConfigured = false;
 if (
     firebaseConfig.apiKey &&
     firebaseConfig.authDomain &&
-    firebaseConfig.projectId &&
-    firebaseConfig.storageBucket &&
-    firebaseConfig.messagingSenderId &&
-    firebaseConfig.appId
+    firebaseConfig.projectId
 ) {
     try {
         app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

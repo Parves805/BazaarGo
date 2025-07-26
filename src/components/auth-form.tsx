@@ -70,6 +70,16 @@ export function AuthForm({ type }: AuthFormProps) {
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
+    if (!isFirebaseConfigured) {
+        toast({
+            variant: 'destructive',
+            title: 'Firebase Not Configured',
+            description: 'Please ask the administrator to configure Firebase credentials.',
+        });
+        setIsGoogleLoading(false);
+        return;
+    }
+
     const provider = new GoogleAuthProvider();
     try {
         const result = await signInWithPopup(auth, provider);
