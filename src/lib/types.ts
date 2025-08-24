@@ -46,6 +46,7 @@ export interface Order {
     zip: string;
     paymentMethod: string;
   };
+  userId?: string; // To associate orders with users
 }
 
 export interface Review {
@@ -55,6 +56,7 @@ export interface Review {
   rating: number;
   comment: string;
   timestamp: string;
+  userId?: string; // To associate reviews with users
 }
 
 export interface PopupCampaign {
@@ -75,6 +77,23 @@ export interface WebsiteSettings {
   address: string;
 }
 
+export interface AiSettings {
+    recommendationsEnabled: boolean;
+}
+
+export interface PaymentGatewaySettings {
+    cashOnDelivery: boolean;
+    bkash: boolean;
+    nagad: boolean;
+    rocket: boolean;
+}
+
+export interface SeoSettings {
+  titleTemplate: string;
+  metaDescription: string;
+  metaKeywords: string;
+}
+
 export interface HomepageSection {
   id: string;
   title: string;
@@ -92,4 +111,37 @@ export interface PromoCard {
 export interface PromoSection {
     id: string;
     cards: PromoCard[];
+}
+
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    address?: {
+        street: string;
+        city: string;
+        state: string;
+        zip: string;
+    };
+    avatar?: string;
+}
+
+export interface UserThread {
+    threadId: string; // Often the user's ID
+    userName: string;
+    messages: {
+        sender: 'user' | 'admin';
+        text: string;
+        timestamp: string;
+    }[];
+    lastMessageTimestamp: string;
+    lastAdminSeenTimestamp?: string;
+}
+
+export interface Notification {
+  id: string;
+  message: string;
+  imageUrl?: string;
+  timestamp: string; // ISO String
 }

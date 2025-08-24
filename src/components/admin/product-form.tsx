@@ -14,13 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { initialCategories } from '@/lib/data';
 import type { Product, Category } from '@/lib/types';
 import { Loader2, Trash2, PlusCircle } from 'lucide-react';
-import { products as initialProducts } from '@/lib/data';
-
-const PRODUCTS_KEY = 'appProducts';
-const CATEGORIES_KEY = 'appCategories';
+import { db, productsCollection, categoriesCollection } from '@/lib/firebase';
+import { doc, getDoc, setDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
 
 const productSchema = z.object({
   name: z.string().min(3, { message: 'Product name must be at least 3 characters.' }),
@@ -51,9 +49,10 @@ export function ProductForm({ productId }: ProductFormProps) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
-    const [categories, setCategories] = useState<Category[]>([]);
 
     const isEditMode = !!productId;
+
+    const { data: categories, isLoading: categoriesLoading } = useFirestoreQuery<Category>(categoriesCollection);
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
@@ -78,25 +77,23 @@ export function ProductForm({ productId }: ProductFormProps) {
     const { fields: colorFields, append: appendColor, remove: removeColor } = useFieldArray({ control: form.control, name: "colors" });
 
     useEffect(() => {
-      try {
-        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-        if (savedCategoriesJSON) {
-            setCategories(JSON.parse(savedCategoriesJSON));
-        } else {
-            setCategories(initialCategories);
-        }
-      } catch (e) {
-        setCategories(initialCategories);
-      }
+        const fetchProduct = async () => {
+            if (!isEditMode) {
+                form.reset({
+                    name: '', shortDescription: '', longDescription: '', price: 0, stock: 0,
+                    category: '', brand: '', images: [{value: ''}], sizes: [], tags: [], colors: [],
+                });
+                setIsFetching(false);
+                return;
+            }
 
-        if (isEditMode) {
             try {
-                const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-                const products: Product[] = savedProducts ? JSON.parse(savedProducts) : initialProducts;
-                const productToEdit = products.find(p => p.id === productId);
+                const productDocRef = doc(db, 'products', productId);
+                const productSnap = await getDoc(productDocRef);
 
-                if (productToEdit) {
-                    form.reset({
+                if (productSnap.exists()) {
+                    const productToEdit = productSnap.data() as Product;
+                     form.reset({
                         name: productToEdit.name,
                         shortDescription: productToEdit.shortDescription,
                         longDescription: productToEdit.longDescription,
@@ -115,31 +112,18 @@ export function ProductForm({ productId }: ProductFormProps) {
                 }
             } catch(e) {
                  toast({ variant: 'destructive', title: 'Failed to load product' });
+                 console.error(e);
             } finally {
                 setIsFetching(false);
             }
-        } else {
-            form.reset({
-                name: '',
-                shortDescription: '',
-                longDescription: '',
-                price: 0,
-                stock: 0,
-                category: '',
-                brand: '',
-                images: [{value: ''}],
-                sizes: [],
-                tags: [],
-                colors: [],
-            });
-            setIsFetching(false);
-        }
+        };
+        fetchProduct();
     }, [productId, isEditMode, form, router, toast]);
 
-    const onSubmit = (data: ProductFormValues) => {
+    const onSubmit = async (data: ProductFormValues) => {
         setIsLoading(true);
 
-        const transformedData = {
+        const productData = {
             name: data.name,
             shortDescription: data.shortDescription || '',
             longDescription: data.longDescription || '',
@@ -154,44 +138,25 @@ export function ProductForm({ productId }: ProductFormProps) {
         };
         
         try {
-            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-            let products: Product[] = [];
-            if (savedProductsJSON) {
-                try {
-                    const parsed = JSON.parse(savedProductsJSON);
-                    if (Array.isArray(parsed)) {
-                        products = parsed;
-                    }
-                } catch (e) {
-                    console.error("Could not parse products from localStorage, starting with a new list.", e);
-                }
-            }
-
             if (isEditMode) {
-                const productIndex = products.findIndex(p => p.id === productId);
-                if (productIndex !== -1) {
-                    products[productIndex] = { 
-                        ...products[productIndex], 
-                        ...transformedData 
-                    };
-                }
+                const productDocRef = doc(db, 'products', productId);
+                await updateDoc(productDocRef, productData);
             } else {
-                const newProduct: Product = {
-                    ...transformedData,
-                    id: `p${new Date().getTime()}`,
+                const newProductData = {
+                    ...productData,
                     rating: Math.round((Math.random() * 1.5 + 3.5) * 10) / 10,
                     reviewCount: Math.floor(Math.random() * 200) + 20,
                     createdAt: new Date().toISOString(),
                 };
-                products.push(newProduct);
+                await addDoc(productsCollection, newProductData);
             }
 
-            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
             toast({
                 title: isEditMode ? 'Product Updated' : 'Product Created',
                 description: `Product "${data.name}" has been successfully saved.`,
             });
             router.push('/admin/products');
+            router.refresh(); // To reflect changes in the product list
         } catch (error) {
             toast({ variant: 'destructive', title: 'An error occurred', description: 'Could not save the product.' });
             console.error(error);
@@ -200,7 +165,7 @@ export function ProductForm({ productId }: ProductFormProps) {
         }
     };
     
-    if (isFetching) {
+    if (isFetching || categoriesLoading) {
         return <p>Loading form...</p>;
     }
 

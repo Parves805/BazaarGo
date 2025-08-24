@@ -3,15 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import { getProductRecommendations, type GetProductRecommendationsResult } from '@/ai/flows/product-recommendations';
-import { products as initialProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './product-card';
 import { Skeleton } from './ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Terminal } from 'lucide-react';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
+import { productsCollection } from '@/lib/firebase';
 
-const PRODUCTS_KEY = 'appProducts';
 const RECOMMENDATIONS_CACHE_KEY = 'aiProductRecommendations';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
@@ -23,29 +21,11 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  
+  const { data: allProducts, isLoading: productsLoading } = useFirestoreQuery<Product>(productsCollection);
 
   useEffect(() => {
-    try {
-      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProductsJSON) {
-          const parsed = JSON.parse(savedProductsJSON);
-          if (Array.isArray(parsed)) {
-              setAllProducts(parsed);
-          } else {
-              setAllProducts(initialProducts);
-          }
-      } else {
-        setAllProducts(initialProducts);
-      }
-    } catch (e) {
-      console.error("Failed to load products for recommendations, using defaults", e);
-      setAllProducts(initialProducts);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (allProducts.length === 0) return;
+    if (productsLoading) return;
 
     async function fetchRecommendations() {
       setLoading(true);
@@ -124,9 +104,9 @@ export function ProductRecommendations({ viewingHistory }: ProductRecommendation
     } else {
         setLoading(false);
     }
-  }, [viewingHistory, allProducts]);
+  }, [viewingHistory, allProducts, productsLoading]);
 
-  if (loading) {
+  if (loading || productsLoading) {
      return (
         <Carousel
           opts={{

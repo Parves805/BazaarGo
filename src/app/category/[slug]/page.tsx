@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { initialCategories, products as initialProducts } from '@/lib/data';
 import { ProductCard } from '@/components/product-card';
 import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
@@ -12,45 +11,23 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import type { Product, Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
+import { productsCollection, categoriesCollection } from '@/lib/firebase';
+import { query, where } from 'firebase/firestore';
 
-const PRODUCTS_KEY = 'appProducts';
-const CATEGORIES_KEY = 'appCategories';
 
 export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
   
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: categories, isLoading: categoriesLoading } = useFirestoreQuery<Category>(categoriesCollection);
+  
+  // Create a query for products in the specific category
+  const productsQuery = slug ? query(productsCollection, where("category", "==", slug)) : null;
+  const { data: filteredProducts, isLoading: productsLoading } = useFirestoreQuery<Product>(productsQuery, [slug]);
 
   const category = categories.find((c) => c.id === slug);
-  const filteredProducts = products.filter((p) => p.category === slug);
-
-  useEffect(() => {
-    const loadData = () => {
-        try {
-            const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-            const newProducts = savedProductsJSON ? JSON.parse(savedProductsJSON) : initialProducts;
-            setProducts(prev => JSON.stringify(prev) !== JSON.stringify(newProducts) ? newProducts : prev);
-
-            const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
-            setCategories(prev => JSON.stringify(prev) !== JSON.stringify(newCategories) ? newCategories : prev);
-        } catch (error) {
-            console.error("Failed to load data from localStorage, using defaults.", error);
-            setProducts(initialProducts);
-            setCategories(initialCategories);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    
-    setIsLoading(true);
-    loadData();
-    const interval = setInterval(loadData, 2000);
-    return () => clearInterval(interval);
-  }, []);
+  const isLoading = categoriesLoading || productsLoading;
 
   useEffect(() => {
     if (!isLoading && !category) {

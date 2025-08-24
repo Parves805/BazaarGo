@@ -1,41 +1,16 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { ProductCard } from '@/components/product-card';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { products as initialProducts } from '@/lib/data';
-
-const PRODUCTS_KEY = 'appProducts';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
+import { productsCollection } from '@/lib/firebase';
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setIsLoading(true);
-    try {
-      const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-      if (savedProductsJSON) {
-        const parsed = JSON.parse(savedProductsJSON);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-        } else {
-          setProducts(initialProducts);
-        }
-      } else {
-        setProducts(initialProducts);
-      }
-    } catch (error) {
-      console.error("Failed to load products from localStorage, using defaults.", error);
-      setProducts(initialProducts);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { data: products, isLoading } = useFirestoreQuery<Product>(productsCollection);
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -8,7 +8,6 @@ import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { initialCategories, products as initialProducts } from '@/lib/data';
 import type { Product, Category, PopupCampaign, WebsiteSettings, HomepageSection as HomepageSectionType, PromoSection } from '@/lib/types';
 import { ProductCard } from '@/components/product-card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -17,16 +16,12 @@ import { ProductRecommendations } from '@/components/product-recommendations';
 import { PopupModal } from '@/components/popup-modal';
 import { HomepageSection } from '@/components/homepage-section';
 import { PromoGrid } from '@/components/promo-grid';
+import { useFirestoreQuery } from '@/hooks/use-firestore-query';
+import { productsCollection, categoriesCollection, websiteSettingsDoc, aiSettingsDoc, popupCampaignDoc, homepageSectionsDoc, promoSectionsDoc } from '@/lib/firebase';
+import { getDoc } from 'firebase/firestore';
 
-const SLIDER_IMAGES_KEY = 'heroSliderImages';
-const PRODUCTS_KEY = 'appProducts';
-const CATEGORIES_KEY = 'appCategories';
 const VIEWING_HISTORY_KEY = 'bazaargoProductViewHistory';
-const AI_SETTINGS_KEY = 'aiSettings';
-const POPUP_CAMPAIGN_KEY = 'popupCampaignSettings';
-const WEBSITE_SETTINGS_KEY = 'websiteSettings';
-const HOMEPAGE_SECTIONS_KEY = 'homepageSections';
-const PROMO_SECTIONS_KEY = 'promoCardSections';
+const SLIDER_IMAGES_KEY = 'heroSliderImages'; // Still using localStorage for this for now as it's less critical
 const POPUP_SEEN_SESSION_KEY = 'bazaargoPopupSeenSession';
 
 
@@ -44,114 +39,75 @@ interface Slide {
     dataAiHint: string;
 }
 
-const defaultHomepageSections: HomepageSectionType[] = [
-  {
-    id: 'default-polo-section',
-    title: 'Designer Polo',
-    mainImageUrl: 'https://lzd-img-global.slatic.net/g/p/mdc/89839425a81a7114b341496a75f10255.jpg_720x720q80.jpg',
-    categorySlug: 'polo-tshirt',
-  }
-];
-
-const defaultPromoSections: PromoSection[] = [
-    { 
-        id: 'section_1',
-        cards: [
-            { id: '1', title: 'Classic Polo', imageUrl: 'https://fabrilife.com/products/650182af39a77-square.jpeg', link: '/category/polo-tshirt' },
-            { id: '2', title: 'Designer Polo', imageUrl: 'https://img.drz.lazcdn.com/g/p/mdc/d08e501aee3431a41857876ab4646a5a.jpg_720x720q80.jpg', link: '/category/polo-tshirt' },
-            { id: '3', title: 'Kids Polo', imageUrl: 'https://placehold.co/400x500.png', link: '/category/polo-tshirt' },
-        ]
-    }
-];
-
 export default function Home() {
   const [heroSlides, setHeroSlides] = React.useState<Slide[]>([]);
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [products, setProducts] = React.useState<Product[]>([]);
+  const { data: products, isLoading: productsLoading } = useFirestoreQuery<Product>(productsCollection);
+  const { data: categories, isLoading: categoriesLoading } = useFirestoreQuery<Category>(categoriesCollection);
+  
   const [viewingHistory, setViewingHistory] = React.useState<string[]>([]);
   const [aiSettings, setAiSettings] = React.useState({ recommendationsEnabled: true });
   const [popupCampaign, setPopupCampaign] = React.useState<PopupCampaign | null>(null);
   const [showPopup, setShowPopup] = React.useState(false);
   const [homepageSections, setHomepageSections] = React.useState<HomepageSectionType[]>([]);
   const [promoSections, setPromoSections] = React.useState<PromoSection[]>([]);
+  const [settingsLoading, setSettingsLoading] = React.useState(true);
 
-  const [isLoading, setIsLoading] = React.useState(true);
+
+  const isLoading = productsLoading || categoriesLoading || settingsLoading;
 
   React.useEffect(() => {
-    const loadData = () => {
-      try {
-        // Load hero slides
-        const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
-        setHeroSlides(prev => {
-            const parsed = savedImages ? JSON.parse(savedImages) : defaultSlides;
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                const newSlides = parsed.filter((slide: Slide) => slide.url);
-                return JSON.stringify(prev) !== JSON.stringify(newSlides) ? newSlides : prev;
-            } else if (!savedImages) {
-                 return defaultSlides;
+    // Load non-critical or session data from localStorage
+    const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
+    setViewingHistory(historyJson ? JSON.parse(historyJson) : []);
+
+    const savedImages = localStorage.getItem(SLIDER_IMAGES_KEY);
+    setHeroSlides(savedImages ? JSON.parse(savedImages) : defaultSlides);
+
+    // Fetch settings from Firestore
+    const fetchSettings = async () => {
+        try {
+            const [
+                aiSettingsSnap, 
+                popupCampaignSnap, 
+                homepageSectionsSnap,
+                promoSectionsSnap
+            ] = await Promise.all([
+                getDoc(aiSettingsDoc),
+                getDoc(popupCampaignDoc),
+                getDoc(homepageSectionsDoc),
+                getDoc(promoSectionsDoc)
+            ]);
+
+            if (aiSettingsSnap.exists()) {
+                setAiSettings(aiSettingsSnap.data());
             }
-            return prev;
-        });
-        
-        // Load products
-        const savedProductsJSON = localStorage.getItem(PRODUCTS_KEY);
-        setProducts(prev => {
-            const allProducts = savedProductsJSON ? JSON.parse(savedProductsJSON) : initialProducts;
-            return JSON.stringify(prev) !== JSON.stringify(allProducts) ? allProducts : prev;
-        });
-        
-        // Load categories
-        const savedCategoriesJSON = localStorage.getItem(CATEGORIES_KEY);
-        setCategories(prev => {
-            const newCategories = savedCategoriesJSON ? JSON.parse(savedCategoriesJSON) : initialCategories;
-            return JSON.stringify(prev) !== JSON.stringify(newCategories) ? newCategories : prev;
-        });
 
-        // Load viewing history
-        const historyJson = localStorage.getItem(VIEWING_HISTORY_KEY);
-        setViewingHistory(prev => {
-            const newHistory = historyJson ? JSON.parse(historyJson) : [];
-            return JSON.stringify(prev) !== JSON.stringify(newHistory) ? newHistory : prev;
-        });
+            if (popupCampaignSnap.exists()) {
+                const campaign = popupCampaignSnap.data();
+                setPopupCampaign(campaign);
+                const popupSeen = sessionStorage.getItem(POPUP_SEEN_SESSION_KEY);
+                if (campaign.enabled && !popupSeen) {
+                    setShowPopup(true);
+                    sessionStorage.setItem(POPUP_SEEN_SESSION_KEY, 'true');
+                }
+            }
 
-        // Load AI settings
-        const savedAiSettings = localStorage.getItem(AI_SETTINGS_KEY);
-        setAiSettings(prev => {
-            const newSettings = savedAiSettings ? JSON.parse(savedAiSettings) : { recommendationsEnabled: true };
-            return JSON.stringify(prev) !== JSON.stringify(newSettings) ? newSettings : prev;
-        });
+            if (homepageSectionsSnap.exists()) {
+                 setHomepageSections(homepageSectionsSnap.data().sections);
+            }
+             if (promoSectionsSnap.exists()) {
+                 setPromoSections(promoSectionsSnap.data().sections);
+            }
 
-        // Load Popup Campaign
-        const savedPopupCampaign = localStorage.getItem(POPUP_CAMPAIGN_KEY);
-        if (savedPopupCampaign) {
-          const campaign = JSON.parse(savedPopupCampaign);
-          setPopupCampaign(campaign);
-          const popupSeen = sessionStorage.getItem(POPUP_SEEN_SESSION_KEY);
-          if (campaign.enabled && !popupSeen) {
-              setShowPopup(true);
-              sessionStorage.setItem(POPUP_SEEN_SESSION_KEY, 'true');
-          }
+        } catch (error) {
+            console.error("Failed to load settings from Firestore:", error);
+        } finally {
+            setSettingsLoading(false);
         }
-        
-        // Load Homepage Sections
-        const savedHomepageSections = localStorage.getItem(HOMEPAGE_SECTIONS_KEY);
-        setHomepageSections(savedHomepageSections ? JSON.parse(savedHomepageSections) : defaultHomepageSections);
+    };
 
-        // Load Promo Card Sections
-        const savedPromoSections = localStorage.getItem(PROMO_SECTIONS_KEY);
-        setPromoSections(savedPromoSections ? JSON.parse(savedPromoSections) : defaultPromoSections);
+    fetchSettings();
 
-      } catch (error) {
-        console.error("Failed to load data from localStorage, using defaults.", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    
-    setIsLoading(true);
-    loadData();
-    const interval = setInterval(loadData, 2000); // Poll every 2 seconds
-    return () => clearInterval(interval);
   }, []);
 
   const handlePopupClose = () => {

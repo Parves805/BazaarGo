@@ -128,6 +128,7 @@ export function AuthForm({ type }: AuthFormProps) {
 
     } catch (error: any) {
         console.error('Google Sign-in error:', error);
+        console.log('Firebase auth error code:', error.code);
         let description = 'An unexpected error occurred during Google Sign-in.';
         if (error.code) {
             switch (error.code) {
@@ -140,6 +141,9 @@ export function AuthForm({ type }: AuthFormProps) {
                 case 'auth/auth-domain-config-error':
                      description = 'The Firebase authentication domain is not configured correctly. Please check your Firebase project settings.';
                      break;
+                case 'auth/unauthorized-domain':
+                    description = 'This domain is not authorized for Firebase authentication. Please add it to the list of authorized domains in your Firebase project console.';
+                    break;
                 default:
                     description = `Error: ${error.message} (Code: ${error.code})`;
             }
